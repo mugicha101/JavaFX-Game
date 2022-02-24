@@ -1,8 +1,8 @@
 package application;
 
 public class Position {
-  double x;
-  double y;
+  public double x;
+  public double y;
   public Position(double x, double y) {
     this.x = x;
     this.y = y;
@@ -33,6 +33,11 @@ public class Position {
     move(offset, 1);
   }
 
+  public void move(double dir, double amount) {
+    x += Math.cos(dir*Math.PI/180);
+    y -= Math.sin(dir*Math.PI/180);
+  }
+
   public void set(int x, int y) {
     this.x = x;
     this.y = y;
@@ -57,5 +62,9 @@ public class Position {
 
   public void move(int[] offset) {
     move(offset, 1);
+  }
+
+  public Position clone() {
+    return new Position(this);
   }
 }

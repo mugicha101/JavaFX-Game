@@ -1,5 +1,8 @@
 package application;
 
+import application.bullet.BulletColor;
+import application.bullet.bulletTypes.Bullet;
+import application.bullet.bulletAttr.BulletAttr;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -21,15 +24,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Game extends Application {
-  public static final int[] dim = {800, 600};
-  public static final int width = 800;
-  public static final int height = 600;
+  public static final double[] dim = {800, 600};
+  public static final double width = 800;
+  public static final double height = 600;
   public static final int edgeMargin = 15;
   public static Player player;
   public static ParallelCamera cam;
   public static GraphicsContext gc;
   public static int frame = 0;
   public static int focusHold = 0;
+  public static ArrayList<Bullet> bullets = new ArrayList<>();
 
   public void start(Stage stage) throws IOException {
     // setup JavaFX
@@ -52,8 +56,53 @@ public class Game extends Application {
     for (int i = 0; i < 4; i++) {
       pImgArr[i] = "Reimu/Reimu" + (i + 1) + ".png";
     }
-    player = new Player(7, 0.5, 15, new Sprite(pImgArr, new int[] {6, 0}, 20, 0.75));
+    player = new Player(7, 0.5, 10, new Sprite(pImgArr, new int[] {6, 0}, 20, 0.75));
     player.pos.set(width*0.5, height*0.8);
+
+    // bullet testing
+    BulletColor[] bColors;
+    bColors = new BulletColor[] {
+            BulletColor.RED,
+            BulletColor.ORANGE,
+            BulletColor.YELLOW,
+            BulletColor.GREEN,
+            BulletColor.TURQUOISE,
+            BulletColor.CYAN,
+            BulletColor.BLUE,
+            BulletColor.PURPLE,
+            BulletColor.MAGENTA,
+            BulletColor.ROSE
+    };
+    for (int i = 0; i < bColors.length; i++)
+      bullets.add(new Bullet(new Position(width/2 + ((double)i-((double)bColors.length-1)/2)*30, height/2), 1, bColors[i], new BulletAttr[] {}));
+    bColors = new BulletColor[] {
+            BulletColor.INVERSE_RED,
+            BulletColor.INVERSE_ORANGE,
+            BulletColor.INVERSE_YELLOW,
+            BulletColor.INVERSE_GREEN,
+            BulletColor.INVERSE_TURQUOISE,
+            BulletColor.INVERSE_CYAN,
+            BulletColor.INVERSE_BLUE,
+            BulletColor.INVERSE_PURPLE,
+            BulletColor.INVERSE_MAGENTA,
+            BulletColor.INVERSE_ROSE
+    };
+    for (int i = 0; i < bColors.length; i++)
+      bullets.add(new Bullet(new Position(width/2 + ((double)i-((double)bColors.length-1)/2)*30, height/2+30), 1, bColors[i], new BulletAttr[] {}));
+    bColors = new BulletColor[] {
+            BulletColor.DARK_RED,
+            BulletColor.DARK_ORANGE,
+            BulletColor.DARK_YELLOW,
+            BulletColor.DARK_GREEN,
+            BulletColor.DARK_TURQUOISE,
+            BulletColor.DARK_CYAN,
+            BulletColor.DARK_BLUE,
+            BulletColor.DARK_PURPLE,
+            BulletColor.DARK_MAGENTA,
+            BulletColor.DARK_ROSE
+    };
+    for (int i = 0; i < bColors.length; i++)
+      bullets.add(new Bullet(new Position(width/2 + ((double)i-((double)bColors.length-1)/2)*30, height/2+60), 1, bColors[i], new BulletAttr[] {}));
   }
 
   private void run() {
@@ -70,6 +119,7 @@ public class Game extends Application {
   private void draw() {
     drawBG();
     drawPlayer();
+    drawBullets();
     drawPlayerHB();
   }
 
@@ -117,16 +167,22 @@ public class Game extends Application {
     player.draw(gc);
   }
 
+  public static void drawBullets() {
+    for (Bullet b : bullets) {
+      b.draw(gc);
+    }
+  }
+
   public static void drawPlayerHB() {
     if (focusHold == 0)
       return;
-    double radius = (-2.913*Math.pow(((double)focusHold/10)-0.5859, 2) + 1) * player.hitbox_radius*3;
+    double radius = (-2.913*Math.pow(((double)focusHold/10)-0.5859, 2) + 1) * player.hitbox_radius*4;
     gc.setFill(Color.color(0, 1, 1));
     RadialGradient grad = new RadialGradient(0, 0, player.pos.x, player.pos.y, radius, false, CycleMethod.NO_CYCLE, Arrays.asList(
             new Stop(0, Color.color(1, 1, 1, 1.0)),
             new Stop(0.1, Color.color(0.5, 1, 1, 1.0)),
             new Stop(0.2, Color.color(0, 0.5, 1, 0.5)),
-            new Stop(0.3, Color.color(0, 0, 1, 0))
+            new Stop(0.4, Color.color(0, 0, 1, 0))
     ));
     gc.setFill(grad);
     gc.fillArc(player.pos.x-radius/2, player.pos.y-radius/2, radius, radius, 0, 360, ArcType.ROUND);
