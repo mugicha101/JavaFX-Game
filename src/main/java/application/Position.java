@@ -12,6 +12,10 @@ public class Position {
     this(0,0);
   }
 
+  public Position(Position pos) {
+    this(pos.x, pos.y);
+  }
+
   public double[] getArr() {
     return new double[] {x, y};
   }
