@@ -41,11 +41,16 @@ public class Game extends Application {
     stage.setTitle("Game");
     tl.play();
 
+    // setup input
+    stage.getScene().setOnKeyPressed(e->Input.keyRequest(e.getCode(), true));
+    stage.getScene().setOnKeyReleased(e->Input.keyRequest(e.getCode(), false));
+
     // setup game
     player = new Player(10, 15, new Sprite("Reimu1.png"));
   }
 
   private void run() {
+    Input.keyTick();
     calc();
     draw();
     frame++;
