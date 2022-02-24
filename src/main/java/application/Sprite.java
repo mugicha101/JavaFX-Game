@@ -28,17 +28,21 @@ public class Sprite {
     this.image = null;
   }
 
-  public Sprite(String imgPath) throws FileNotFoundException {
+  public Sprite(String imgPath, double scale) throws FileNotFoundException {
     this();
-    setImage(imgPath);
+    setImage(imgPath, scale);
   }
 
-  public void setImage(String filePath) throws FileNotFoundException {
+  public Sprite(String imgPath) throws FileNotFoundException {
+    this(imgPath, 1);
+  }
+
+  public void setImage(String filePath, double scale) throws FileNotFoundException {
     InputStream stream = new FileInputStream("src/main/java/application/images/" + filePath);
     Image rawImage = new Image(stream);
     image = new ImageView(rawImage);
-    image.setScaleX(1);
-    image.setScaleY(1);
+    image.setScaleX(scale);
+    image.setScaleY(scale);
     updateImage();
   }
 
@@ -68,6 +72,6 @@ public class Sprite {
 
   public void draw(GraphicsContext gc) {
     Image snap = getSnapshot();
-    gc.drawImage(snap, -snap.getWidth()/2, -snap.getHeight()/2);
+    gc.drawImage(snap, pos.x-snap.getWidth()/2, pos.y-snap.getHeight()/2);
   }
 }

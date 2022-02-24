@@ -1,9 +1,9 @@
 package application;
 
 public class Position {
-  int x;
-  int y;
-  public Position(int x, int y) {
+  double x;
+  double y;
+  public Position(double x, double y) {
     this.x = x;
     this.y = y;
   }
@@ -12,7 +12,46 @@ public class Position {
     this(0,0);
   }
 
-  public int[] getArr() {
-    return new int[] {x, y};
+  public double[] getArr() {
+    return new double[] {x, y};
+  }
+
+  public void move(double[] offset, double multi) {
+    x += offset[0] * multi;
+    y += offset[1] * multi;
+  }
+
+  public void move(int[] offset, double multi) {
+    move(new double[] {offset[0], offset[1]}, multi);
+  }
+
+  public void move(double[] offset) {
+    move(offset, 1);
+  }
+
+  public void set(int x, int y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  public void set(double x, double y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  public void set(double[] arr) {
+    set(arr[0], arr[1]);
+  }
+
+  public void set(int[] arr) {
+    set(arr[0], arr[1]);
+  }
+
+  public void set(Position pos) {
+    set(pos.getArr());
+  }
+
+  public void move(int[] offset) {
+    move(offset, 1);
   }
 }

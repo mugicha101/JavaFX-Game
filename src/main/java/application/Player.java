@@ -7,15 +7,18 @@ import javafx.scene.transform.Transform;
 
 public class Player {
   public Position pos;
-  public final int speed;
-  public final int hitbox_radius;
+  public final double speed;
+  public final double focus_multi;
+  public final double hitbox_radius;
   private final Sprite sprite;
   public double dir;
-  public Player(int speed, int hitbox_radius, Sprite sprite) {
+  public Player(double speed, double focus_multi, double hitbox_radius, Sprite sprite) {
     this.pos = new Position(0,0);
     this.speed = speed;
+    this.focus_multi = focus_multi;
     this.hitbox_radius = hitbox_radius;
     this.sprite = sprite;
+    sprite.pos = pos;
   }
 
   public Sprite getSprite() {

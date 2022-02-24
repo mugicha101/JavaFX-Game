@@ -3,14 +3,15 @@ package application;
 import javafx.scene.input.KeyCode;
 import javafx.util.Pair;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class Input {
-  public static final HashMap<String, Input> inputMap = new HashMap<>();
-  public static ArrayList<Pair<KeyCode, Boolean>> inputQueue; // async -> sync
+  private static final HashMap<String, Input> inputMap = new HashMap<>();
+  private static final ArrayList<Pair<KeyCode, Boolean>> inputQueue = new ArrayList<>(); // async -> sync
 
   public static void init() {
     inputMap.put("left", new Input(new KeyCode[] {KeyCode.A, KeyCode.LEFT}));
@@ -18,6 +19,11 @@ public class Input {
     inputMap.put("up", new Input(new KeyCode[] {KeyCode.W, KeyCode.UP}));
     inputMap.put("down", new Input(new KeyCode[] {KeyCode.S, KeyCode.DOWN}));
     inputMap.put("shoot", new Input(new KeyCode[] {KeyCode.Z, KeyCode.BACK_SLASH}));
+    inputMap.put("focus", new Input(new KeyCode[] {KeyCode.SHIFT}));
+  }
+
+  public static Input getInput(String name) {
+    return inputMap.get(name);
   }
 
   public static void keyRequest(KeyCode key, boolean press) {
