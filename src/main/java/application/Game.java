@@ -41,7 +41,11 @@ public class Game extends Application {
     stage.getScene().setOnKeyReleased(e->Input.keyRequest(e.getCode(), false));
 
     // setup game
-    player = new Player(5, 0.5, 15, new Sprite("Reimu1.png", 0.75));
+    String[] pImgArr = new String[4];
+    for (int i = 0; i < 4; i++) {
+      pImgArr[i] = "Reimu/Reimu" + (i + 1) + ".png";
+    }
+    player = new Player(5, 0.5, 15, new Sprite(pImgArr, 25, 0.75));
     player.pos.set(width*0.5, height*0.8);
   }
 

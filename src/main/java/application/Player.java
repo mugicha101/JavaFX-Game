@@ -1,9 +1,6 @@
 package application;
 
-import javafx.scene.ParallelCamera;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.transform.Transform;
 
 public class Player {
   public Position pos;
