@@ -52,11 +52,15 @@ public class Game extends Application {
   }
 
   private void calc() {
-
+    movePlayer();
   }
 
   private void draw() {
     drawBG();
+  }
+
+  private void movePlayer() {
+
   }
 
   private void drawBG() {

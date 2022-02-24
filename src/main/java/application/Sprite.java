@@ -21,12 +21,10 @@ import java.util.List;
 public class Sprite {
   private ImageView image;
   public Position pos;
-  public Rectangle2D bounds; // hit box
   public double dir; // direction
 
   public Sprite() {
     this.pos = new Position(0, 0);
-    this.bounds = new Rectangle2D(0,0,0,0);
     this.image = null;
   }
 
@@ -48,19 +46,28 @@ public class Sprite {
     return image.getImage();
   }
 
+  private Rectangle2D getBounds() {
+    Image snap = getSnapshot();
+    return new Rectangle2D(pos.x-snap.getWidth()/2, pos.y-snap.getHeight()/2, snap.getWidth(), snap.getHeight());
+  }
+
   public boolean intersects(Sprite sprite) {
-    return this.bounds.intersects(sprite.bounds);
+    return this.getBounds().intersects(sprite.getBounds());
   }
 
   private void updateImage() {
     image.setRotate(dir);
   }
 
-  public void draw(GraphicsContext gc) {
+  private Image getSnapshot() {
+    updateImage();
     SnapshotParameters sp = new SnapshotParameters();
     sp.setFill(Color.TRANSPARENT);
-    updateImage();
-    Image snap = image.snapshot(sp, null);
+    return image.snapshot(sp, null);
+  }
+
+  public void draw(GraphicsContext gc) {
+    Image snap = getSnapshot();
     gc.drawImage(snap, -snap.getWidth()/2, -snap.getHeight()/2);
   }
 }
