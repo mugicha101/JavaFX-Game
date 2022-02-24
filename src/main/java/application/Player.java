@@ -9,25 +9,28 @@ public class Player {
   public final double hitbox_radius;
   private final Sprite sprite;
   public double dir;
+  public double alpha;
   public Player(double speed, double focus_multi, double hitbox_radius, Sprite sprite) {
     this.pos = new Position(0,0);
     this.speed = speed;
     this.focus_multi = focus_multi;
     this.hitbox_radius = hitbox_radius;
     this.sprite = sprite;
+    this.alpha = 1;
     sprite.pos = pos;
   }
 
   public Sprite getSprite() {
-    this.updateSprite();
-    return this.sprite;
+    updateSprite();
+    return sprite;
   }
 
   private void updateSprite() {
-    this.sprite.dir = this.dir;
+    sprite.dir = dir;
+    sprite.alpha = alpha;
   }
 
   public void draw(GraphicsContext gc) {
-    this.getSprite().draw(gc);
+    getSprite().draw(gc);
   }
 }
