@@ -141,7 +141,7 @@ public class Bullet {
   }
 
   public double getRenderRadius() {
-    return radius * getScale() * 1;
+    return radius * getScale() * 1.25;
   }
 
   public boolean intersects(Bullet bullet) {

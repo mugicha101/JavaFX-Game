@@ -8,7 +8,7 @@ public class LinMoveAttr extends BulletAttr {
   public LinMoveAttr(String id, double speed, double dir) {
     super(id);
     initSpeed = speed;
-    initDir = dir;
+    initDir = dir % 360;
   }
 
   public void init(Bullet b) {

@@ -124,14 +124,14 @@ public class Game extends Application {
   }
 
   public void spawnBullets() {
-    if (frame % 60 == 0) {
-      for (int i = 0; i < 36; i++)
+    if (frame % 5 == 0) {
+      for (int i = 0; i < 3; i++)
         bullets.add(
             new Bullet(
-                new Position(width / 2, height / 2),
+                new Position(width / 2, height * 0.2),
                 1,
                 BulletColor.RED,
-                new BulletAttr[] {new LinMoveAttr(null, 1, i * 10)}));
+                new BulletAttr[] {new LinMoveAttr(null, 2, i * 60 + Math.random() * 360)}));
     }
   }
 
@@ -151,17 +151,14 @@ public class Game extends Application {
   }
 
   public static void drawBullets() {
-    // group bullets TODO: CHECK OUT DISJOINT SET IMPLEMENTATION
+    // group bullets by AABB intersection
     HashSet<BulletGroup> groups = new HashSet<>();
     Stack<BulletGroup> stack = new Stack<>();
     for (Bullet b : bullets) {
       stack.add(new BulletGroup(b));
     }
 
-    int ops = 0;
-    System.out.println("BEGIN " + bullets.size());
     while (stack.size() != 0) {
-      ops++;
       BulletGroup bg = stack.pop();
       boolean newGroup = true;
       for (BulletGroup bg2 : groups) {
@@ -176,7 +173,8 @@ public class Game extends Application {
       if (newGroup)
         groups.add(bg);
     }
-    System.out.println(ops + ", " + groups.size());
+
+    // render bullets using 1 thread per group
     int i = 0;
     for (BulletGroup bg : groups) {
       BulletColor bc = new BulletColor(Color.WHITE, Color.color(Math.sin(i*Math.PI/10)*0.5+0.5, Math.sin(i*Math.PI/10+Math.PI*2/3)*0.5+0.5, Math.sin(i*Math.PI/10+Math.PI*4/3)*0.5+0.5));
