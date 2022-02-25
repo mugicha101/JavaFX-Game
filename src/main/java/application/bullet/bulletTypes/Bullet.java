@@ -140,8 +140,8 @@ public class Bullet {
     gc.setGlobalAlpha(1);
   }
 
-  public double getRenderRadius() {
-    return radius * getScale() * 2;
+  public double getRenderRadius() { // radius of front render
+    return radius * getScale() * 1.25;
   }
 
   public boolean intersects(Bullet bullet) {

@@ -3,12 +3,13 @@ package application.bullet;
 import application.Position;
 import application.bullet.bulletTypes.Bullet;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
 
 public class BulletGroup {
   public final ArrayList<Bullet> bullets;
-  private Rectangle2D bounds;
+  private Circle bounds;
   private boolean needsUpdate;
   public BulletGroup() {
     bullets = new ArrayList<>() {};
@@ -39,24 +40,27 @@ public class BulletGroup {
     bullets.addAll(group.bullets);
   }
 
-  public Rectangle2D getBounds() {
+  public Circle getBounds() { // TODO: Use Circles Instead
     if (needsUpdate) {
-      double minX = Double.MAX_VALUE;
-      double maxX = Double.MIN_VALUE;
-      double minY = Double.MAX_VALUE;
-      double maxY = Double.MIN_VALUE;
+      double x = 0, y = 0;
+      // find average position
       for (Bullet b : bullets) {
-        double radius = b.getRenderRadius();
-        if (b.pos.x - radius < minX)
-          minX = b.pos.x - radius;
-        if (b.pos.x + radius > maxX)
-          maxX = b.pos.x + radius;
-        if (b.pos.y - radius < minY)
-          minY = b.pos.y - radius;
-        if (b.pos.y + radius > maxY)
-          maxY = b.pos.y + radius;
+        x += b.pos.x;
+        y += b.pos.y;
       }
-      bounds = minX == Double.MAX_VALUE? null : new Rectangle2D(minX, minY, maxX-minX, maxY-minY);
+      x /= bullets.size();
+      y /= bullets.size();
+
+      // get max distance from position
+      double maxDist = 0;
+      for (Bullet b : bullets) {
+        double dist = b.pos.dist(x, y) + b.getRenderRadius();
+        if (dist > maxDist)
+          maxDist = dist;
+      }
+
+      // set circle
+      bounds = new Circle(x, y, maxDist);
       needsUpdate = false;
     }
     return bounds;
@@ -66,14 +70,14 @@ public class BulletGroup {
     return intersects(bg.getBounds());
   }
 
-  public boolean intersects(Rectangle2D bounds) {
+  public boolean intersects(Circle bounds) {
     if (bounds == null || getBounds() == null)
       return false;
-    return getBounds().intersects(bounds);
+    return getCenter().distSqd(bounds.getCenterX(), bounds.getCenterY()) < Math.pow(getBounds().getRadius() + bounds.getRadius(), 2);
   }
 
   public Position getCenter() {
-    Rectangle2D rect = getBounds();
-    return new Position(rect.getMinX() + rect.getWidth() * 0.5, rect.getMinY() + rect.getHeight() * 0.5);
+    Circle c = getBounds();
+    return new Position(c.getCenterX(), c.getCenterY());
   }
 }

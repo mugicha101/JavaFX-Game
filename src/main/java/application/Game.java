@@ -3,15 +3,13 @@ package application;
 import application.bullet.BulletColor;
 import application.bullet.BulletGroup;
 import application.bullet.BulletGroupComparator;
-import application.bullet.BulletRenderer;
+import application.bullet.BulletRenderThread;
 import application.bullet.bulletAttr.LinMoveAttr;
 import application.bullet.bulletTypes.Bullet;
 import application.bullet.bulletAttr.BulletAttr;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Group;
 import javafx.scene.ParallelCamera;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -22,6 +20,7 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -125,14 +124,14 @@ public class Game extends Application {
   }
 
   public void spawnBullets() {
-    if (frame % 5 == 0) {
-      for (int i = 0; i < 3; i++)
+    if (frame % 30 == 0) {
+      for (int i = 0; i < 30; i++)
         bullets.add(
             new Bullet(
                 new Position(width / 2, height * 0.2),
-                1,
+                0.75,
                 BulletColor.RED,
-                new BulletAttr[] {new LinMoveAttr(null, 2, i * 60 + Math.random() * 360)}));
+                new BulletAttr[] {new LinMoveAttr(null, 2, frame + Math.random() * 360)}));
     }
   }
 
@@ -152,22 +151,25 @@ public class Game extends Application {
   }
 
   public static void drawBullets() {
-    // group bullets by AABB intersection
+    // group bullets by Bounding Circle intersection
     HashSet<BulletGroup> groups = new HashSet<>();
     Stack<BulletGroup> stack = new Stack<>();
-    for (int i = bullets.size()-1; i >= 0; i--) {
-      stack.add(new BulletGroup(bullets.get(i)));
-    }
+    BulletGroup[] bga = new BulletGroup[bullets.size()];
+    for (int i = 0; i < bullets.size(); ++i)
+      bga[i] = new BulletGroup(bullets.get(i));
+    Arrays.sort(bga, new BulletGroupComparator(width/2, 0));
+    Collections.reverse(Arrays.asList(bga));
+    Collections.addAll(stack, bga);
 
     while (stack.size() != 0) {
       BulletGroup bg = stack.pop();
       boolean newGroup = true;
-      // TODO: check for intersection from closest to furthest AABB center
       BulletGroup[] bgArr = new BulletGroup[groups.size()];
       int i = 0;
       for (BulletGroup bg2 : groups)
         bgArr[i++] = bg2;
-      Arrays.sort(bgArr, new BulletGroupComparator(bg));
+      Arrays.sort(bgArr, new BulletGroupComparator(bg.getCenter()));
+      // Collections.reverse(Arrays.asList(bgArr));
       for (BulletGroup bg2 : bgArr) {
         if (bg.intersects(bg2)) {
           newGroup = false;
@@ -184,13 +186,17 @@ public class Game extends Application {
     // for testing
     gc.setFill(Color.GRAY);
     for (BulletGroup bg : groups) {
-      Rectangle2D rect = bg.getBounds();
-      gc.fillRect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
+      Circle c = bg.getBounds();
+      gc.fillArc(c.getCenterX()-c.getRadius(), c.getCenterY()-c.getRadius(), c.getRadius()*2, c.getRadius()*2, 0, 360, ArcType.ROUND);
     }
 
-    // render bullets using 1 thread per group
+    // render back of bullets on 1 thread (to allow for tighter grouping
+    for (Bullet b : bullets)
+      b.drawBack(gc);
+
+    // render front of bullets using 1 thread per group
     for (BulletGroup bg : groups) {
-      BulletRenderer br = new BulletRenderer(bg);
+      BulletRenderThread br = new BulletRenderThread(bg);
       br.run();
     }
     /*
