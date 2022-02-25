@@ -2,6 +2,7 @@ package application;
 
 import application.bullet.BulletColor;
 import application.bullet.BulletGroup;
+import application.bullet.BulletGroupComparator;
 import application.bullet.BulletRenderer;
 import application.bullet.bulletAttr.LinMoveAttr;
 import application.bullet.bulletTypes.Bullet;
@@ -154,14 +155,20 @@ public class Game extends Application {
     // group bullets by AABB intersection
     HashSet<BulletGroup> groups = new HashSet<>();
     Stack<BulletGroup> stack = new Stack<>();
-    for (Bullet b : bullets) {
-      stack.add(new BulletGroup(b));
+    for (int i = bullets.size()-1; i >= 0; i--) {
+      stack.add(new BulletGroup(bullets.get(i)));
     }
 
     while (stack.size() != 0) {
       BulletGroup bg = stack.pop();
       boolean newGroup = true;
-      for (BulletGroup bg2 : groups) {
+      // TODO: check for intersection from closest to furthest AABB center
+      BulletGroup[] bgArr = new BulletGroup[groups.size()];
+      int i = 0;
+      for (BulletGroup bg2 : groups)
+        bgArr[i++] = bg2;
+      Arrays.sort(bgArr, new BulletGroupComparator(bg));
+      for (BulletGroup bg2 : bgArr) {
         if (bg.intersects(bg2)) {
           newGroup = false;
           bg2.merge(bg);
@@ -174,15 +181,17 @@ public class Game extends Application {
         groups.add(bg);
     }
 
-    // render bullets using 1 thread per group
-    int i = 0;
+    // for testing
+    gc.setFill(Color.GRAY);
     for (BulletGroup bg : groups) {
-      BulletColor bc = new BulletColor(Color.WHITE, Color.color(Math.sin(i*Math.PI/10)*0.5+0.5, Math.sin(i*Math.PI/10+Math.PI*2/3)*0.5+0.5, Math.sin(i*Math.PI/10+Math.PI*4/3)*0.5+0.5));
-      for (Bullet b : bg.bullets)
-        b.color = bc;
+      Rectangle2D rect = bg.getBounds();
+      gc.fillRect(rect.getMinX(), rect.getMinY(), rect.getWidth(), rect.getHeight());
+    }
+
+    // render bullets using 1 thread per group
+    for (BulletGroup bg : groups) {
       BulletRenderer br = new BulletRenderer(bg);
       br.run();
-      i++;
     }
     /*
     for (Bullet b : bullets)

@@ -1,5 +1,6 @@
 package application.bullet;
 
+import application.Position;
 import application.bullet.bulletTypes.Bullet;
 import javafx.geometry.Rectangle2D;
 
@@ -69,5 +70,10 @@ public class BulletGroup {
     if (bounds == null || getBounds() == null)
       return false;
     return getBounds().intersects(bounds);
+  }
+
+  public Position getCenter() {
+    Rectangle2D rect = getBounds();
+    return new Position(rect.getMinX() + rect.getWidth() * 0.5, rect.getMinY() + rect.getHeight() * 0.5);
   }
 }
