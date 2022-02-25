@@ -6,16 +6,13 @@ import application.bullet.BulletColor;
 import application.bullet.bulletAttr.BulletAttr;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.ArcType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Bullet {
-  private static final int gradientLayers = 3;
+  private static final int frontGradientLayers = 2;
+  private static final int backGradientLayers = 3;
   private boolean alive;
   protected int time;
   public double radius;
@@ -28,7 +25,7 @@ public class Bullet {
     this.pos = pos.clone();
     alive = true;
     time = 0;
-    this.radius = size*10;
+    this.radius = size*5;
     this.color = color;
     attrList = new ArrayList<>();
     for (BulletAttr ba : attrArr) {
@@ -106,8 +103,8 @@ public class Bullet {
     double alpha = alive? 1 : time / 10.0;
     gc.setFill(color.outerColor);
     gc.setGlobalAlpha(alpha*0.2);
-    for (int i = 0; i < gradientLayers; i++) {
-      double size = radius * (2 - 1.0 * i / gradientLayers);
+    for (int i = 0; i < backGradientLayers; i++) {
+      double size = radius * (2 - 1.0 * i / backGradientLayers);
       gc.fillArc(pos.x - size, pos.y - size, size * 2, size * 2, 0, 360, ArcType.ROUND);
     }
   }
@@ -130,11 +127,11 @@ public class Bullet {
     double[] c2 = new double[] {color.innerColor.getRed(), color.innerColor.getGreen(), color.innerColor.getBlue()};
     double[] c3 = new double[3];
     gc.setGlobalAlpha(alpha);
-    for (int i = 0; i <= gradientLayers; i++) {
+    for (int i = 0; i <= frontGradientLayers; i++) {
       for (int j = 0; j < 3; j++)
-        c3[j] = c1[j] + (c2[j] - c1[j]) * i / gradientLayers;
+        c3[j] = c1[j] + (c2[j] - c1[j]) * i / frontGradientLayers;
       gc.setFill(Color.color(c3[0], c3[1], c3[2]));
-      double size = radius * (1.25 - 0.75 * i / gradientLayers);
+      double size = radius * (1.25 - 0.75 * i / frontGradientLayers);
       gc.fillArc(pos.x - size, pos.y - size, size * 2, size * 2, 0, 360, ArcType.ROUND);
     }
     gc.setGlobalAlpha(1);

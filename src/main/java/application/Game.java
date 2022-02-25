@@ -38,6 +38,7 @@ public class Game extends Application {
   public static int frame = -1;
   public static int focusHold = 0;
   public static ArrayList<Bullet> bullets = new ArrayList<>();
+  public static boolean debug = false;
 
   public void start(Stage stage) throws IOException {
     // setup JavaFX
@@ -71,6 +72,7 @@ public class Game extends Application {
   }
 
   private void calc() {
+    debugToggle();
     movePlayer();
     spawnBullets();
     moveBullets();
@@ -81,6 +83,12 @@ public class Game extends Application {
     drawPlayer();
     drawBullets();
     drawPlayerHB();
+  }
+
+  private void debugToggle() {
+    if (Input.getInput("debug").onInitialPress()) {
+      debug = !debug;
+    }
   }
 
   private void movePlayer() {
@@ -125,13 +133,15 @@ public class Game extends Application {
 
   public void spawnBullets() {
     if (frame % 30 == 0) {
-      for (int i = 0; i < 30; i++)
+      Position pos = new Position(width * (0.25 + Math.random() * 0.5), height * (0.1 + Math.random() * 0.2));
+      double dir = Math.random() * 360;
+      for (int i = 0; i < 36; i++)
         bullets.add(
             new Bullet(
-                new Position(width / 2, height * 0.2),
-                0.75,
+                pos,
+                1,
                 BulletColor.RED,
-                new BulletAttr[] {new LinMoveAttr(null, 2, frame + Math.random() * 360)}));
+                new BulletAttr[] {new LinMoveAttr(null, 2, dir + i * 10)}));
     }
   }
 
@@ -184,10 +194,12 @@ public class Game extends Application {
     }
 
     // for testing
-    gc.setFill(Color.GRAY);
-    for (BulletGroup bg : groups) {
-      Circle c = bg.getBounds();
-      gc.fillArc(c.getCenterX()-c.getRadius(), c.getCenterY()-c.getRadius(), c.getRadius()*2, c.getRadius()*2, 0, 360, ArcType.ROUND);
+    if (debug) {
+      gc.setFill(Color.GRAY);
+      for (BulletGroup bg : groups) {
+        Circle c = bg.getBounds();
+        gc.fillArc(c.getCenterX()-c.getRadius(), c.getCenterY()-c.getRadius(), c.getRadius()*2, c.getRadius()*2, 0, 360, ArcType.ROUND);
+      }
     }
 
     // render back of bullets on 1 thread (to allow for tighter grouping

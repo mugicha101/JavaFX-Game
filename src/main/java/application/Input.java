@@ -20,6 +20,7 @@ public class Input {
     inputMap.put("down", new Input(new KeyCode[] {KeyCode.S, KeyCode.DOWN}));
     inputMap.put("shoot", new Input(new KeyCode[] {KeyCode.Z, KeyCode.BACK_SLASH}));
     inputMap.put("focus", new Input(new KeyCode[] {KeyCode.SHIFT}));
+    inputMap.put("debug", new Input(new KeyCode[] {KeyCode.F5}));
   }
 
   public static Input getInput(String name) {
