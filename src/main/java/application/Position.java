@@ -34,8 +34,8 @@ public class Position {
   }
 
   public void move(double dir, double amount) {
-    x += Math.cos(dir*Math.PI/180);
-    y -= Math.sin(dir*Math.PI/180);
+    x += Math.cos(dir*Math.PI/180) * amount;
+    y -= Math.sin(dir*Math.PI/180) * amount;
   }
 
   public void set(int x, int y) {
@@ -66,5 +66,21 @@ public class Position {
 
   public Position clone() {
     return new Position(this);
+  }
+
+  public double distSqd(double x, double y) {
+    return Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2);
+  }
+
+  public double distSqd(Position pos) {
+    return distSqd(pos.x, pos.y);
+  }
+
+  public double dist(double x, double y) {
+    return Math.sqrt(distSqd(x, y));
+  }
+
+  public double dist(Position pos) {
+    return Math.sqrt(distSqd(pos));
   }
 }

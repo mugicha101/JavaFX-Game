@@ -79,7 +79,7 @@ public class Sprite {
     Image snap = getSnapshot();
     gc.save();
     gc.setGlobalAlpha(alpha);
-    gc.drawImage(snap, pos.x-snap.getWidth()/2+(double)offset[0]*scale, pos.y-snap.getHeight()/2-(double)offset[1]*scale);
+    gc.drawImage(snap, pos.x-snap.getWidth()/2+(double)offset[0]*scale, pos.y-snap.getHeight()/2+(double)offset[1]*scale);
     gc.restore();
   }
 }

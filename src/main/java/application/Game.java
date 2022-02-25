@@ -1,11 +1,16 @@
 package application;
 
 import application.bullet.BulletColor;
+import application.bullet.BulletGroup;
+import application.bullet.BulletRenderer;
+import application.bullet.bulletAttr.LinMoveAttr;
 import application.bullet.bulletTypes.Bullet;
 import application.bullet.bulletAttr.BulletAttr;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
 import javafx.scene.ParallelCamera;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -20,8 +25,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class Game extends Application {
   public static final double[] dim = {800, 600};
@@ -31,7 +35,7 @@ public class Game extends Application {
   public static Player player;
   public static ParallelCamera cam;
   public static GraphicsContext gc;
-  public static int frame = 0;
+  public static int frame = -1;
   public static int focusHold = 0;
   public static ArrayList<Bullet> bullets = new ArrayList<>();
 
@@ -39,7 +43,6 @@ public class Game extends Application {
     // setup JavaFX
     Canvas canvas = new Canvas(dim[0], dim[1]);
     gc = canvas.getGraphicsContext2D();
-    cam = new ParallelCamera();
     Timeline tl = new Timeline(new KeyFrame(Duration.millis(17), e->run()));
     tl.setCycleCount(Timeline.INDEFINITE);
     stage.setScene(new Scene(new StackPane(canvas)));
@@ -56,64 +59,21 @@ public class Game extends Application {
     for (int i = 0; i < 4; i++) {
       pImgArr[i] = "Reimu/Reimu" + (i + 1) + ".png";
     }
-    player = new Player(7, 0.5, 10, new Sprite(pImgArr, new int[] {6, 0}, 20, 0.75));
+    player = new Player(7, 0.5, 3, new Sprite(pImgArr, new int[] {6, 0}, 20, 0.75));
     player.pos.set(width*0.5, height*0.8);
-
-    // bullet testing
-    BulletColor[] bColors;
-    bColors = new BulletColor[] {
-            BulletColor.RED,
-            BulletColor.ORANGE,
-            BulletColor.YELLOW,
-            BulletColor.GREEN,
-            BulletColor.TURQUOISE,
-            BulletColor.CYAN,
-            BulletColor.BLUE,
-            BulletColor.PURPLE,
-            BulletColor.MAGENTA,
-            BulletColor.ROSE
-    };
-    for (int i = 0; i < bColors.length; i++)
-      bullets.add(new Bullet(new Position(width/2 + ((double)i-((double)bColors.length-1)/2)*30, height/2), 1, bColors[i], new BulletAttr[] {}));
-    bColors = new BulletColor[] {
-            BulletColor.INVERSE_RED,
-            BulletColor.INVERSE_ORANGE,
-            BulletColor.INVERSE_YELLOW,
-            BulletColor.INVERSE_GREEN,
-            BulletColor.INVERSE_TURQUOISE,
-            BulletColor.INVERSE_CYAN,
-            BulletColor.INVERSE_BLUE,
-            BulletColor.INVERSE_PURPLE,
-            BulletColor.INVERSE_MAGENTA,
-            BulletColor.INVERSE_ROSE
-    };
-    for (int i = 0; i < bColors.length; i++)
-      bullets.add(new Bullet(new Position(width/2 + ((double)i-((double)bColors.length-1)/2)*30, height/2+30), 1, bColors[i], new BulletAttr[] {}));
-    bColors = new BulletColor[] {
-            BulletColor.DARK_RED,
-            BulletColor.DARK_ORANGE,
-            BulletColor.DARK_YELLOW,
-            BulletColor.DARK_GREEN,
-            BulletColor.DARK_TURQUOISE,
-            BulletColor.DARK_CYAN,
-            BulletColor.DARK_BLUE,
-            BulletColor.DARK_PURPLE,
-            BulletColor.DARK_MAGENTA,
-            BulletColor.DARK_ROSE
-    };
-    for (int i = 0; i < bColors.length; i++)
-      bullets.add(new Bullet(new Position(width/2 + ((double)i-((double)bColors.length-1)/2)*30, height/2+60), 1, bColors[i], new BulletAttr[] {}));
   }
 
   private void run() {
+    frame++;
     Input.keyTick();
     calc();
     draw();
-    frame++;
   }
 
   private void calc() {
     movePlayer();
+    spawnBullets();
+    moveBullets();
   }
 
   private void draw() {
@@ -134,7 +94,7 @@ public class Game extends Application {
     if (Input.getInput("down").isPressed())
       moveOffset[1]++;
 
-    double multi = player.speed * (Input.getInput("focus").isPressed()? player.focus_multi : 1);
+    double multi = player.speed * (Input.getInput("focus").isPressed()? player.focusMulti : 1);
     player.pos.move(moveOffset, multi);
     if (player.pos.x < edgeMargin)
       player.pos.x = edgeMargin;
@@ -150,6 +110,29 @@ public class Game extends Application {
       focusHold++;
     else if (focusHold > 0 && !Input.getInput("focus").isPressed())
       focusHold--;
+  }
+
+  public void moveBullets() {
+    ArrayList<Bullet> aliveBullets = new ArrayList<>();
+    for (Bullet b : bullets) {
+      b.move();
+      if (b.isAlive() || b.getTime() < 10)
+        aliveBullets.add(b);
+    }
+    bullets = aliveBullets;
+
+  }
+
+  public void spawnBullets() {
+    if (frame % 60 == 0) {
+      for (int i = 0; i < 36; i++)
+        bullets.add(
+            new Bullet(
+                new Position(width / 2, height / 2),
+                1,
+                BulletColor.RED,
+                new BulletAttr[] {new LinMoveAttr(null, 1, i * 10)}));
+    }
   }
 
   private void drawBG() {
@@ -168,15 +151,53 @@ public class Game extends Application {
   }
 
   public static void drawBullets() {
+    // group bullets TODO: CHECK OUT DISJOINT SET IMPLEMENTATION
+    HashSet<BulletGroup> groups = new HashSet<>();
+    Stack<BulletGroup> stack = new Stack<>();
     for (Bullet b : bullets) {
-      b.draw(gc);
+      stack.add(new BulletGroup(b));
     }
+
+    int ops = 0;
+    System.out.println("BEGIN " + bullets.size());
+    while (stack.size() != 0) {
+      ops++;
+      BulletGroup bg = stack.pop();
+      boolean newGroup = true;
+      for (BulletGroup bg2 : groups) {
+        if (bg.intersects(bg2)) {
+          newGroup = false;
+          bg2.merge(bg);
+          groups.remove(bg2);
+          stack.add(bg2);
+          break;
+        }
+      }
+      if (newGroup)
+        groups.add(bg);
+    }
+    System.out.println(ops + ", " + groups.size());
+    int i = 0;
+    for (BulletGroup bg : groups) {
+      BulletColor bc = new BulletColor(Color.WHITE, Color.color(Math.sin(i*Math.PI/10)*0.5+0.5, Math.sin(i*Math.PI/10+Math.PI*2/3)*0.5+0.5, Math.sin(i*Math.PI/10+Math.PI*4/3)*0.5+0.5));
+      for (Bullet b : bg.bullets)
+        b.color = bc;
+      BulletRenderer br = new BulletRenderer(bg);
+      br.run();
+      i++;
+    }
+    /*
+    for (Bullet b : bullets)
+      b.drawBack(gc);
+    for (Bullet b : bullets)
+      b.drawFront(gc);
+     */
   }
 
   public static void drawPlayerHB() {
     if (focusHold == 0)
       return;
-    double radius = (-2.913*Math.pow(((double)focusHold/10)-0.5859, 2) + 1) * player.hitbox_radius*4;
+    double radius = (-2.913*Math.pow(((double)focusHold/10)-0.5859, 2)*2 + 2) * player.hbRadius * 6;
     gc.setFill(Color.color(0, 1, 1));
     RadialGradient grad = new RadialGradient(0, 0, player.pos.x, player.pos.y, radius, false, CycleMethod.NO_CYCLE, Arrays.asList(
             new Stop(0, Color.color(1, 1, 1, 1.0)),
@@ -185,7 +206,7 @@ public class Game extends Application {
             new Stop(0.4, Color.color(0, 0, 1, 0))
     ));
     gc.setFill(grad);
-    gc.fillArc(player.pos.x-radius/2, player.pos.y-radius/2, radius, radius, 0, 360, ArcType.ROUND);
+    gc.fillArc(player.pos.x-radius, player.pos.y-radius, radius*2, radius*2, 0, 360, ArcType.ROUND);
   }
 
   public static void main(String[] args) {

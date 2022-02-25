@@ -12,7 +12,12 @@ public class RiceBullet extends Bullet {
   }
 
   @Override
-  public void draw(GraphicsContext gc) {
+  public void drawBack(GraphicsContext gc) {
+
+  }
+
+  @Override
+  public void drawFront(GraphicsContext gc) {
 
   }
 }
