@@ -11,7 +11,7 @@ import javafx.scene.shape.ArcType;
 import java.util.ArrayList;
 
 public class Bullet {
-  private static final int frontGradientLayers = 2;
+  private static final int frontGradientLayers = 3;
   private static final int backGradientLayers = 3;
   private boolean alive;
   protected int time;
@@ -109,7 +109,7 @@ public class Bullet {
     double radius = this.radius * getScale();
     double alpha = alive? Math.min(time / 10.0, 1) : 1;
     gc.setFill(color.outerColor);
-    gc.setGlobalAlpha(alpha*0.2);
+    gc.setGlobalAlpha(alpha*0.3);
     for (int i = 0; i < backGradientLayers; i++) {
       double size = radius * (2 - 1.0 * i / backGradientLayers);
       gc.fillArc(pos.x - size, pos.y - size, size * 2, size * 2, 0, 360, ArcType.ROUND);

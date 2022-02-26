@@ -237,8 +237,9 @@ public class Game extends Application {
       }
     }
 
-    // group smallest groups until 8 or less groups
-    while (bgArr.size() > 8) {
+    // group smallest groups until amount of groups is at most the amount of processors
+    int cores = Runtime.getRuntime().availableProcessors();
+    while (bgArr.size() > cores) {
       bgArr.sort(new BulletGroupComparator());
       bgArr.get(bgArr.size()-2).merge(bgArr.get(bgArr.size()-1));
       bgArr.remove(bgArr.size()-1);
@@ -253,7 +254,7 @@ public class Game extends Application {
                 Math.sin(c) * 0.5 + 0.5,
                 Math.sin(c + Math.PI * 2 / 3) * 0.5 + 0.5,
                 Math.sin(c + Math.PI * 4 / 3) * 0.5 + 0.5);
-        c += Math.PI / 10;
+        c += 2 * Math.PI / cores;
         for (Bullet b : bg.getBullets()) {
           b.color = new BulletColor(Color.WHITE, color);
         }
