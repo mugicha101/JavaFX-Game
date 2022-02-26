@@ -14,10 +14,12 @@ public class BulletRenderThread implements Runnable {
   }
 
   public BulletRenderThread(BulletGroup bg) {
-    this(bg.bullets);
+    this(bg.getBullets());
   }
 
   public void run() {
+    for (Bullet b : bullets)
+      b.drawBack(Game.gc);
     for (Bullet b : bullets)
       b.drawFront(Game.gc);
   }

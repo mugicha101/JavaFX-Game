@@ -21,6 +21,8 @@ public class Bullet {
   public final Position pos;
   public double speed;
   public double dir;
+  private static int nextId = 0;
+  private int id;
   public Bullet(Position pos, double size, BulletColor color, BulletAttr[] attrArr) {
     this.pos = pos.clone();
     alive = true;
@@ -31,6 +33,11 @@ public class Bullet {
     for (BulletAttr ba : attrArr) {
       attrList.add(ba.clone());
     }
+    id = nextId++;
+  }
+
+  public final int id() {
+    return id;
   }
 
   public final boolean isAlive() {
@@ -93,14 +100,14 @@ public class Bullet {
     if (!alive)
       return 1 - time / 10.0;
     else if (time < 10)
-      return 2.0 / (1 + time * 0.2);
+      return 5 / (0.5 + time * 0.5);
     else
       return 1;
   }
 
   public void drawBack(GraphicsContext gc) {
     double radius = this.radius * getScale();
-    double alpha = alive? 1 : time / 10.0;
+    double alpha = alive? Math.min(time / 10.0, 1) : 1;
     gc.setFill(color.outerColor);
     gc.setGlobalAlpha(alpha*0.2);
     for (int i = 0; i < backGradientLayers; i++) {
@@ -111,7 +118,7 @@ public class Bullet {
 
   public void drawFront(GraphicsContext gc) {
     double radius = this.radius * getScale();
-    double alpha = alive? 1 : time / 10.0;
+    double alpha = alive? Math.min(time / 10.0, 1) : 1;
     /*
     RadialGradient grad = new RadialGradient(0, 0, pos.x, pos.y, radius, false, CycleMethod.NO_CYCLE, Arrays.asList(
             new Stop(0, color.innerColor),
@@ -137,8 +144,8 @@ public class Bullet {
     gc.setGlobalAlpha(1);
   }
 
-  public double getRenderRadius() { // radius of front render
-    return radius * getScale() * 1.25;
+  public double getRenderRadius() {
+    return radius * getScale() * 2;
   }
 
   public boolean intersects(Bullet bullet) {

@@ -24,7 +24,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.util.Pair;
+
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Game extends Application {
@@ -39,6 +42,7 @@ public class Game extends Application {
   public static int focusHold = 0;
   public static ArrayList<Bullet> bullets = new ArrayList<>();
   public static boolean debug = false;
+  public static final double chunkSize = 50;
 
   public void start(Stage stage) throws IOException {
     // setup JavaFX
@@ -132,7 +136,7 @@ public class Game extends Application {
   }
 
   public void spawnBullets() {
-    if (frame % 30 == 0) {
+    if (frame % 10 == 0) {
       Position pos = new Position(width * (0.25 + Math.random() * 0.5), height * (0.1 + Math.random() * 0.2));
       double dir = Math.random() * 360;
       for (int i = 0; i < 36; i++)
@@ -160,57 +164,108 @@ public class Game extends Application {
     player.draw(gc);
   }
 
+  private static Integer getChunkId(double x, double y) {
+    return (int)(y/chunkSize) * 1000 + (int)(x/chunkSize);
+  }
+
+  private static double getChunkIdX(Integer id) {
+    return (id % 1000) * chunkSize;
+  }
+
+  private static double getChunkIdY(Integer id) {
+    return (id / 1000) * chunkSize;
+  }
+
+  private static void groupHelper(ArrayList<Integer> group, HashMap<Integer, HashSet<Integer>> adjList, HashSet<Integer> visited, HashMap<Integer, BulletGroup> chunks, Integer id) {
+    group.add(id);
+    visited.add(id);
+    for (Integer nid : adjList.get(id)) {
+      if (!visited.contains(nid)) {
+        groupHelper(group, adjList, visited, chunks, nid);
+      }
+    }
+  }
+
   public static void drawBullets() {
     // group bullets by Bounding Circle intersection
-    HashSet<BulletGroup> groups = new HashSet<>();
-    Stack<BulletGroup> stack = new Stack<>();
-    BulletGroup[] bga = new BulletGroup[bullets.size()];
-    for (int i = 0; i < bullets.size(); ++i)
-      bga[i] = new BulletGroup(bullets.get(i));
-    Arrays.sort(bga, new BulletGroupComparator(width/2, 0));
-    Collections.reverse(Arrays.asList(bga));
-    Collections.addAll(stack, bga);
+    // TODO: switch to grid chunk based grouping (UnionFind chunks if bullets on edge)
+    // Form Chunks
+    HashMap<Integer, BulletGroup> chunks = new HashMap<>();
+    HashMap<Integer, HashSet<Integer>> adjList = new HashMap<>();
+    for (Bullet b : bullets) {
+      // get chunks
+      HashSet<Integer> chunkIdSet = new HashSet<>();
+      double radius = b.getRenderRadius();
+      chunkIdSet.add(getChunkId(b.pos.x - b.radius, b.pos.y - b.radius));
+      chunkIdSet.add(getChunkId(b.pos.x + b.radius, b.pos.y - b.radius));
+      chunkIdSet.add(getChunkId(b.pos.x - b.radius, b.pos.y + b.radius));
+      chunkIdSet.add(getChunkId(b.pos.x + b.radius, b.pos.y + b.radius));
+      for (Integer id : chunkIdSet) {
+        if (!chunks.containsKey(id)) chunks.put(id, new BulletGroup());
+      }
 
-    while (stack.size() != 0) {
-      BulletGroup bg = stack.pop();
-      boolean newGroup = true;
-      BulletGroup[] bgArr = new BulletGroup[groups.size()];
-      int i = 0;
-      for (BulletGroup bg2 : groups)
-        bgArr[i++] = bg2;
-      Arrays.sort(bgArr, new BulletGroupComparator(bg.getCenter()));
-      // Collections.reverse(Arrays.asList(bgArr));
-      for (BulletGroup bg2 : bgArr) {
-        if (bg.intersects(bg2)) {
-          newGroup = false;
-          bg2.merge(bg);
-          groups.remove(bg2);
-          stack.add(bg2);
-          break;
+      // connect chunks
+      List<Integer> chunkIdArr = chunkIdSet.stream().toList();
+      for (Integer id : chunkIdArr) {
+        if (!adjList.containsKey(id)) adjList.put(id, new HashSet<>());
+      }
+      chunks.get(chunkIdArr.get(0)).addBullet(b);
+      if (chunkIdArr.size() > 1) {
+        for (int i = 1; i < chunkIdArr.size(); i++) {
+          adjList.get(chunkIdArr.get(0)).add(chunkIdArr.get(i));
+          adjList.get(chunkIdArr.get(i)).add(chunkIdArr.get(0));
         }
       }
-      if (newGroup)
-        groups.add(bg);
     }
+
+
+    // form groups by dfs
+    HashSet<Integer> visited = new HashSet<>();
+    ArrayList<ArrayList<Integer>> chunkGroups = new ArrayList<>();
+    for (Integer id : chunks.keySet()) {
+      if (!visited.contains(id)) {
+        ArrayList<Integer> group = new ArrayList<>();
+        chunkGroups.add(group);
+        groupHelper(group, adjList, visited, chunks, id);
+      }
+    }
+    ArrayList<BulletGroup> bgArr = new ArrayList<>(chunkGroups.size());
+    for (ArrayList<Integer> group : chunkGroups) {
+      bgArr.add(chunks.get(group.get(0)));
+      for (int j = 1; j < group.size(); j++) {
+        bgArr.get(bgArr.size()-1).merge(chunks.get(group.get(j)));
+      }
+    }
+
+    // group smallest groups until 8 or less groups
+    while (bgArr.size() > 8) {
+      bgArr.sort(new BulletGroupComparator());
+      bgArr.get(bgArr.size()-2).merge(bgArr.get(bgArr.size()-1));
+      bgArr.remove(bgArr.size()-1);
+    }
+    bgArr.sort(new BulletGroupComparator());
 
     // for testing
     if (debug) {
-      gc.setFill(Color.GRAY);
-      for (BulletGroup bg : groups) {
-        Circle c = bg.getBounds();
-        gc.fillArc(c.getCenterX()-c.getRadius(), c.getCenterY()-c.getRadius(), c.getRadius()*2, c.getRadius()*2, 0, 360, ArcType.ROUND);
+      double c = 0;
+      for (BulletGroup bg : bgArr) {
+        Color color = Color.color(
+                Math.sin(c) * 0.5 + 0.5,
+                Math.sin(c + Math.PI * 2 / 3) * 0.5 + 0.5,
+                Math.sin(c + Math.PI * 4 / 3) * 0.5 + 0.5);
+        c += Math.PI / 10;
+        for (Bullet b : bg.getBullets()) {
+          b.color = new BulletColor(Color.WHITE, color);
+        }
       }
     }
 
-    // render back of bullets on 1 thread (to allow for tighter grouping
-    for (Bullet b : bullets)
-      b.drawBack(gc);
-
     // render front of bullets using 1 thread per group
-    for (BulletGroup bg : groups) {
+    for (BulletGroup bg : bgArr) {
       BulletRenderThread br = new BulletRenderThread(bg);
       br.run();
     }
+    gc.setGlobalAlpha(1);
     /*
     for (Bullet b : bullets)
       b.drawBack(gc);
