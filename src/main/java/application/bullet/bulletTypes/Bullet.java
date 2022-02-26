@@ -4,15 +4,17 @@ import application.Game;
 import application.Position;
 import application.bullet.BulletColor;
 import application.bullet.bulletAttr.BulletAttr;
+import javafx.scene.Group;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
 
 public class Bullet {
   private static final int frontGradientLayers = 3;
-  private static final int backGradientLayers = 3;
+  private static final int backGradientLayers = 6;
   private boolean alive;
   protected int time;
   public double radius;
@@ -23,17 +25,25 @@ public class Bullet {
   public double dir;
   private static int nextId = 0;
   private int id;
+  private Group groupBack;
+  private Group groupFront;
+  private static final double groupSize = 10;
   public Bullet(Position pos, double size, BulletColor color, BulletAttr[] attrArr) {
     this.pos = pos.clone();
     alive = true;
     time = 0;
-    this.radius = size*5;
+    this.radius = size*8;
     this.color = color;
     attrList = new ArrayList<>();
     for (BulletAttr ba : attrArr) {
       attrList.add(ba.clone());
     }
     id = nextId++;
+    groupFront = new Group();
+    groupBack = new Group();
+    updateGroup();
+    Game.bulletGroupBack.getChildren().add(groupBack);
+    Game.bulletGroupFront.getChildren().add(groupFront);
   }
 
   public final int id() {
@@ -57,6 +67,11 @@ public class Bullet {
 
   public final void kill() {
     kill(false);
+  }
+
+  public void delete() {
+    Game.bulletGroupBack.getChildren().remove(groupBack);
+    Game.bulletGroupFront.getChildren().remove(groupFront);
   }
 
   public final void move() {
@@ -91,61 +106,63 @@ public class Bullet {
     if (alive && defaultCollision) {
       if (pos.distSqd(Game.player.pos) <= Math.pow(radius + Game.player.hbRadius, 2))
         this.kill();
-      else if (pos.x > Game.width + radius*3 || pos.y > Game.height + radius*3 || pos.x < -radius*3 || pos.y < -radius*3)
+      else if (pos.x > Game.width + getRenderRadius() || pos.y > Game.height + getRenderRadius() || pos.x < -getRenderRadius() || pos.y < -getRenderRadius())
         this.kill(true);
     }
   }
 
   protected double getScale() {
     if (!alive)
-      return 1 - time / 10.0;
+      return 1 + time / 5.0;
     else if (time < 10)
       return 5 / (0.5 + time * 0.5);
     else
       return 1;
   }
 
-  public void drawBack(GraphicsContext gc) {
-    double radius = this.radius * getScale();
-    double alpha = alive? Math.min(time / 10.0, 1) : 1;
-    gc.setFill(color.outerColor);
-    gc.setGlobalAlpha(alpha*0.3);
-    for (int i = 0; i < backGradientLayers; i++) {
-      double size = radius * (2 - 1.0 * i / backGradientLayers);
-      gc.fillArc(pos.x - size, pos.y - size, size * 2, size * 2, 0, 360, ArcType.ROUND);
+  public void drawUpdate() {
+    double scale = this.radius * getScale() / groupSize;
+    double alpha = alive? Math.min(time / 10.0, 1) : 1 - time / 10.0;
+    if (scale != groupFront.getScaleX()) {
+      groupBack.setScaleX(scale);
+      groupBack.setScaleY(scale);
+      groupFront.setScaleX(scale);
+      groupFront.setScaleY(scale);
     }
+    if (alpha != groupFront.getOpacity()) {
+      groupFront.setOpacity(alpha);
+      groupBack.setOpacity(alpha);
+    }
+    groupBack.setTranslateX(pos.x);
+    groupBack.setTranslateY(pos.y);
+    groupFront.setTranslateX(pos.x);
+    groupFront.setTranslateY(pos.y);
   }
 
-  public void drawFront(GraphicsContext gc) {
-    double radius = this.radius * getScale();
-    double alpha = alive? Math.min(time / 10.0, 1) : 1;
-    /*
-    RadialGradient grad = new RadialGradient(0, 0, pos.x, pos.y, radius, false, CycleMethod.NO_CYCLE, Arrays.asList(
-            new Stop(0, color.innerColor),
-            new Stop(0.1, color.innerColor),
-            new Stop(0.3, color.outerColor),
-            new Stop(0.35, Color.color(color.outerColor.getRed(), color.outerColor.getGreen(), color.outerColor.getBlue(), 0.5)),
-            new Stop(0.5, Color.color(color.outerColor.getRed(), color.outerColor.getGreen(), color.outerColor.getBlue(), 0))
-    ));
-    gc.setFill(grad);
-    gc.fillArc(pos.x-radius, pos.y-radius, radius*2, radius*2, 0, 360, ArcType.ROUND);
-     */
+  public void updateGroup() {
+    groupBack.getChildren().clear();
+    groupFront.getChildren().clear();
+    // back
+    for (int i = 0; i < backGradientLayers; i++) {
+      Circle circle = new Circle(0, 0, groupSize * (2 - 1.0 * i / backGradientLayers));
+      circle.setFill(Color.color(color.outerColor.getRed(), color.outerColor.getGreen(), color.outerColor.getBlue(), 0.3));
+      groupBack.getChildren().add(circle);
+    }
+    // front
     double[] c1 = new double[] {color.outerColor.getRed(), color.outerColor.getGreen(), color.outerColor.getBlue()};
     double[] c2 = new double[] {color.innerColor.getRed(), color.innerColor.getGreen(), color.innerColor.getBlue()};
     double[] c3 = new double[3];
-    gc.setGlobalAlpha(alpha);
     for (int i = 0; i <= frontGradientLayers; i++) {
+      Circle circle = new Circle(0, 0, groupSize * (1.25 - 0.75 * i / frontGradientLayers));
       for (int j = 0; j < 3; j++)
         c3[j] = c1[j] + (c2[j] - c1[j]) * i / frontGradientLayers;
-      gc.setFill(Color.color(c3[0], c3[1], c3[2]));
-      double size = radius * (1.25 - 0.75 * i / frontGradientLayers);
-      gc.fillArc(pos.x - size, pos.y - size, size * 2, size * 2, 0, 360, ArcType.ROUND);
+      circle.setFill(Color.color(c3[0], c3[1], c3[2]));
+      groupFront.getChildren().add(circle);
     }
-    gc.setGlobalAlpha(1);
   }
 
   public double getRenderRadius() {
-    return radius * getScale() * 2;
+    return radius * getScale() * 3;
   }
 
   public boolean intersects(Bullet bullet) {

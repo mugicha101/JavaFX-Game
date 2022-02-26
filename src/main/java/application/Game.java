@@ -1,33 +1,27 @@
 package application;
 
 import application.bullet.BulletColor;
-import application.bullet.BulletGroup;
-import application.bullet.BulletGroupComparator;
-import application.bullet.BulletRenderThread;
 import application.bullet.bulletAttr.LinMoveAttr;
 import application.bullet.bulletTypes.Bullet;
 import application.bullet.bulletAttr.BulletAttr;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.scene.Group;
 import javafx.scene.ParallelCamera;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.ArcType;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.util.Pair;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Game extends Application {
@@ -37,20 +31,25 @@ public class Game extends Application {
   public static final int edgeMargin = 15;
   public static Player player;
   public static ParallelCamera cam;
+  public static boolean debug = false;
   public static GraphicsContext gc;
   public static int frame = -1;
   public static int focusHold = 0;
   public static ArrayList<Bullet> bullets = new ArrayList<>();
-  public static boolean debug = false;
-  public static final double chunkSize = 50;
+  public static Group root;
+  public static Group bulletGroupFront;
+  public static Group bulletGroupBack;
 
   public void start(Stage stage) throws IOException {
     // setup JavaFX
+    root = new Group();
     Canvas canvas = new Canvas(dim[0], dim[1]);
     gc = canvas.getGraphicsContext2D();
+    root.getChildren().add(canvas);
     Timeline tl = new Timeline(new KeyFrame(Duration.millis(17), e->run()));
     tl.setCycleCount(Timeline.INDEFINITE);
-    stage.setScene(new Scene(new StackPane(canvas)));
+    Scene scene = new Scene(root);
+    stage.setScene(scene);
     stage.show();
     stage.setTitle("Game");
     tl.play();
@@ -58,6 +57,12 @@ public class Game extends Application {
     // setup input
     stage.getScene().setOnKeyPressed(e->Input.keyRequest(e.getCode(), true));
     stage.getScene().setOnKeyReleased(e->Input.keyRequest(e.getCode(), false));
+
+    // setup scene graph bullets node
+    bulletGroupBack = new Group();
+    bulletGroupFront = new Group();
+    root.getChildren().add(bulletGroupBack);
+    root.getChildren().add(bulletGroupFront);
 
     // setup game
     String[] pImgArr = new String[4];
@@ -130,6 +135,8 @@ public class Game extends Application {
       b.move();
       if (b.isAlive() || b.getTime() < 10)
         aliveBullets.add(b);
+      else
+        b.delete();
     }
     bullets = aliveBullets;
 
@@ -164,115 +171,10 @@ public class Game extends Application {
     player.draw(gc);
   }
 
-  private static Integer getChunkId(double x, double y) {
-    return (int)(y/chunkSize) * 1000 + (int)(x/chunkSize);
-  }
-
-  private static double getChunkIdX(Integer id) {
-    return (id % 1000) * chunkSize;
-  }
-
-  private static double getChunkIdY(Integer id) {
-    return (id / 1000) * chunkSize;
-  }
-
-  private static void groupHelper(ArrayList<Integer> group, HashMap<Integer, HashSet<Integer>> adjList, HashSet<Integer> visited, HashMap<Integer, BulletGroup> chunks, Integer id) {
-    group.add(id);
-    visited.add(id);
-    for (Integer nid : adjList.get(id)) {
-      if (!visited.contains(nid)) {
-        groupHelper(group, adjList, visited, chunks, nid);
-      }
-    }
-  }
-
   public static void drawBullets() {
-    // group bullets by Bounding Circle intersection
-    // TODO: switch to grid chunk based grouping (UnionFind chunks if bullets on edge)
-    // Form Chunks
-    HashMap<Integer, BulletGroup> chunks = new HashMap<>();
-    HashMap<Integer, HashSet<Integer>> adjList = new HashMap<>();
     for (Bullet b : bullets) {
-      // get chunks
-      HashSet<Integer> chunkIdSet = new HashSet<>();
-      double radius = b.getRenderRadius();
-      chunkIdSet.add(getChunkId(b.pos.x - b.radius, b.pos.y - b.radius));
-      chunkIdSet.add(getChunkId(b.pos.x + b.radius, b.pos.y - b.radius));
-      chunkIdSet.add(getChunkId(b.pos.x - b.radius, b.pos.y + b.radius));
-      chunkIdSet.add(getChunkId(b.pos.x + b.radius, b.pos.y + b.radius));
-      for (Integer id : chunkIdSet) {
-        if (!chunks.containsKey(id)) chunks.put(id, new BulletGroup());
-      }
-
-      // connect chunks
-      List<Integer> chunkIdArr = chunkIdSet.stream().toList();
-      for (Integer id : chunkIdArr) {
-        if (!adjList.containsKey(id)) adjList.put(id, new HashSet<>());
-      }
-      chunks.get(chunkIdArr.get(0)).addBullet(b);
-      if (chunkIdArr.size() > 1) {
-        for (int i = 1; i < chunkIdArr.size(); i++) {
-          adjList.get(chunkIdArr.get(0)).add(chunkIdArr.get(i));
-          adjList.get(chunkIdArr.get(i)).add(chunkIdArr.get(0));
-        }
-      }
+      b.drawUpdate();
     }
-
-
-    // form groups by dfs
-    HashSet<Integer> visited = new HashSet<>();
-    ArrayList<ArrayList<Integer>> chunkGroups = new ArrayList<>();
-    for (Integer id : chunks.keySet()) {
-      if (!visited.contains(id)) {
-        ArrayList<Integer> group = new ArrayList<>();
-        chunkGroups.add(group);
-        groupHelper(group, adjList, visited, chunks, id);
-      }
-    }
-    ArrayList<BulletGroup> bgArr = new ArrayList<>(chunkGroups.size());
-    for (ArrayList<Integer> group : chunkGroups) {
-      bgArr.add(chunks.get(group.get(0)));
-      for (int j = 1; j < group.size(); j++) {
-        bgArr.get(bgArr.size()-1).merge(chunks.get(group.get(j)));
-      }
-    }
-
-    // group smallest groups until amount of groups is at most the amount of processors
-    int cores = Runtime.getRuntime().availableProcessors();
-    while (bgArr.size() > cores) {
-      bgArr.sort(new BulletGroupComparator());
-      bgArr.get(bgArr.size()-2).merge(bgArr.get(bgArr.size()-1));
-      bgArr.remove(bgArr.size()-1);
-    }
-    bgArr.sort(new BulletGroupComparator());
-
-    // for testing
-    if (debug) {
-      double c = 0;
-      for (BulletGroup bg : bgArr) {
-        Color color = Color.color(
-                Math.sin(c) * 0.5 + 0.5,
-                Math.sin(c + Math.PI * 2 / 3) * 0.5 + 0.5,
-                Math.sin(c + Math.PI * 4 / 3) * 0.5 + 0.5);
-        c += 2 * Math.PI / cores;
-        for (Bullet b : bg.getBullets()) {
-          b.color = new BulletColor(Color.WHITE, color);
-        }
-      }
-    }
-
-    // render front of bullets using 1 thread per group
-    for (BulletGroup bg : bgArr) {
-      BulletRenderThread br = new BulletRenderThread(bg);
-      br.run();
-    }
-    gc.setGlobalAlpha(1);
-    /*
-    for (Bullet b : bullets)
-      b.drawBack(gc);
-    for (Bullet b : bullets)
-      b.drawFront(gc);
-     */
   }
 
   public static void drawPlayerHB() {
