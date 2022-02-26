@@ -5,16 +5,17 @@ import application.Position;
 import application.bullet.BulletColor;
 import application.bullet.bulletAttr.BulletAttr;
 import javafx.scene.Group;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcType;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
 import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
 
 public class Bullet {
-  private static final int frontGradientLayers = 3;
-  private static final int backGradientLayers = 6;
+  protected static final int frontGradientLayers = 3;
+  protected static final int backGradientLayers = 5;
+  protected static final double backOpacity = 0.1;
   private boolean alive;
   protected int time;
   public double radius;
@@ -25,9 +26,9 @@ public class Bullet {
   public double dir;
   private static int nextId = 0;
   private int id;
-  private Group groupBack;
-  private Group groupFront;
-  private static final double groupSize = 10;
+  protected Group groupBack;
+  protected Group groupFront;
+  protected static final double groupSize = 10;
   private boolean needsUpdate = true;
   public Bullet(Position pos, double size, BulletColor color, BulletAttr[] attrArr) {
     this.pos = pos.clone();
@@ -138,8 +139,9 @@ public class Bullet {
       groupFront.setOpacity(alpha);
       groupBack.setOpacity(alpha);
     }
-    if (dir != groupFront.getRotate()) {
-      groupFront.setRotate(dir);
+    if (-dir != groupFront.getRotate()) {
+      groupFront.setRotate(-dir);
+      groupBack.setRotate(-dir);
     }
     groupBack.setTranslateX(pos.x);
     groupBack.setTranslateY(pos.y);
@@ -152,16 +154,17 @@ public class Bullet {
     groupFront.getChildren().clear();
     // back
     for (int i = 0; i < backGradientLayers; i++) {
-      Circle circle = new Circle(0, 0, groupSize * (2 - 1.0 * i / backGradientLayers));
-      circle.setFill(Color.color(color.outerColor.getRed(), color.outerColor.getGreen(), color.outerColor.getBlue(), 0.3));
+      Circle circle = new Circle(0, 0, groupSize * (3 - 1.75 * i / backGradientLayers));
+      circle.setFill(Color.color(getOuterColor().getRed(), getOuterColor().getGreen(), getOuterColor().getBlue(), backOpacity));
       groupBack.getChildren().add(circle);
     }
     // front
-    double[] c1 = new double[] {color.outerColor.getRed(), color.outerColor.getGreen(), color.outerColor.getBlue()};
-    double[] c2 = new double[] {color.innerColor.getRed(), color.innerColor.getGreen(), color.innerColor.getBlue()};
+    RadialGradient grad = new RadialGradient(0, 0, 0, 0, groupSize, false, CycleMethod.NO_CYCLE);
+    double[] c1 = new double[] {getOuterColor().getRed(), getOuterColor().getGreen(), getOuterColor().getBlue()};
+    double[] c2 = new double[] {getInnerColor().getRed(), getInnerColor().getGreen(), getInnerColor().getBlue()};
     double[] c3 = new double[3];
     for (int i = 0; i <= frontGradientLayers; i++) {
-      Circle circle = new Circle(0, 0, groupSize * (1.25 - 0.75 * i / frontGradientLayers));
+      Circle circle = new Circle(0, 0, groupSize * (1.25 - 0.5 * i / frontGradientLayers));
       for (int j = 0; j < 3; j++)
         c3[j] = c1[j] + (c2[j] - c1[j]) * i / frontGradientLayers;
       circle.setFill(Color.color(c3[0], c3[1], c3[2]));
@@ -175,6 +178,14 @@ public class Bullet {
 
   public final BulletColor getColor() {
     return color;
+  }
+
+  public final Color getOuterColor() {
+    return color.outerColor;
+  }
+
+  public final Color getInnerColor() {
+    return color.innerColor;
   }
 
   public final void setColor(BulletColor color) {

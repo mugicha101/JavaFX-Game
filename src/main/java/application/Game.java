@@ -1,9 +1,11 @@
 package application;
 
 import application.bullet.BulletColor;
+import application.bullet.bulletAttr.LinAccelAttr;
 import application.bullet.bulletAttr.LinMoveAttr;
 import application.bullet.bulletTypes.Bullet;
 import application.bullet.bulletAttr.BulletAttr;
+import application.bullet.bulletTypes.RiceBullet;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -143,16 +145,30 @@ public class Game extends Application {
   }
 
   public void spawnBullets() {
-    if (frame % 10 == 0) {
+    if (frame % 20 == 0) {
       Position pos = new Position(width * (0.25 + Math.random() * 0.5), height * (0.1 + Math.random() * 0.2));
       double dir = Math.random() * 360;
-      for (int i = 0; i < 36; i++)
+      for (int i = 0; i < 36; i++) {
         bullets.add(
-            new Bullet(
+            new RiceBullet(
                 pos,
                 1,
-                BulletColor.RED,
-                new BulletAttr[] {new LinMoveAttr(null, 2, dir + i * 10)}));
+                BulletColor.YELLOW,
+                new BulletAttr[] {
+                        new LinMoveAttr(null, 20, dir + i * 10),
+                        new LinAccelAttr(null, -1, 2)
+                }));
+        if (i % 2 == 0) {
+          bullets.add(
+              new Bullet(
+                  pos,
+                  1,
+                  BulletColor.RED,
+                  new BulletAttr[] {
+                    new LinMoveAttr(null, 15, dir + i * 10), new LinAccelAttr(null, -1, 1)
+                  }));
+        }
+      }
     }
   }
 
