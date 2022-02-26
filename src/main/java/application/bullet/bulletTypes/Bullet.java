@@ -18,7 +18,7 @@ public class Bullet {
   private boolean alive;
   protected int time;
   public double radius;
-  public BulletColor color;
+  private BulletColor color;
   private final ArrayList<BulletAttr> attrList;
   public final Position pos;
   public double speed;
@@ -28,6 +28,7 @@ public class Bullet {
   private Group groupBack;
   private Group groupFront;
   private static final double groupSize = 10;
+  private boolean needsUpdate = true;
   public Bullet(Position pos, double size, BulletColor color, BulletAttr[] attrArr) {
     this.pos = pos.clone();
     alive = true;
@@ -41,7 +42,7 @@ public class Bullet {
     id = nextId++;
     groupFront = new Group();
     groupBack = new Group();
-    updateGroup();
+    needsUpdate = true;
     Game.bulletGroupBack.getChildren().add(groupBack);
     Game.bulletGroupFront.getChildren().add(groupFront);
   }
@@ -120,7 +121,11 @@ public class Bullet {
       return 1;
   }
 
-  public void drawUpdate() {
+  public final void drawUpdate() {
+    if (needsUpdate) {
+      updateGroup();
+      needsUpdate = false;
+    }
     double scale = this.radius * getScale() / groupSize;
     double alpha = alive? Math.min(time / 10.0, 1) : 1 - time / 10.0;
     if (scale != groupFront.getScaleX()) {
@@ -132,6 +137,9 @@ public class Bullet {
     if (alpha != groupFront.getOpacity()) {
       groupFront.setOpacity(alpha);
       groupBack.setOpacity(alpha);
+    }
+    if (dir != groupFront.getRotate()) {
+      groupFront.setRotate(dir);
     }
     groupBack.setTranslateX(pos.x);
     groupBack.setTranslateY(pos.y);
@@ -163,6 +171,15 @@ public class Bullet {
 
   public double getRenderRadius() {
     return radius * getScale() * 3;
+  }
+
+  public final BulletColor getColor() {
+    return color;
+  }
+
+  public final void setColor(BulletColor color) {
+    this.color = color;
+    needsUpdate = true;
   }
 
   public boolean intersects(Bullet bullet) {

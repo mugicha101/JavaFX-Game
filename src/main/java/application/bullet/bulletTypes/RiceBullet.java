@@ -12,7 +12,7 @@ public class RiceBullet extends Bullet {
   }
 
   @Override
-  public void drawUpdate() {
+  public void updateGroup() {
 
   }
 }
