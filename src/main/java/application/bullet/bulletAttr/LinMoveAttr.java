@@ -13,7 +13,8 @@ public class LinMoveAttr extends BulletAttr {
 
   public void init(Bullet b) {
     b.speed = initSpeed;
-    b.dir = initDir;
+    b.moveDir = initDir;
+    b.drawDir = initDir;
   }
 
   public void prepTick(Bullet b) {
@@ -21,7 +22,7 @@ public class LinMoveAttr extends BulletAttr {
   }
 
   public void moveTick(Bullet b) {
-    b.pos.move(b.dir, b.speed);
+    b.pos.move(b.moveDir, b.speed);
   }
 
   public boolean collisionTick(Bullet b) {

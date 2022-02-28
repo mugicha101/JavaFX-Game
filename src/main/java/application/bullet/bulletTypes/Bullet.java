@@ -23,7 +23,8 @@ public class Bullet {
   private final ArrayList<BulletAttr> attrList;
   public final Position pos;
   public double speed;
-  public double dir;
+  public double moveDir;
+  public double drawDir;
   private static int nextId = 0;
   private int id;
   protected Group groupBack;
@@ -139,9 +140,9 @@ public class Bullet {
       groupFront.setOpacity(alpha);
       groupBack.setOpacity(alpha);
     }
-    if (-dir != groupFront.getRotate()) {
-      groupFront.setRotate(-dir);
-      groupBack.setRotate(-dir);
+    if (-drawDir != groupFront.getRotate()) {
+      groupFront.setRotate(-drawDir);
+      groupBack.setRotate(-drawDir);
     }
     groupBack.setTranslateX(pos.x);
     groupBack.setTranslateY(pos.y);
