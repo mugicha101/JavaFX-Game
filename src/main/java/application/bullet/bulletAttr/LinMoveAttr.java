@@ -2,34 +2,43 @@ package application.bullet.bulletAttr;
 
 import application.bullet.bulletTypes.Bullet;
 
-public class LinMoveAttr extends BulletAttr {
+public class LinMoveAttr extends MoveAttr {
   private final double initSpeed;
   private final double initDir;
-  public LinMoveAttr(String id, double speed, double dir) {
+  private final AccelAttr accelAttr;
+  private double speed;
+  private double dir;
+  public LinMoveAttr(String id, double speed, double dir, AccelAttr accelAttr) {
     super(id);
     initSpeed = speed;
     initDir = dir % 360;
+    this.accelAttr = accelAttr.clone();
+  }
+
+  public LinMoveAttr(String id, double speed, double dir) {
+    this(id, speed, dir, null);
   }
 
   public void init(Bullet b) {
-    b.speed = initSpeed;
-    b.moveDir = initDir;
-    b.drawDir = initDir;
+    speed = initSpeed;
+    dir = initDir;
+    b.dir = dir;
   }
 
   public void prepTick(Bullet b) {
-
+    if (accelAttr != null)
+      speed = accelAttr.tick(speed);
   }
 
   public void moveTick(Bullet b) {
-    b.pos.move(b.moveDir, b.speed);
+    b.pos.move(dir, speed);
   }
 
   public boolean collisionTick(Bullet b) {
     return false;
   }
 
-  public BulletAttr clone() {
+  public MoveAttr clone() {
     return new LinMoveAttr(getId(), initSpeed, initDir);
   }
 }

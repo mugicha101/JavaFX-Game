@@ -2,43 +2,30 @@ package application.bullet.bulletAttr;
 
 import application.bullet.bulletTypes.Bullet;
 
-public class LinAccelAttr extends BulletAttr {
+public class LinAccelAttr extends AccelAttr {
   private final double accelAmount;
   private final Double speedCap;
-  public LinAccelAttr(String id, double accelAmount, double speedCap) {
-    super(id);
+  public LinAccelAttr(double accelAmount, double speedCap) {
     this.accelAmount = accelAmount;
     this.speedCap = speedCap;
   }
 
-  public LinAccelAttr(String id, double accelAmount) {
-    super(id);
+  public LinAccelAttr(double accelAmount) {
     this.accelAmount = accelAmount;
     this.speedCap = null;
   }
 
-  public void init(Bullet b) {
-
+  public double tick(double speed) {
+    speed += accelAmount;
+    if (speedCap != null && ((accelAmount < 0 && speed < speedCap) || (accelAmount > 0 && speed > speedCap)))
+      speed = speedCap;
+    return speed;
   }
 
-  public void prepTick(Bullet b) {
-    b.speed += accelAmount;
-    if (speedCap != null && ((accelAmount < 0 && b.speed < speedCap) || (accelAmount > 0 && b.speed > speedCap)))
-      b.speed = speedCap;
-  }
-
-  public void moveTick(Bullet b) {
-
-  }
-
-  public boolean collisionTick(Bullet b) {
-    return false;
-  }
-
-  public BulletAttr clone() {
+  public AccelAttr clone() {
     if (speedCap == null)
-      return new LinAccelAttr(getId(), accelAmount);
+      return new LinAccelAttr(accelAmount);
     else
-      return new LinAccelAttr(getId(), accelAmount, speedCap);
+      return new LinAccelAttr(accelAmount, speedCap);
   }
 }

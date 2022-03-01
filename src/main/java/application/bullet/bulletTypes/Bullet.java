@@ -3,7 +3,7 @@ package application.bullet.bulletTypes;
 import application.Game;
 import application.Position;
 import application.bullet.BulletColor;
-import application.bullet.bulletAttr.BulletAttr;
+import application.bullet.bulletAttr.MoveAttr;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -20,26 +20,24 @@ public class Bullet {
   protected int time;
   public double radius;
   private BulletColor color;
-  private final ArrayList<BulletAttr> attrList;
+  private final ArrayList<MoveAttr> attrList;
   public final Position pos;
-  public double speed;
-  public double moveDir;
-  public double drawDir;
+  public double dir; // direction bullet is facing (not necessarily direction its moving)
   private static int nextId = 0;
   private int id;
   protected Group groupBack;
   protected Group groupFront;
   protected static final double groupSize = 10;
   private boolean needsUpdate = true;
-  public Bullet(Position pos, double size, BulletColor color, BulletAttr[] attrArr) {
+  public Bullet(Position pos, double size, BulletColor color, MoveAttr[] attrArr) {
     this.pos = pos.clone();
     alive = true;
     time = 0;
     this.radius = size*8;
     this.color = color;
     attrList = new ArrayList<>();
-    for (BulletAttr ba : attrArr) {
-      attrList.add(ba.clone());
+    for (MoveAttr ma : attrArr) {
+      attrList.add(ma.clone());
     }
     id = nextId++;
     groupFront = new Group();
@@ -84,24 +82,24 @@ public class Bullet {
 
     // init
     if (time == 1) {
-      for (BulletAttr ba : attrList)
-        ba.init(this);
+      for (MoveAttr ma : attrList)
+        ma.init(this);
     }
 
     // prep
-    for (BulletAttr ba : attrList)
-      ba.prepTick(this);
+    for (MoveAttr ma : attrList)
+      ma.prepTick(this);
 
     // move
-    for (BulletAttr ba : attrList)
-      ba.moveTick(this);
+    for (MoveAttr ma : attrList)
+       ma.moveTick(this);
 
     // collision
     boolean defaultCollision = true;
-    for (BulletAttr ba : attrList) {
-      if (ba.overridesDefaultCollision())
+    for (MoveAttr ma : attrList) {
+      if (ma.overridesDefaultCollision())
         defaultCollision = false;
-      if (ba.collisionTick(this)) {
+      if (ma.collisionTick(this)) {
         this.kill();
         break;
       }
@@ -140,9 +138,9 @@ public class Bullet {
       groupFront.setOpacity(alpha);
       groupBack.setOpacity(alpha);
     }
-    if (-drawDir != groupFront.getRotate()) {
-      groupFront.setRotate(-drawDir);
-      groupBack.setRotate(-drawDir);
+    if (-dir != groupFront.getRotate()) {
+      groupFront.setRotate(-dir);
+      groupBack.setRotate(-dir);
     }
     groupBack.setTranslateX(pos.x);
     groupBack.setTranslateY(pos.y);

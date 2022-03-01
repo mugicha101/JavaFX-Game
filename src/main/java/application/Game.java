@@ -3,6 +3,7 @@ package application;
 import application.bullet.BulletColor;
 import application.bullet.bulletAttr.LinAccelAttr;
 import application.bullet.bulletAttr.LinMoveAttr;
+import application.bullet.bulletAttr.MoveAttr;
 import application.bullet.bulletTypes.Bullet;
 import application.bullet.bulletAttr.BulletAttr;
 import application.bullet.bulletTypes.RiceBullet;
@@ -154,9 +155,8 @@ public class Game extends Application {
                 pos,
                 1,
                 BulletColor.YELLOW,
-                new BulletAttr[] {
-                        new LinMoveAttr(null, 20, dir + i * 10),
-                        new LinAccelAttr(null, -1, 2)
+                new MoveAttr[] {
+                        new LinMoveAttr(null, 20, dir + i * 10, new LinAccelAttr(-1, 2))
                 }));
         if (i % 2 == 0) {
           bullets.add(
@@ -164,8 +164,8 @@ public class Game extends Application {
                   pos,
                   1,
                   BulletColor.RED,
-                  new BulletAttr[] {
-                    new LinMoveAttr(null, 15, dir + i * 10), new LinAccelAttr(null, -1, 1)
+                  new MoveAttr[] {
+                    new LinMoveAttr(null, 15, dir + i * 10, new LinAccelAttr(-1, 1))
                   }));
         }
       }

@@ -20,22 +20,24 @@ public class Position {
     return new double[] {x, y};
   }
 
-  public void move(double[] offset, double multi) {
+  public Position move(double[] offset, double multi) {
     x += offset[0] * multi;
     y += offset[1] * multi;
+    return this;
   }
 
-  public void move(int[] offset, double multi) {
-    move(new double[] {offset[0], offset[1]}, multi);
+  public Position move(int[] offset, double multi) {
+    return move(new double[] {offset[0], offset[1]}, multi);
   }
 
-  public void move(double[] offset) {
-    move(offset, 1);
+  public Position move(double[] offset) {
+    return move(offset, 1);
   }
 
-  public void move(double dir, double amount) {
+  public Position move(double dir, double amount) {
     x += Math.cos(dir*Math.PI/180) * amount;
     y -= Math.sin(dir*Math.PI/180) * amount;
+    return this;
   }
 
   public void set(int x, int y) {
