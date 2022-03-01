@@ -161,12 +161,12 @@ public class Bullet {
       transferGroupsToCache();
       // get/make new groups
       if (groupCache.containsKey(id) && groupCache.get(id).size() != 0) {
-        System.out.println("FROM CACHE");
+        // System.out.println("FROM CACHE");
         ArrayList<Group[]> groupList = groupCache.get(id);
         Group[] groups = groupList.remove(groupList.size()-1);
         copyGroups(groups[0], groups[1]);
       } else {
-        System.out.println("NEW");
+        // System.out.println("NEW");
         updateGroup();
       }
       groupId = id;

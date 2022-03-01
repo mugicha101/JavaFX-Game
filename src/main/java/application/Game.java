@@ -146,7 +146,7 @@ public class Game extends Application {
   }
 
   public void spawnBullets() {
-    if (frame % 20 == 0) {
+    if (frame % 600 < 300? frame % 5 == 0 : frame % 20 == 0) {
       Position pos = new Position(width * (0.25 + Math.random() * 0.5), height * (0.1 + Math.random() * 0.2));
       double dir = Math.random() * 360;
       for (int i = 0; i < 36; i++) {
@@ -156,7 +156,7 @@ public class Game extends Application {
                 1,
                 BulletColor.YELLOW,
                 new MoveAttr[] {
-                        new LinMoveAttr(null, 20, dir + i * 10, new LinAccelAttr(-1, 2))
+                        new LinMoveAttr(null, 20, dir + i * 10, new LinAccelAttr(-1, 3))
                 }));
         if (i % 2 == 0) {
           bullets.add(
@@ -165,7 +165,7 @@ public class Game extends Application {
                   1,
                   BulletColor.RED,
                   new MoveAttr[] {
-                    new LinMoveAttr(null, 15, dir + i * 10, new LinAccelAttr(-1, 1))
+                    new LinMoveAttr(null, 15, dir + i * 10, new LinAccelAttr(-1, 2))
                   }));
         }
       }
