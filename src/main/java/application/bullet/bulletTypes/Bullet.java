@@ -11,6 +11,7 @@ import javafx.scene.paint.RadialGradient;
 import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Bullet {
   protected static final int frontGradientLayers = 3;
@@ -28,7 +29,8 @@ public class Bullet {
   protected Group groupBack;
   protected Group groupFront;
   protected static final double groupSize = 10;
-  private boolean needsUpdate = true;
+  private String groupId;
+  private static HashMap<String, ArrayList<Group[]>> groupCache = new HashMap<>(); // holds [groupBack, groupFront] for previously deleted bullets to be reused
   public Bullet(Position pos, double size, BulletColor color, MoveAttr[] attrArr) {
     this.pos = pos.clone();
     alive = true;
@@ -42,9 +44,14 @@ public class Bullet {
     id = nextId++;
     groupFront = new Group();
     groupBack = new Group();
-    needsUpdate = true;
     Game.bulletGroupBack.getChildren().add(groupBack);
     Game.bulletGroupFront.getChildren().add(groupFront);
+    groupId = null;
+    drawUpdate();
+  }
+
+  public String getType() {
+    return "normal";
   }
 
   public final int id() {
@@ -71,6 +78,7 @@ public class Bullet {
   }
 
   public void delete() {
+    transferGroupsToCache();
     Game.bulletGroupBack.getChildren().remove(groupBack);
     Game.bulletGroupFront.getChildren().remove(groupFront);
   }
@@ -121,10 +129,47 @@ public class Bullet {
       return 1;
   }
 
+  private String generateGroupId() {
+    return getType() + ": " + color.getId();
+  }
+
+  private void copyGroups(Group backSource, Group frontSource) {
+    groupBack.getChildren().clear();
+    groupBack.getChildren().addAll(backSource.getChildren());
+    groupFront.getChildren().clear();
+    groupFront.getChildren().addAll(frontSource.getChildren());
+  }
+
+  private void transferGroupsToCache() { // saves groups to cache and clears groups
+    if (groupId == null)
+      return;
+    Group gbCopy = new Group();
+    Group gfCopy = new Group();
+    gbCopy.getChildren().addAll(groupBack.getChildren());
+    gfCopy.getChildren().addAll(groupFront.getChildren());
+    groupBack.getChildren().clear();
+    groupFront.getChildren().clear();
+    if (!groupCache.containsKey(groupId))
+      groupCache.put(groupId, new ArrayList<>());
+    groupCache.get(generateGroupId()).add(new Group[] {gbCopy, gfCopy});
+  }
+
   public final void drawUpdate() {
-    if (needsUpdate) {
-      updateGroup();
-      needsUpdate = false;
+    String id = generateGroupId();
+    if (groupId == null || !groupId.equals(id)) {
+      // save old groups to cache and clear current groups
+      transferGroupsToCache();
+      // get/make new groups
+      if (groupCache.containsKey(id) && groupCache.get(id).size() != 0) {
+        System.out.println("FROM CACHE");
+        ArrayList<Group[]> groupList = groupCache.get(id);
+        Group[] groups = groupList.remove(groupList.size()-1);
+        copyGroups(groups[0], groups[1]);
+      } else {
+        System.out.println("NEW");
+        updateGroup();
+      }
+      groupId = id;
     }
     double scale = this.radius * getScale() / groupSize;
     double alpha = alive? Math.min(time / 10.0, 1) : 1 - time / 10.0;
@@ -149,8 +194,6 @@ public class Bullet {
   }
 
   public void updateGroup() {
-    groupBack.getChildren().clear();
-    groupFront.getChildren().clear();
     // back
     for (int i = 0; i < backGradientLayers; i++) {
       Circle circle = new Circle(0, 0, groupSize * (3 - 1.75 * i / backGradientLayers));
@@ -189,7 +232,6 @@ public class Bullet {
 
   public final void setColor(BulletColor color) {
     this.color = color;
-    needsUpdate = true;
   }
 
   public boolean intersects(Bullet bullet) {

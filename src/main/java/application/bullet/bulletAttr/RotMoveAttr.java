@@ -19,8 +19,8 @@ public class RotMoveAttr extends MoveAttr {
     initMoveSpeed = moveSpeed;
     initRotSpeed = rotSpeed;
     initDir = dir;
-    this.moveAccelAttr = moveAccelAttr;
-    this.rotAccelAttr = rotAccelAttr;
+    this.moveAccelAttr = moveAccelAttr == null? null : moveAccelAttr.clone();
+    this.rotAccelAttr = rotAccelAttr == null? null : rotAccelAttr.clone();
     this.center = new Position(0,0);
   }
 

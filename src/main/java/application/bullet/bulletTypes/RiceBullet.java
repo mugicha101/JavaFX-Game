@@ -15,6 +15,11 @@ public class RiceBullet extends Bullet {
   }
 
   @Override
+  public String getType() {
+    return "rice";
+  }
+
+  @Override
   public void updateGroup() {
     groupBack.getChildren().clear();
     groupFront.getChildren().clear();

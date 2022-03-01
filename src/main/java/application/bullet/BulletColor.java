@@ -54,4 +54,9 @@ public class BulletColor {
   public BulletColor(double r1, double g1, double b1, double r2, double g2, double b2) {
     this(Color.color(r1, g1, b1), Color.color(r2, g2, b2));
   }
+
+  public String getId() {
+    return "(" + innerColor.getRed() + "," + innerColor.getGreen() + "," + innerColor.getBlue() +
+            "),(" + outerColor.getRed() + "," + outerColor.getGreen() + "," + outerColor.getBlue() + ")";
+  }
 }

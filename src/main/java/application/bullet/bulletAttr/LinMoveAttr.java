@@ -12,7 +12,7 @@ public class LinMoveAttr extends MoveAttr {
     super(id);
     initSpeed = speed;
     initDir = dir % 360;
-    this.accelAttr = accelAttr.clone();
+    this.accelAttr = accelAttr == null? null : accelAttr.clone();
   }
 
   public LinMoveAttr(String id, double speed, double dir) {
@@ -39,6 +39,6 @@ public class LinMoveAttr extends MoveAttr {
   }
 
   public MoveAttr clone() {
-    return new LinMoveAttr(getId(), initSpeed, initDir);
+    return new LinMoveAttr(getId(), initSpeed, initDir, accelAttr);
   }
 }
