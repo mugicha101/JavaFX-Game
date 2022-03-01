@@ -3,13 +3,14 @@ package application.bullet.bulletTypes;
 import application.Position;
 import application.bullet.BulletColor;
 import application.bullet.bulletAttr.BulletAttr;
+import application.bullet.bulletAttr.MoveAttr;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.shape.Ellipse;
 
 public class RiceBullet extends Bullet {
-  public RiceBullet(Position pos, double size, BulletColor color, BulletAttr[] attrArr) {
+  public RiceBullet(Position pos, double size, BulletColor color, MoveAttr[] attrArr) {
     super(pos, size*0.35, color, attrArr);
   }
 
