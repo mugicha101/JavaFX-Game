@@ -5,10 +5,12 @@ module com.example.demo {
 
   opens application to javafx.fxml;
   exports application;
-  exports application.bullet.bulletAttr;
-  opens application.bullet.bulletAttr to javafx.fxml;
-  exports application.bullet.bulletTypes;
-  opens application.bullet.bulletTypes to javafx.fxml;
+  exports application.bullet.attr;
+  opens application.bullet.attr to javafx.fxml;
+  exports application.bullet.types;
+  opens application.bullet.types to javafx.fxml;
+  exports application.bullet.staging to javafx.fxml;
+  opens application.bullet.staging;
   exports application.bullet;
   opens application.bullet to javafx.fxml;
 }

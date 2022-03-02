@@ -1,6 +1,8 @@
-package application.bullet.bulletAttr;
+package application.bullet.attr;
 
-import application.bullet.bulletTypes.Bullet;
+import application.bullet.types.Bullet;
+
+import java.util.HashMap;
 
 public class LinMoveAttr extends MoveAttr {
   private final double initSpeed;
@@ -26,7 +28,7 @@ public class LinMoveAttr extends MoveAttr {
   }
 
   public void prepTick(Bullet b) {
-    if (accelAttr != null)
+    if (accelAttr != null && accelAttr.enabled)
       speed = accelAttr.tick(speed);
   }
 
@@ -38,7 +40,14 @@ public class LinMoveAttr extends MoveAttr {
     return false;
   }
 
-  public MoveAttr clone() {
-    return new LinMoveAttr(getId(), initSpeed, initDir, accelAttr);
+  public MoveAttr clone(String newId) {
+    return new LinMoveAttr(newId, initSpeed, initDir, accelAttr);
+  }
+
+  @Override
+  public void toMap(HashMap<String, BulletAttr> map, String prefix) {
+    map.put(prefix + getId(), this);
+    if (accelAttr != null)
+      accelAttr.toMap(map, prefix + getId() + ".");
   }
 }

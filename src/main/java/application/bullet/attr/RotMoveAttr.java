@@ -1,8 +1,10 @@
-package application.bullet.bulletAttr;
+package application.bullet.attr;
 
 import application.Game;
 import application.Position;
-import application.bullet.bulletTypes.Bullet;
+import application.bullet.types.Bullet;
+
+import java.util.HashMap;
 
 public class RotMoveAttr extends MoveAttr {
   private final double initDist;
@@ -45,9 +47,9 @@ public class RotMoveAttr extends MoveAttr {
   }
 
   public void prepTick(Bullet b) {
-    if (moveAccelAttr != null)
+    if (moveAccelAttr != null && moveAccelAttr.enabled)
       moveSpeed = moveAccelAttr.tick(moveSpeed);
-    if (rotAccelAttr != null)
+    if (rotAccelAttr != null && rotAccelAttr.enabled)
       rotSpeed = rotAccelAttr.tick(rotSpeed);
   }
 
@@ -67,7 +69,16 @@ public class RotMoveAttr extends MoveAttr {
     return dist * dist > Game.width * Game.width + Game.height * Game.height;
   }
 
-  public MoveAttr clone() {
-    return new RotMoveAttr(getId(), initDist, initMoveSpeed, initDir, initRotSpeed, moveAccelAttr, rotAccelAttr);
+  public MoveAttr clone(String newId) {
+    return new RotMoveAttr(newId, initDist, initMoveSpeed, initDir, initRotSpeed, moveAccelAttr, rotAccelAttr);
+  }
+
+  @Override
+  public void toMap(HashMap<String, BulletAttr> map, String prefix) {
+    if (moveAccelAttr != null)
+      moveAccelAttr.toMap(map, prefix + getId() + ".");
+    if (rotAccelAttr != null)
+      rotAccelAttr.toMap(map, prefix + getId() + ".");
+    map.put(prefix + getId(), this);
   }
 }

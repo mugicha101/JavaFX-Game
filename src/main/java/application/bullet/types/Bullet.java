@@ -1,18 +1,20 @@
-package application.bullet.bulletTypes;
+package application.bullet.types;
 
 import application.Game;
 import application.Position;
 import application.bullet.BulletColor;
-import application.bullet.bulletAttr.LinAccelAttr;
-import application.bullet.bulletAttr.LinMoveAttr;
-import application.bullet.bulletAttr.MoveAttr;
+import application.bullet.attr.BulletAttr;
+import application.bullet.attr.MoveAttr;
+import application.bullet.staging.BulletStage;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.shape.Circle;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Bullet {
@@ -35,6 +37,10 @@ public class Bullet {
   protected static final double groupSize = 10;
   private String groupId;
   private static HashMap<String, ArrayList<Group[]>> groupCache = new HashMap<>(); // holds [groupBack, groupFront] for previously deleted bullets to be reused
+  private final ArrayList<BulletStage> stageList;
+  private int stageIndex;
+  private int stageTime;
+  private final HashMap<String, BulletAttr> attrMap;
 
   public static ArrayList<Bullet> getBullets() {
     return bullets;
@@ -62,15 +68,24 @@ public class Bullet {
     bullets.add(bullet);
   }
 
-  public Bullet(Position pos, double size, BulletColor color, MoveAttr[] attrArr) {
+  public Bullet(Position pos, double size, BulletColor color, MoveAttr[] attrArr, BulletStage[] stageArr) {
     this.pos = pos.clone();
     alive = true;
     time = 0;
     this.radius = size*8;
     this.color = color;
     attrList = new ArrayList<>();
+    attrMap = new HashMap<>();
     for (MoveAttr ma : attrArr) {
-      attrList.add(ma.clone());
+      MoveAttr maClone = ma.clone();
+      attrList.add(maClone);
+      maClone.toMap(attrMap, "");
+    }
+    if (stageArr == null)
+      stageList = null;
+    else {
+      stageList = new ArrayList<>();
+      stageList.addAll(Arrays.stream(stageArr).toList());
     }
     id = nextId++;
     groupFront = new Group();
@@ -79,13 +94,18 @@ public class Bullet {
     Game.bulletGroupFront.getChildren().add(groupFront);
     groupId = null;
     drawUpdate();
+    stageIndex = 0;
+  }
+
+  public Bullet(Position pos, double size, BulletColor color, MoveAttr[] attrArr) {
+    this(pos, size, color, attrArr, null);
   }
 
   public String getType() {
     return "normal";
   }
 
-  public final int id() {
+  public final int getId() {
     return id;
   }
 
@@ -125,18 +145,38 @@ public class Bullet {
         ma.init(this);
     }
 
+    // update stages
+    if (stageList != null && stageIndex < stageList.size()) {
+      stageTime++;
+      while (stageTime >= stageList.get(stageIndex).getTime()) {
+        BulletStage stage = stageList.get(stageIndex);
+        BulletAttr ba = attrMap.get(stage.getId());
+        if (ba == null)
+          throw new NullPointerException("null BulletAttr instance assigned to stage (id=" + stage.getId() + " is not in available ids: " + attrMap.keySet());
+        stage.action(ba);
+        stageTime = 0;
+        stageIndex++;
+        if (stageIndex == stageList.size())
+          break;
+      }
+    }
+
     // prep
     for (MoveAttr ma : attrList)
-      ma.prepTick(this);
+      if (ma.enabled)
+        ma.prepTick(this);
 
     // move
     for (MoveAttr ma : attrList)
+      if (ma.enabled)
        ma.moveTick(this);
 
     // collision
     boolean defaultPlayerCollision = true;
     boolean defaultBorderCollision = true;
     for (MoveAttr ma : attrList) {
+      if (!ma.enabled)
+        continue;
       if (ma.overridesDefaultPlayerCollision())
         defaultPlayerCollision = false;
       if (ma.overridesDefaultBorderCollision())

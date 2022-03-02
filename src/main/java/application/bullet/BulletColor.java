@@ -1,6 +1,5 @@
 package application.bullet;
 
-import application.bullet.bulletTypes.Bullet;
 import javafx.scene.paint.Color;
 
 public class BulletColor {

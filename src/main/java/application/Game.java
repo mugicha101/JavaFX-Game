@@ -1,7 +1,7 @@
 package application;
 
 import application.patterns.*;
-import application.bullet.bulletTypes.Bullet;
+import application.bullet.types.Bullet;
 import application.patterns.Pattern;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
