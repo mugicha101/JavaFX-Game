@@ -8,12 +8,14 @@ public class LinMoveAttr extends MoveAttr {
   private final double initSpeed;
   private final double initDir;
   private final AccelAttr accelAttr;
-  private double speed;
-  private double dir;
+  public double speed;
+  public double dir;
   public LinMoveAttr(String id, double speed, double dir, AccelAttr accelAttr) {
     super(id);
     initSpeed = speed;
     initDir = dir % 360;
+    this.speed = initSpeed;
+    this.dir = initDir;
     this.accelAttr = accelAttr == null? null : accelAttr.clone();
   }
 

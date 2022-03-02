@@ -15,7 +15,7 @@ public abstract class MoveAttr extends BulletAttr {
   public boolean overridesDefaultPlayerCollision() {
     return false;
   }
-  public abstract void init(Bullet b); // runs on spawn
+  public abstract void init(Bullet b); // runs on first frame of movement (does not run if disabled by stages on start, internal fields should be set in constructor)
   public abstract void prepTick(Bullet b); // before movement
   public abstract void moveTick(Bullet b); // moves bullet
   public abstract boolean collisionTick(Bullet b); // collision checks (returns true if collided)

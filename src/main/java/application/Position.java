@@ -42,6 +42,10 @@ public class Position {
     return move(offset[0], offset[1], 1);
   }
 
+  public Position move(Position pos) {
+    return move(pos.x, pos.y);
+  }
+
   public Position moveInDir(double dir, double amount) {
     x += Math.cos(dir*Math.PI/180) * amount;
     y -= Math.sin(dir*Math.PI/180) * amount;

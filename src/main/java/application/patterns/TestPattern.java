@@ -2,15 +2,9 @@ package application.patterns;
 
 import application.Position;
 import application.bullet.BulletColor;
-import application.bullet.attr.LinAccelAttr;
-import application.bullet.attr.LinMoveAttr;
-import application.bullet.attr.MoveAttr;
-import application.bullet.attr.RotMoveAttr;
-import application.bullet.staging.BulletStage;
-import application.bullet.staging.DisableStage;
-import application.bullet.staging.EnableStage;
-import application.bullet.types.Bullet;
-import application.bullet.types.RiceBullet;
+import application.bullet.attr.*;
+import application.bullet.staging.*;
+import application.bullet.types.*;
 
 public class TestPattern extends Pattern {
   public TestPattern() {
@@ -29,25 +23,18 @@ public class TestPattern extends Pattern {
                   1,
                   BulletColor.YELLOW,
                   new MoveAttr[] {
-                    new LinMoveAttr("move", 1 + j * 0.2, dir + i * 10, new LinAccelAttr("acc", -0.1, -3))
+                    new RotMoveAttr("rot", 0, 3 + j * 0.2, dir + i * 10, 5, new LinAccelAttr("moveAcc", -0.1, 0), new LinAccelAttr("rotAcc", -0.1, 0)),
+                    new LinMoveAttr("lin", 0, dir + i * 10, new LinAccelAttr("acc", 0.1, 3))
                   },
                   new BulletStage[] {
-                    new DisableStage("move.acc", 0), new EnableStage("move.acc", 60 + j * 3),
+                    new DisableAttrStage(0, "lin"),
+                    new ModifyStage(120 + j * 5, ModifyFactory.setColor(BulletColor.RED)),
+                    new ModifyStage(0, (Bullet b) -> {((LinMoveAttr)b.getAttr("lin")).dir = ((RotMoveAttr)b.getAttr("rot")).dir;}),
+                    new DisableAttrStage(0, "rot"),
+                    new EnableAttrStage(0, "lin"),
+                    new BlankStage(60)
                   }));
         }
-      }
-    }
-    if (cycle % 20 == 0) {
-      double dir = Math.random() * 360;
-      for (int i = 0; i < 8; i++) {
-        Bullet.spawnBullet(
-            new Bullet(
-                new Position(width / 2, height * 0.2),
-                1,
-                BulletColor.RED,
-                new MoveAttr[] {
-                    new RotMoveAttr("move", 50, 15, dir + i * 45, 0.3*Math.sin(cycle*Math.PI/300), new LinAccelAttr("acc", -1, 2))
-                }));
       }
     }
   }

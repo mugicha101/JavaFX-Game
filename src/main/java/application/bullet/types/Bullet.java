@@ -5,14 +5,16 @@ import application.Position;
 import application.bullet.BulletColor;
 import application.bullet.attr.BulletAttr;
 import application.bullet.attr.MoveAttr;
+import application.bullet.staging.AttrStage;
+import application.bullet.staging.BlankStage;
 import application.bullet.staging.BulletStage;
+import application.bullet.staging.ModifyStage;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.shape.Circle;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,7 +24,7 @@ public class Bullet {
   protected static final int frontGradientLayers = 3;
   protected static final int backGradientLayers = 5;
   protected static final double backOpacity = 0.1;
-  public static final int offscreenMargin = 100;
+  public static final int offscreenMargin = 0;
   private boolean alive;
   protected int time;
   public double radius;
@@ -109,12 +111,20 @@ public class Bullet {
     return id;
   }
 
+  public final BulletAttr getAttr(String id) {
+    return attrMap.get(id);
+  }
+
   public final boolean isAlive() {
     return alive;
   }
 
   public final int getTime() {
     return time;
+  }
+
+  public final boolean finishedStages() {
+    return stageList == null || stageIndex == stageList.size();
   }
 
   public final void kill(boolean quick) {
@@ -149,11 +159,21 @@ public class Bullet {
     if (stageList != null && stageIndex < stageList.size()) {
       stageTime++;
       while (stageTime >= stageList.get(stageIndex).getTime()) {
-        BulletStage stage = stageList.get(stageIndex);
-        BulletAttr ba = attrMap.get(stage.getId());
-        if (ba == null)
-          throw new NullPointerException("null BulletAttr instance assigned to stage (id=" + stage.getId() + " is not in available ids: " + attrMap.keySet());
-        stage.action(ba);
+        BulletStage baseStage = stageList.get(stageIndex);
+        if (baseStage instanceof BlankStage stage) {
+          stage.action();
+        } else if (baseStage instanceof AttrStage stage) {
+          BulletAttr ba = getAttr(stage.getId());
+          if (ba == null)
+            throw new NullPointerException(
+                "null BulletAttr instance assigned to stage (id="
+                    + stage.getId()
+                    + " is not in available ids: "
+                    + attrMap.keySet());
+          stage.action(ba);
+        } else if (baseStage instanceof ModifyStage stage) {
+          stage.action(this);
+        }
         stageTime = 0;
         stageIndex++;
         if (stageIndex == stageList.size())
@@ -189,7 +209,7 @@ public class Bullet {
     if (alive) {
       if (defaultPlayerCollision && (time >= 10 && pos.distSqd(Game.player.pos) <= Math.pow(radius + Game.player.hbRadius, 2)))
         this.kill();
-      else if (defaultBorderCollision && (pos.x > Game.width + offscreenMargin + getRenderRadius() || pos.y > Game.height + offscreenMargin + getRenderRadius() || pos.x < -getRenderRadius() - offscreenMargin || pos.y < -getRenderRadius() - offscreenMargin))
+      else if (defaultBorderCollision && finishedStages() && (pos.x > Game.width + offscreenMargin + getRenderRadius() || pos.y > Game.height + offscreenMargin + getRenderRadius() || pos.x < -getRenderRadius() - offscreenMargin || pos.y < -getRenderRadius() - offscreenMargin))
         this.kill(true);
     }
   }

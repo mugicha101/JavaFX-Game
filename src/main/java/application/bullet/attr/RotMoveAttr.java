@@ -12,10 +12,10 @@ public class RotMoveAttr extends MoveAttr {
   private final double initDir;
   private final double initRotSpeed;
   private final Position center;
-  private double dist;
-  private double moveSpeed;
-  private double rotSpeed;
-  private double dir;
+  public double dist;
+  public double moveSpeed;
+  public double rotSpeed;
+  public double dir;
   private final AccelAttr moveAccelAttr;
   private final AccelAttr rotAccelAttr;
   public RotMoveAttr(String id, double startingDist, double moveSpeed, double dir, double rotSpeed, AccelAttr moveAccelAttr, AccelAttr rotAccelAttr) {
@@ -24,6 +24,10 @@ public class RotMoveAttr extends MoveAttr {
     initMoveSpeed = moveSpeed;
     initRotSpeed = rotSpeed;
     initDir = dir;
+    this.dist = initDist;
+    this.moveSpeed = initMoveSpeed;
+    this.rotSpeed = initRotSpeed;
+    this.dir = initDir;
     this.moveAccelAttr = moveAccelAttr == null? null : moveAccelAttr.clone();
     this.rotAccelAttr = rotAccelAttr == null? null : rotAccelAttr.clone();
     this.center = new Position(0,0);
@@ -66,7 +70,7 @@ public class RotMoveAttr extends MoveAttr {
   }
 
   public boolean collisionTick(Bullet b) {
-    return dist * dist > Game.width * Game.width + Game.height * Game.height;
+    return b.finishedStages() && dist * dist > Game.width * Game.width + Game.height * Game.height;
   }
 
   public MoveAttr clone(String newId) {

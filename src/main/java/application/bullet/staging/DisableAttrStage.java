@@ -2,9 +2,9 @@ package application.bullet.staging;
 
 import application.bullet.attr.BulletAttr;
 
-public class DisableStage extends BulletStage {
-  public DisableStage(String bulletAttrId, int time) {
-    super(bulletAttrId, time);
+public class DisableAttrStage extends AttrStage {
+  public DisableAttrStage(int time, String bulletAttrId) {
+    super(time, bulletAttrId);
   }
 
   public void action(BulletAttr ba) {
