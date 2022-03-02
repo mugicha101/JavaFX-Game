@@ -29,7 +29,7 @@ public class TestPattern extends Pattern {
                   new BulletStage[] {
                     new DisableAttrStage(0, "lin"),
                     new ModifyStage(120 + j * 5, ModifyFactory.setColor(BulletColor.RED)),
-                    new ModifyStage(0, (Bullet b) -> {((LinMoveAttr)b.getAttr("lin")).dir = ((RotMoveAttr)b.getAttr("rot")).dir;}),
+                    new ModifyStage(0, (Bullet b) -> ((LinMoveAttr)b.getAttr("lin")).dir = ((RotMoveAttr)b.getAttr("rot")).dir),
                     new DisableAttrStage(0, "rot"),
                     new EnableAttrStage(0, "lin"),
                     new BlankStage(60)

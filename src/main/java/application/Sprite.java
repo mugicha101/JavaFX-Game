@@ -7,29 +7,27 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class Sprite {
+  private final String[] imgPaths;
   private ImageView[] images;
   private double scale; // scale of image
-  private int[] offset; // offset in pixels of image
+  private final int[] offset; // offset in pixels of image
   public Position pos;
   public double dir; // direction
-  public int frameDelay;
+  public final int frameDelay;
   public double alpha;
 
-  public Sprite() {
+  public Sprite(String[] imgPaths, int[] offset, int frameDelay, double scale) throws FileNotFoundException {
     this.pos = new Position(0, 0);
     this.images = null;
-    this.frameDelay = 20;
-    this.offset = new int[] {0,0};
+    this.frameDelay = frameDelay;
     this.alpha = 1;
-  }
-
-  public Sprite(String[] imgPaths, int[] offset, int frameDelay, double scale) throws FileNotFoundException {
-    this();
+    this.imgPaths = imgPaths;
     this.offset = offset == null? new int[] {0,0} : offset;
     setImages(imgPaths, frameDelay, scale);
   }
@@ -81,5 +79,13 @@ public class Sprite {
     gc.setGlobalAlpha(alpha);
     gc.drawImage(snap, pos.x-snap.getWidth()/2+(double)offset[0]*scale, pos.y-snap.getHeight()/2+(double)offset[1]*scale);
     gc.restore();
+  }
+
+  public Sprite clone() {
+    try {
+      return new Sprite(imgPaths, offset, frameDelay, scale);
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException();
+    }
   }
 }
