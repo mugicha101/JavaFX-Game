@@ -3,6 +3,8 @@ package application.bullet.bulletTypes;
 import application.Game;
 import application.Position;
 import application.bullet.BulletColor;
+import application.bullet.bulletAttr.LinAccelAttr;
+import application.bullet.bulletAttr.LinMoveAttr;
 import application.bullet.bulletAttr.MoveAttr;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -14,9 +16,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Bullet {
+  private static ArrayList<Bullet> bullets = new ArrayList<>();
   protected static final int frontGradientLayers = 3;
   protected static final int backGradientLayers = 5;
   protected static final double backOpacity = 0.1;
+  public static final int offscreenMargin = 100;
   private boolean alive;
   protected int time;
   public double radius;
@@ -31,6 +35,33 @@ public class Bullet {
   protected static final double groupSize = 10;
   private String groupId;
   private static HashMap<String, ArrayList<Group[]>> groupCache = new HashMap<>(); // holds [groupBack, groupFront] for previously deleted bullets to be reused
+
+  public static ArrayList<Bullet> getBullets() {
+    return bullets;
+  }
+
+  public static void moveBullets() {
+    ArrayList<Bullet> aliveBullets = new ArrayList<>();
+    for (Bullet b : bullets) {
+      b.move();
+      if (b.isAlive() || b.getTime() < 10)
+        aliveBullets.add(b);
+      else
+        b.delete();
+    }
+    bullets = aliveBullets;
+  }
+
+  public static void drawBullets() {
+    for (Bullet b : bullets) {
+      b.drawUpdate();
+    }
+  }
+
+  public static void spawnBullet(Bullet bullet) {
+    bullets.add(bullet);
+  }
+
   public Bullet(Position pos, double size, BulletColor color, MoveAttr[] attrArr) {
     this.pos = pos.clone();
     alive = true;
@@ -103,19 +134,22 @@ public class Bullet {
        ma.moveTick(this);
 
     // collision
-    boolean defaultCollision = true;
+    boolean defaultPlayerCollision = true;
+    boolean defaultBorderCollision = true;
     for (MoveAttr ma : attrList) {
-      if (ma.overridesDefaultCollision())
-        defaultCollision = false;
+      if (ma.overridesDefaultPlayerCollision())
+        defaultPlayerCollision = false;
+      if (ma.overridesDefaultBorderCollision())
+        defaultBorderCollision = false;
       if (ma.collisionTick(this)) {
         this.kill();
         break;
       }
     }
-    if (alive && defaultCollision) {
-      if (time >= 10 && pos.distSqd(Game.player.pos) <= Math.pow(radius + Game.player.hbRadius, 2))
+    if (alive) {
+      if (defaultPlayerCollision && (time >= 10 && pos.distSqd(Game.player.pos) <= Math.pow(radius + Game.player.hbRadius, 2)))
         this.kill();
-      else if (pos.x > Game.width + getRenderRadius() || pos.y > Game.height + getRenderRadius() || pos.x < -getRenderRadius() || pos.y < -getRenderRadius())
+      else if (defaultBorderCollision && (pos.x > Game.width + offscreenMargin + getRenderRadius() || pos.y > Game.height + offscreenMargin + getRenderRadius() || pos.x < -getRenderRadius() - offscreenMargin || pos.y < -getRenderRadius() - offscreenMargin))
         this.kill(true);
     }
   }

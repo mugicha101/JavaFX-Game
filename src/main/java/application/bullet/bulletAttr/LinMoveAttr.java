@@ -31,7 +31,7 @@ public class LinMoveAttr extends MoveAttr {
   }
 
   public void moveTick(Bullet b) {
-    b.pos.move(dir, speed);
+    b.pos.moveInDir(dir, speed);
   }
 
   public boolean collisionTick(Bullet b) {

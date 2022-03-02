@@ -7,7 +7,10 @@ public abstract class MoveAttr extends BulletAttr {
     super(id);
   }
 
-  public boolean overridesDefaultCollision() {
+  public boolean overridesDefaultBorderCollision() {
+    return false;
+  }
+  public boolean overridesDefaultPlayerCollision() {
     return false;
   }
   public abstract void init(Bullet b); // runs on spawn

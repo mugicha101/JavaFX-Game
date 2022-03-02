@@ -1,12 +1,8 @@
 package application;
 
-import application.bullet.BulletColor;
-import application.bullet.bulletAttr.LinAccelAttr;
-import application.bullet.bulletAttr.LinMoveAttr;
-import application.bullet.bulletAttr.MoveAttr;
+import application.patterns.*;
 import application.bullet.bulletTypes.Bullet;
-import application.bullet.bulletAttr.BulletAttr;
-import application.bullet.bulletTypes.RiceBullet;
+import application.patterns.Pattern;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -38,7 +34,6 @@ public class Game extends Application {
   public static GraphicsContext gc;
   public static int frame = -1;
   public static int focusHold = 0;
-  public static ArrayList<Bullet> bullets = new ArrayList<>();
   public static Group root;
   public static Group bulletGroupFront;
   public static Group bulletGroupBack;
@@ -86,14 +81,14 @@ public class Game extends Application {
   private void calc() {
     debugToggle();
     movePlayer();
-    spawnBullets();
-    moveBullets();
+    Pattern.patternTick();
+    Bullet.moveBullets();
   }
 
   private void draw() {
     drawBG();
     drawPlayer();
-    drawBullets();
+    Bullet.drawBullets();
     drawPlayerHB();
   }
 
@@ -132,46 +127,6 @@ public class Game extends Application {
       focusHold--;
   }
 
-  public void moveBullets() {
-    ArrayList<Bullet> aliveBullets = new ArrayList<>();
-    for (Bullet b : bullets) {
-      b.move();
-      if (b.isAlive() || b.getTime() < 10)
-        aliveBullets.add(b);
-      else
-        b.delete();
-    }
-    bullets = aliveBullets;
-
-  }
-
-  public void spawnBullets() {
-    if (frame % 600 < 300? frame % 5 == 0 : frame % 20 == 0) {
-      Position pos = new Position(width * (0.25 + Math.random() * 0.5), height * (0.1 + Math.random() * 0.2));
-      double dir = Math.random() * 360;
-      for (int i = 0; i < 36; i++) {
-        bullets.add(
-            new RiceBullet(
-                pos,
-                1,
-                BulletColor.YELLOW,
-                new MoveAttr[] {
-                        new LinMoveAttr(null, 20, dir + i * 10, new LinAccelAttr(-1, 3))
-                }));
-        if (i % 2 == 0) {
-          bullets.add(
-              new Bullet(
-                  pos,
-                  1,
-                  BulletColor.RED,
-                  new MoveAttr[] {
-                    new LinMoveAttr(null, 15, dir + i * 10, new LinAccelAttr(-1, 2))
-                  }));
-        }
-      }
-    }
-  }
-
   private void drawBG() {
     // background
     gc.setFill(Color.BLACK);
@@ -185,12 +140,6 @@ public class Game extends Application {
   public static void drawPlayer() {
     player.alpha = 1-(double)focusHold/20;
     player.draw(gc);
-  }
-
-  public static void drawBullets() {
-    for (Bullet b : bullets) {
-      b.drawUpdate();
-    }
   }
 
   public static void drawPlayerHB() {
@@ -210,6 +159,7 @@ public class Game extends Application {
 
   public static void main(String[] args) {
     Input.init();
+    new TestPattern();
     launch();
   }
 }
