@@ -22,8 +22,6 @@ import java.util.HashMap;
 
 public class Bullet {
   private static ArrayList<Bullet> bullets = new ArrayList<>();
-  protected static final int frontGradientLayers = 2;
-  protected static final int backGradientLayers = 5;
   protected static final double backOpacity = 0.3;
   public static final int offscreenMargin = 0;
   private boolean alive;
