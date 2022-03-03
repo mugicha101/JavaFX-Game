@@ -25,7 +25,8 @@ public class Sprite {
   public double alpha;
   private final Group sceneGroup;
 
-  public Sprite(Group sceneGroup, String[] imgPaths, int[] offset, int frameDelay, double scale) throws FileNotFoundException {
+  public Sprite(Group sceneGroup, String[] imgPaths, int[] offset, int frameDelay, double scale)
+      throws FileNotFoundException {
     this.sceneGroup = sceneGroup;
     iv = new ImageView();
     sceneGroup.getChildren().add(iv);
@@ -34,11 +35,12 @@ public class Sprite {
     this.frameDelay = frameDelay;
     this.alpha = 1;
     this.imgPaths = imgPaths;
-    this.offset = offset == null? new int[] {0,0} : offset;
+    this.offset = offset == null ? new int[] {0, 0} : offset;
     setImages(imgPaths, frameDelay, scale);
   }
 
-  public void setImages(String[] filePaths, int frameDelay, double scale) throws FileNotFoundException {
+  public void setImages(String[] filePaths, int frameDelay, double scale)
+      throws FileNotFoundException {
     imgs = new Image[filePaths.length];
     this.scale = scale;
     for (int i = 0; i < filePaths.length; i++) {
@@ -49,25 +51,21 @@ public class Sprite {
   }
 
   private Image getImage() {
-    return imgs[(int)((double)Game.frame / frameDelay) % imgs.length];
+    return imgs[(int) ((double) Game.frame / frameDelay) % imgs.length];
   }
 
   public void drawUpdate() {
     Image img = getImage();
-    if (iv.getImage() != img)
-      iv.setImage(img);
-    double x = pos.x - img.getWidth()/2 + offset[0] * scale;
-    double y = pos.y - img.getHeight()/2 + offset[1] * scale;
-    if (iv.getX() != x)
-      iv.setX(x);
-    if (iv.getY() != y)
-      iv.setY(y);
+    if (iv.getImage() != img) iv.setImage(img);
+    double x = pos.x - img.getWidth() / 2 + offset[0] * scale;
+    double y = pos.y - img.getHeight() / 2 + offset[1] * scale;
+    if (iv.getX() != x) iv.setX(x);
+    if (iv.getY() != y) iv.setY(y);
     if (iv.getScaleX() != scale) {
       iv.setScaleX(scale);
       iv.setScaleY(scale);
     }
-    if (iv.getRotate() != dir)
-      iv.setRotate(dir);
+    if (iv.getRotate() != dir) iv.setRotate(dir);
   }
 
   public void delete() {

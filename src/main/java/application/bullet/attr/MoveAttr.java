@@ -18,9 +18,8 @@ public abstract class MoveAttr extends BulletAttr {
   }
 
   public abstract void init(
-      Bullet
-          b); // runs on first frame of movement (does not run if disabled by stages on start,
-              // internal fields should be set in constructor)
+      Bullet b); // runs on first frame of movement (does not run if disabled by stages on start,
+  // internal fields should be set in constructor)
 
   public abstract void prepTick(Bullet b); // before movement
 

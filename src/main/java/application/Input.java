@@ -11,7 +11,8 @@ import java.util.HashSet;
 
 public class Input {
   private static final HashMap<String, Input> inputMap = new HashMap<>();
-  private static final ArrayList<Pair<KeyCode, Boolean>> inputQueue = new ArrayList<>(); // async -> sync
+  private static final ArrayList<Pair<KeyCode, Boolean>> inputQueue =
+      new ArrayList<>(); // async -> sync
 
   public static void init() {
     inputMap.put("left", new Input(new KeyCode[] {KeyCode.A, KeyCode.LEFT}));
@@ -33,26 +34,21 @@ public class Input {
 
   private static void keyPress(KeyCode key) {
     for (Input in : inputMap.values()) {
-      if (in.hasKey(key))
-        in.press();
+      if (in.hasKey(key)) in.press();
     }
   }
 
   private static void keyRelease(KeyCode key) {
     for (Input in : inputMap.values()) {
-      if (in.hasKey(key))
-        in.release();
+      if (in.hasKey(key)) in.release();
     }
   }
 
   public static void keyTick() {
-    for (Input in : inputMap.values())
-      in.tick();
+    for (Input in : inputMap.values()) in.tick();
     for (Pair<KeyCode, Boolean> req : inputQueue) {
-      if (req.getValue())
-        keyPress(req.getKey());
-      else
-        keyRelease(req.getKey());
+      if (req.getValue()) keyPress(req.getKey());
+      else keyRelease(req.getKey());
     }
     inputQueue.clear();
   }
@@ -60,6 +56,7 @@ public class Input {
   private boolean pressed = false;
   private boolean initial = false;
   private HashSet<KeyCode> keys;
+
   public Input(KeyCode[] keys) {
     this.keys = new HashSet<>();
     this.keys.addAll(Arrays.asList(keys));

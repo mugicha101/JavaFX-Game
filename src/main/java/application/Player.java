@@ -18,8 +18,9 @@ public class Player {
   public double dir;
   public double alpha;
   private Circle hb;
+
   public Player(double speed, double focus_multi, double hitbox_radius, Sprite sprite) {
-    this.pos = new Position(0,0);
+    this.pos = new Position(0, 0);
     this.speed = speed;
     this.focusMulti = focus_multi;
     this.hbRadius = hitbox_radius;
@@ -33,7 +34,7 @@ public class Player {
     sprite.dir = dir;
     sprite.alpha = alpha;
     sprite.drawUpdate();
-    double scale = -2.913*Math.pow(((double)Game.focusHold/10)-0.5859, 2)*2 + 2;
+    double scale = -2.913 * Math.pow(((double) Game.focusHold / 10) - 0.5859, 2) * 2 + 2;
     if (hb.getScaleX() != scale) {
       hb.setScaleX(scale);
       hb.setScaleY(scale);
@@ -51,12 +52,20 @@ public class Player {
   private void initPlayerHB() {
     double radius = hbRadius * 6;
     hb = new Circle(radius);
-    RadialGradient grad = new RadialGradient(0, 0, radius/2, radius/2, radius, false, CycleMethod.NO_CYCLE, Arrays.asList(
-            new Stop(0, Color.color(1, 1, 1, 1.0)),
-            new Stop(0.1, Color.color(0.5, 1, 1, 1.0)),
-            new Stop(0.2, Color.color(0, 0.5, 1, 0.5)),
-            new Stop(0.4, Color.color(0, 0, 1, 0))
-    ));
+    RadialGradient grad =
+        new RadialGradient(
+            0,
+            0,
+            radius / 2,
+            radius / 2,
+            radius,
+            false,
+            CycleMethod.NO_CYCLE,
+            Arrays.asList(
+                new Stop(0, Color.color(1, 1, 1, 1.0)),
+                new Stop(0.1, Color.color(0.5, 1, 1, 1.0)),
+                new Stop(0.2, Color.color(0, 0.5, 1, 0.5)),
+                new Stop(0.4, Color.color(0, 0, 1, 0))));
     hb.setFill(grad);
     Game.playerHBGroup.getChildren().add(hb);
   }

@@ -3,13 +3,14 @@ package application;
 public class Position {
   public double x;
   public double y;
+
   public Position(double x, double y) {
     this.x = x;
     this.y = y;
   }
 
   public Position() {
-    this(0,0);
+    this(0, 0);
   }
 
   public Position(Position pos) {
@@ -47,8 +48,8 @@ public class Position {
   }
 
   public Position moveInDir(double dir, double amount) {
-    x += Math.cos(dir*Math.PI/180) * amount;
-    y -= Math.sin(dir*Math.PI/180) * amount;
+    x += Math.cos(dir * Math.PI / 180) * amount;
+    y -= Math.sin(dir * Math.PI / 180) * amount;
     return this;
   }
 

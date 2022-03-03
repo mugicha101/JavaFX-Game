@@ -10,6 +10,7 @@ public class Enemy {
   private final Path path;
   public final Position pos;
   public final Sprite sprite;
+
   public Enemy(int lifetime, Path path, Sprite sprite) {
     time = 0;
     this.lifetime = lifetime;

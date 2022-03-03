@@ -14,8 +14,7 @@ public abstract class Pattern {
   protected final Random rand;
 
   public static void patternTick() {
-    for (Pattern pattern : patternSet)
-      pattern.spawnTick();
+    for (Pattern pattern : patternSet) pattern.spawnTick();
   }
 
   public static void removePattern(Pattern pattern) {
@@ -49,13 +48,12 @@ public abstract class Pattern {
   }
 
   public final void reduceHealth(int amount) {
-    if (amount < 0)
-      return;
+    if (amount < 0) return;
     health -= amount;
   }
 
   public final double getHealthProportion() {
-    return health/maxHealth;
+    return health / maxHealth;
   }
 
   public final void remove() {
