@@ -59,6 +59,8 @@ public class Sprite {
     if (iv.getImage() != img) iv.setImage(img);
     double x = pos.x - img.getWidth() / 2 + offset[0] * scale;
     double y = pos.y - img.getHeight() / 2 + offset[1] * scale;
+    if (alpha != iv.getOpacity())
+      iv.setOpacity(alpha);
     if (iv.getX() != x) iv.setX(x);
     if (iv.getY() != y) iv.setY(y);
     if (iv.getScaleX() != scale) {
