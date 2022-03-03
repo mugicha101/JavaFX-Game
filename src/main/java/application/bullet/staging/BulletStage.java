@@ -7,6 +7,7 @@ import application.bullet.attr.BulletAttr;
 // stages when to enable, disable, and modify bullet attributes during bullet's lifetime
 public abstract class BulletStage {
   private final int time;
+
   public BulletStage(int time) {
     this.time = time;
   }

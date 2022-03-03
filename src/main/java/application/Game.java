@@ -46,7 +46,7 @@ public class Game extends Application {
     Canvas canvas = new Canvas(dim[0], dim[1]);
     gc = canvas.getGraphicsContext2D();
     root.getChildren().add(canvas);
-    Timeline tl = new Timeline(new KeyFrame(Duration.millis(17), e->run()));
+    Timeline tl = new Timeline(new KeyFrame(Duration.millis(17), e -> run()));
     tl.setCycleCount(Timeline.INDEFINITE);
     Scene scene = new Scene(root);
     stage.setScene(scene);
@@ -55,8 +55,8 @@ public class Game extends Application {
     tl.play();
 
     // setup input
-    stage.getScene().setOnKeyPressed(e->Input.keyRequest(e.getCode(), true));
-    stage.getScene().setOnKeyReleased(e->Input.keyRequest(e.getCode(), false));
+    stage.getScene().setOnKeyPressed(e -> Input.keyRequest(e.getCode(), true));
+    stage.getScene().setOnKeyReleased(e -> Input.keyRequest(e.getCode(), false));
 
     // setup scene graph bullets node
     playerGroup = new Group();
@@ -78,7 +78,7 @@ public class Game extends Application {
       pImgArr[i] = "Reimu/Reimu" + (i + 1) + ".png";
     }
     player = new Player(7, 0.5, 3, new Sprite(playerGroup, pImgArr, new int[] {6, 0}, 20, 0.75));
-    player.pos.set(width*0.5, height*0.8);
+    player.pos.set(width * 0.5, height * 0.8);
   }
 
   private void run() {
@@ -108,35 +108,25 @@ public class Game extends Application {
 
   private void movePlayer() {
     int[] moveOffset = new int[] {0, 0};
-    if (Input.getInput("left").isPressed())
-      moveOffset[0]--;
-    if (Input.getInput("right").isPressed())
-      moveOffset[0]++;
-    if (Input.getInput("up").isPressed())
-      moveOffset[1]--;
-    if (Input.getInput("down").isPressed())
-      moveOffset[1]++;
+    if (Input.getInput("left").isPressed()) moveOffset[0]--;
+    if (Input.getInput("right").isPressed()) moveOffset[0]++;
+    if (Input.getInput("up").isPressed()) moveOffset[1]--;
+    if (Input.getInput("down").isPressed()) moveOffset[1]++;
 
-    double multi = player.speed * (Input.getInput("focus").isPressed()? player.focusMulti : 1);
+    double multi = player.speed * (Input.getInput("focus").isPressed() ? player.focusMulti : 1);
     player.pos.move(moveOffset, multi);
-    if (player.pos.x < edgeMargin)
-      player.pos.x = edgeMargin;
-    else if (player.pos.x > width - edgeMargin)
-      player.pos.x = width - edgeMargin;
-    if (player.pos.y < edgeMargin)
-      player.pos.y = edgeMargin;
-    else if (player.pos.y > height - edgeMargin)
-      player.pos.y = height - edgeMargin;
+    if (player.pos.x < edgeMargin) player.pos.x = edgeMargin;
+    else if (player.pos.x > width - edgeMargin) player.pos.x = width - edgeMargin;
+    if (player.pos.y < edgeMargin) player.pos.y = edgeMargin;
+    else if (player.pos.y > height - edgeMargin) player.pos.y = height - edgeMargin;
     player.dir = moveOffset[0] * multi * 5;
 
-    if (focusHold < 10 && Input.getInput("focus").isPressed())
-      focusHold++;
-    else if (focusHold > 0 && !Input.getInput("focus").isPressed())
-      focusHold--;
+    if (focusHold < 10 && Input.getInput("focus").isPressed()) focusHold++;
+    else if (focusHold > 0 && !Input.getInput("focus").isPressed()) focusHold--;
   }
 
   public static void drawPlayer() {
-    player.alpha = 1-(double)focusHold/20;
+    player.alpha = 1 - (double) focusHold / 20;
     player.drawUpdate();
   }
 

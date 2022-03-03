@@ -10,13 +10,14 @@ public class LinMoveAttr extends MoveAttr {
   private final AccelAttr accelAttr;
   public double speed;
   public double dir;
+
   public LinMoveAttr(String id, double speed, double dir, AccelAttr accelAttr) {
     super(id);
     initSpeed = speed;
     initDir = dir % 360;
     this.speed = initSpeed;
     this.dir = initDir;
-    this.accelAttr = accelAttr == null? null : accelAttr.clone();
+    this.accelAttr = accelAttr == null ? null : accelAttr.clone();
   }
 
   public LinMoveAttr(String id, double speed, double dir) {
@@ -30,8 +31,7 @@ public class LinMoveAttr extends MoveAttr {
   }
 
   public void prepTick(Bullet b) {
-    if (accelAttr != null && accelAttr.enabled)
-      speed = accelAttr.tick(speed);
+    if (accelAttr != null && accelAttr.enabled) speed = accelAttr.tick(speed);
   }
 
   public void moveTick(Bullet b) {
@@ -49,7 +49,6 @@ public class LinMoveAttr extends MoveAttr {
   @Override
   public void toMap(HashMap<String, BulletAttr> map, String prefix) {
     map.put(prefix + getId(), this);
-    if (accelAttr != null)
-      accelAttr.toMap(map, prefix + getId() + ".");
+    if (accelAttr != null) accelAttr.toMap(map, prefix + getId() + ".");
   }
 }

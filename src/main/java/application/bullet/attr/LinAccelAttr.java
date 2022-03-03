@@ -5,6 +5,7 @@ import java.util.HashMap;
 public class LinAccelAttr extends AccelAttr {
   public double accelAmount;
   public Double speedCap;
+
   public LinAccelAttr(String id, double accelAmount, double speedCap) {
     super(id);
     this.accelAmount = accelAmount;
@@ -19,16 +20,15 @@ public class LinAccelAttr extends AccelAttr {
 
   public double tick(double speed) {
     speed += accelAmount;
-    if (speedCap != null && ((accelAmount < 0 && speed < speedCap) || (accelAmount > 0 && speed > speedCap)))
+    if (speedCap != null
+        && ((accelAmount < 0 && speed < speedCap) || (accelAmount > 0 && speed > speedCap)))
       speed = speedCap;
     return speed;
   }
 
   public AccelAttr clone(String newId) {
-    if (speedCap == null)
-      return new LinAccelAttr(newId, accelAmount);
-    else
-      return new LinAccelAttr(newId, accelAmount, speedCap);
+    if (speedCap == null) return new LinAccelAttr(newId, accelAmount);
+    else return new LinAccelAttr(newId, accelAmount, speedCap);
   }
 
   @Override

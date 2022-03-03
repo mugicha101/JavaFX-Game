@@ -18,7 +18,15 @@ public class RotMoveAttr extends MoveAttr {
   public double dir;
   private final AccelAttr moveAccelAttr;
   private final AccelAttr rotAccelAttr;
-  public RotMoveAttr(String id, double startingDist, double moveSpeed, double dir, double rotSpeed, AccelAttr moveAccelAttr, AccelAttr rotAccelAttr) {
+
+  public RotMoveAttr(
+      String id,
+      double startingDist,
+      double moveSpeed,
+      double dir,
+      double rotSpeed,
+      AccelAttr moveAccelAttr,
+      AccelAttr rotAccelAttr) {
     super(id);
     initDist = startingDist;
     initMoveSpeed = moveSpeed;
@@ -28,16 +36,23 @@ public class RotMoveAttr extends MoveAttr {
     this.moveSpeed = initMoveSpeed;
     this.rotSpeed = initRotSpeed;
     this.dir = initDir;
-    this.moveAccelAttr = moveAccelAttr == null? null : moveAccelAttr.clone();
-    this.rotAccelAttr = rotAccelAttr == null? null : rotAccelAttr.clone();
-    this.center = new Position(0,0);
+    this.moveAccelAttr = moveAccelAttr == null ? null : moveAccelAttr.clone();
+    this.rotAccelAttr = rotAccelAttr == null ? null : rotAccelAttr.clone();
+    this.center = new Position(0, 0);
   }
 
-  public RotMoveAttr(String id, double startingDist, double moveSpeed, double dir, double rotSpeed, AccelAttr moveAccelAttr) {
+  public RotMoveAttr(
+      String id,
+      double startingDist,
+      double moveSpeed,
+      double dir,
+      double rotSpeed,
+      AccelAttr moveAccelAttr) {
     this(id, startingDist, moveSpeed, dir, rotSpeed, moveAccelAttr, null);
   }
 
-  public RotMoveAttr(String id, double startingDist, double moveSpeed, double dir, double rotSpeed) {
+  public RotMoveAttr(
+      String id, double startingDist, double moveSpeed, double dir, double rotSpeed) {
     this(id, startingDist, moveSpeed, dir, rotSpeed, null, null);
   }
 
@@ -51,10 +66,8 @@ public class RotMoveAttr extends MoveAttr {
   }
 
   public void prepTick(Bullet b) {
-    if (moveAccelAttr != null && moveAccelAttr.enabled)
-      moveSpeed = moveAccelAttr.tick(moveSpeed);
-    if (rotAccelAttr != null && rotAccelAttr.enabled)
-      rotSpeed = rotAccelAttr.tick(rotSpeed);
+    if (moveAccelAttr != null && moveAccelAttr.enabled) moveSpeed = moveAccelAttr.tick(moveSpeed);
+    if (rotAccelAttr != null && rotAccelAttr.enabled) rotSpeed = rotAccelAttr.tick(rotSpeed);
   }
 
   public void moveTick(Bullet b) {
@@ -74,15 +87,14 @@ public class RotMoveAttr extends MoveAttr {
   }
 
   public MoveAttr clone(String newId) {
-    return new RotMoveAttr(newId, initDist, initMoveSpeed, initDir, initRotSpeed, moveAccelAttr, rotAccelAttr);
+    return new RotMoveAttr(
+        newId, initDist, initMoveSpeed, initDir, initRotSpeed, moveAccelAttr, rotAccelAttr);
   }
 
   @Override
   public void toMap(HashMap<String, BulletAttr> map, String prefix) {
-    if (moveAccelAttr != null)
-      moveAccelAttr.toMap(map, prefix + getId() + ".");
-    if (rotAccelAttr != null)
-      rotAccelAttr.toMap(map, prefix + getId() + ".");
+    if (moveAccelAttr != null) moveAccelAttr.toMap(map, prefix + getId() + ".");
+    if (rotAccelAttr != null) rotAccelAttr.toMap(map, prefix + getId() + ".");
     map.put(prefix + getId(), this);
   }
 }

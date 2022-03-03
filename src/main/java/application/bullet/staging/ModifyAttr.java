@@ -5,4 +5,3 @@ import application.bullet.attr.BulletAttr;
 public interface ModifyAttr {
   void action(BulletAttr ba);
 }
-
