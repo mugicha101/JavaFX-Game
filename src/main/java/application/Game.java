@@ -35,8 +35,10 @@ public class Game extends Application {
   public static int frame = -1;
   public static int focusHold = 0;
   public static Group root;
+  public static Group playerGroup;
   public static Group bulletGroupFront;
   public static Group bulletGroupBack;
+  public static Group playerHBGroup;
 
   public void start(Stage stage) throws IOException {
     // setup JavaFX
@@ -57,17 +59,21 @@ public class Game extends Application {
     stage.getScene().setOnKeyReleased(e->Input.keyRequest(e.getCode(), false));
 
     // setup scene graph bullets node
+    playerGroup = new Group();
+    root.getChildren().add(playerGroup);
     bulletGroupBack = new Group();
-    bulletGroupFront = new Group();
     root.getChildren().add(bulletGroupBack);
+    bulletGroupFront = new Group();
     root.getChildren().add(bulletGroupFront);
+    playerHBGroup = new Group();
+    root.getChildren().add(playerHBGroup);
 
     // setup game
     String[] pImgArr = new String[4];
     for (int i = 0; i < 4; i++) {
       pImgArr[i] = "Reimu/Reimu" + (i + 1) + ".png";
     }
-    player = new Player(7, 0.5, 3, new Sprite(pImgArr, new int[] {6, 0}, 20, 0.75));
+    player = new Player(7, 0.5, 3, new Sprite(playerGroup, pImgArr, new int[] {6, 0}, 20, 0.75));
     player.pos.set(width*0.5, height*0.8);
   }
 
@@ -89,7 +95,6 @@ public class Game extends Application {
     drawBG();
     drawPlayer();
     Bullet.drawBullets();
-    drawPlayerHB();
   }
 
   private void debugToggle() {
@@ -139,22 +144,7 @@ public class Game extends Application {
 
   public static void drawPlayer() {
     player.alpha = 1-(double)focusHold/20;
-    player.draw(gc);
-  }
-
-  public static void drawPlayerHB() {
-    if (focusHold == 0)
-      return;
-    double radius = (-2.913*Math.pow(((double)focusHold/10)-0.5859, 2)*2 + 2) * player.hbRadius * 6;
-    gc.setFill(Color.color(0, 1, 1));
-    RadialGradient grad = new RadialGradient(0, 0, player.pos.x, player.pos.y, radius, false, CycleMethod.NO_CYCLE, Arrays.asList(
-            new Stop(0, Color.color(1, 1, 1, 1.0)),
-            new Stop(0.1, Color.color(0.5, 1, 1, 1.0)),
-            new Stop(0.2, Color.color(0, 0.5, 1, 0.5)),
-            new Stop(0.4, Color.color(0, 0, 1, 0))
-    ));
-    gc.setFill(grad);
-    gc.fillArc(player.pos.x-radius, player.pos.y-radius, radius*2, radius*2, 0, 360, ArcType.ROUND);
+    player.drawUpdate();
   }
 
   public static void main(String[] args) {

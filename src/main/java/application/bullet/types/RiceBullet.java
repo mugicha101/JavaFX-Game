@@ -8,6 +8,7 @@ import application.bullet.staging.BulletStage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Ellipse;
 
 public class RiceBullet extends Bullet {
@@ -29,24 +30,29 @@ public class RiceBullet extends Bullet {
     groupBack.getChildren().clear();
     groupFront.getChildren().clear();
     // back
+    if (groupBack.getChildren().size() == 0) {
+      for (int i = 0; i < backGradientLayers; i++) {
+        double radius = groupSize * (3 - 1.75 * i / backGradientLayers);
+        groupBack.getChildren().add(new Ellipse(0, 0, radius * 2, radius));
+      }
+    }
     for (int i = 0; i < backGradientLayers; i++) {
-      double radius = groupSize * (3 - 1.75 * i / backGradientLayers);
-      Ellipse ellipse = new Ellipse(0, 0, radius * 2, radius);
-      ellipse.setFill(Color.color(getOuterColor().getRed(), getOuterColor().getGreen(), getOuterColor().getBlue(), backOpacity));
-      groupBack.getChildren().add(ellipse);
+      ((Ellipse)groupBack.getChildren().get(i)).setFill(Color.color(getOuterColor().getRed(), getOuterColor().getGreen(), getOuterColor().getBlue(), backOpacity));
     }
     // front
-    RadialGradient grad = new RadialGradient(0, 0, 0, 0, groupSize, false, CycleMethod.NO_CYCLE);
+    if (groupFront.getChildren().size() == 0) {
+      for (int i = 0; i <= frontGradientLayers; i++) {
+        double radius = groupSize * (1.25 - 0.5 * i / frontGradientLayers);
+        groupFront.getChildren().add(new Ellipse(0, 0, radius * 2, radius));
+      }
+    }
     double[] c1 = new double[] {getOuterColor().getRed(), getOuterColor().getGreen(), getOuterColor().getBlue()};
     double[] c2 = new double[] {getInnerColor().getRed(), getInnerColor().getGreen(), getInnerColor().getBlue()};
     double[] c3 = new double[3];
     for (int i = 0; i <= frontGradientLayers; i++) {
-      double radius = groupSize * (1.25 - 0.5 * i / frontGradientLayers);
-      Ellipse ellipse = new Ellipse(0, 0, radius * 2, radius);
       for (int j = 0; j < 3; j++)
         c3[j] = c1[j] + (c2[j] - c1[j]) * i / frontGradientLayers;
-      ellipse.setFill(Color.color(c3[0], c3[1], c3[2]));
-      groupFront.getChildren().add(ellipse);
+      ((Ellipse)groupFront.getChildren().get(i)).setFill(Color.color(c3[0], c3[1], c3[2]));
     }
   }
 }

@@ -33,12 +33,10 @@ public class Bullet {
   public final Position pos;
   public double dir; // direction bullet is facing (not necessarily direction its moving)
   private static int nextId = 0;
-  private int id;
   protected Group groupBack;
   protected Group groupFront;
   protected static final double groupSize = 10;
   private String groupId;
-  private static HashMap<String, ArrayList<Group[]>> groupCache = new HashMap<>(); // holds [groupBack, groupFront] for previously deleted bullets to be reused
   private final ArrayList<BulletStage> stageList;
   private int stageIndex;
   private int stageTime;
@@ -89,13 +87,11 @@ public class Bullet {
       stageList = new ArrayList<>();
       stageList.addAll(Arrays.stream(stageArr).toList());
     }
-    id = nextId++;
     groupFront = new Group();
     groupBack = new Group();
     Game.bulletGroupBack.getChildren().add(groupBack);
     Game.bulletGroupFront.getChildren().add(groupFront);
     groupId = null;
-    drawUpdate();
     stageIndex = 0;
   }
 
@@ -105,10 +101,6 @@ public class Bullet {
 
   public String getType() {
     return "normal";
-  }
-
-  public final int getId() {
-    return id;
   }
 
   public final BulletAttr getAttr(String id) {
@@ -139,7 +131,6 @@ public class Bullet {
   }
 
   public void delete() {
-    transferGroupsToCache();
     Game.bulletGroupBack.getChildren().remove(groupBack);
     Game.bulletGroupFront.getChildren().remove(groupFront);
   }
@@ -234,35 +225,10 @@ public class Bullet {
     groupFront.getChildren().addAll(frontSource.getChildren());
   }
 
-  private void transferGroupsToCache() { // saves groups to cache and clears groups
-    if (groupId == null)
-      return;
-    Group gbCopy = new Group();
-    Group gfCopy = new Group();
-    gbCopy.getChildren().addAll(groupBack.getChildren());
-    gfCopy.getChildren().addAll(groupFront.getChildren());
-    groupBack.getChildren().clear();
-    groupFront.getChildren().clear();
-    if (!groupCache.containsKey(groupId))
-      groupCache.put(groupId, new ArrayList<>());
-    groupCache.get(generateGroupId()).add(new Group[] {gbCopy, gfCopy});
-  }
-
   public final void drawUpdate() {
     String id = generateGroupId();
     if (groupId == null || !groupId.equals(id)) {
-      // save old groups to cache and clear current groups
-      transferGroupsToCache();
-      // get/make new groups
-      if (groupCache.containsKey(id) && groupCache.get(id).size() != 0) {
-        // System.out.println("FROM CACHE");
-        ArrayList<Group[]> groupList = groupCache.get(id);
-        Group[] groups = groupList.remove(groupList.size()-1);
-        copyGroups(groups[0], groups[1]);
-      } else {
-        // System.out.println("NEW");
-        updateGroup();
-      }
+      updateGroup();
       groupId = id;
     }
     double scale = this.radius * getScale() / groupSize;
@@ -289,22 +255,26 @@ public class Bullet {
 
   public void updateGroup() {
     // back
-    for (int i = 0; i < backGradientLayers; i++) {
-      Circle circle = new Circle(0, 0, groupSize * (3 - 1.75 * i / backGradientLayers));
-      circle.setFill(Color.color(getOuterColor().getRed(), getOuterColor().getGreen(), getOuterColor().getBlue(), backOpacity));
-      groupBack.getChildren().add(circle);
+    if (groupBack.getChildren().size() == 0) {
+      for (int i = 0; i < backGradientLayers; i++)
+        groupBack.getChildren().add(new Circle(0, 0, groupSize * (3 - 1.75 * i / backGradientLayers)));
     }
+    for (int i = 0; i < backGradientLayers; i++) {
+      ((Circle)groupBack.getChildren().get(i)).setFill(Color.color(getOuterColor().getRed(), getOuterColor().getGreen(), getOuterColor().getBlue(), backOpacity));
+    }
+
     // front
-    RadialGradient grad = new RadialGradient(0, 0, 0, 0, groupSize, false, CycleMethod.NO_CYCLE);
+    if (groupFront.getChildren().size() == 0) {
+      for (int i = 0; i <= frontGradientLayers; i++)
+        groupFront.getChildren().add(new Circle(0, 0, groupSize * (1.25 - 0.5 * i / frontGradientLayers)));
+    }
     double[] c1 = new double[] {getOuterColor().getRed(), getOuterColor().getGreen(), getOuterColor().getBlue()};
     double[] c2 = new double[] {getInnerColor().getRed(), getInnerColor().getGreen(), getInnerColor().getBlue()};
     double[] c3 = new double[3];
     for (int i = 0; i <= frontGradientLayers; i++) {
-      Circle circle = new Circle(0, 0, groupSize * (1.25 - 0.5 * i / frontGradientLayers));
       for (int j = 0; j < 3; j++)
         c3[j] = c1[j] + (c2[j] - c1[j]) * i / frontGradientLayers;
-      circle.setFill(Color.color(c3[0], c3[1], c3[2]));
-      groupFront.getChildren().add(circle);
+      ((Circle)groupFront.getChildren().get(i)).setFill(Color.color(c3[0], c3[1], c3[2]));
     }
   }
 

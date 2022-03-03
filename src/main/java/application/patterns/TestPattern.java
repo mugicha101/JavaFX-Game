@@ -17,18 +17,20 @@ public class TestPattern extends Pattern {
       double dir = Math.random() * 360;
       for (int i = 0; i < 36; i++) {
         for (int j = 2; j >= 0; j--) {
+          int colorSwitchTime = rand.nextInt(60);
           Bullet.spawnBullet(
               new RiceBullet(
                   pos.clone().moveInDir(dir, 100),
                   1,
                   BulletColor.YELLOW,
                   new MoveAttr[] {
-                    new RotMoveAttr("rot", 0, 3 + j * 0.2, dir + i * 10, 5, new LinAccelAttr("moveAcc", -0.1, 0), new LinAccelAttr("rotAcc", -0.1, 0)),
+                    new RotMoveAttr("rot", 0, 3 + j * 0.2, dir + i * 10, 2, new LinAccelAttr("moveAcc", -0.1, 0), new LinAccelAttr("rotAcc", -0.025, 0)),
                     new LinMoveAttr("lin", 0, dir + i * 10, new LinAccelAttr("acc", 0.1, 3))
                   },
                   new BulletStage[] {
                     new DisableAttrStage(0, "lin"),
-                    new ModifyStage(120 + j * 5, ModifyFactory.setColor(BulletColor.RED)),
+                    new ModifyStage(30 + colorSwitchTime, (Bullet b) -> b.setColor(BulletColor.RED)),
+                    new ModifyStage(60 + j * 10 - colorSwitchTime, ModifyFactory.setColor(BulletColor.RED)),
                     new ModifyStage(0, (Bullet b) -> ((LinMoveAttr)b.getAttr("lin")).dir = ((RotMoveAttr)b.getAttr("rot")).dir),
                     new DisableAttrStage(0, "rot"),
                     new EnableAttrStage(0, "lin"),

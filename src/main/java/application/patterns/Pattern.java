@@ -3,6 +3,7 @@ package application.patterns;
 import application.Game;
 
 import java.util.HashSet;
+import java.util.Random;
 
 public abstract class Pattern {
   private final String name;
@@ -10,6 +11,7 @@ public abstract class Pattern {
   private double health;
   private int cycle;
   private static final HashSet<Pattern> patternSet = new HashSet<>();
+  protected final Random rand;
 
   public static void patternTick() {
     for (Pattern pattern : patternSet)
@@ -26,6 +28,7 @@ public abstract class Pattern {
     health = 0;
     cycle = 0;
     patternSet.add(this);
+    rand = new Random();
   }
 
   public void init() {
