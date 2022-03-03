@@ -11,8 +11,6 @@ import application.bullet.staging.BulletStage;
 import application.bullet.staging.ModifyStage;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
 import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
@@ -21,8 +19,8 @@ import java.util.HashMap;
 
 public class Bullet {
   private static ArrayList<Bullet> bullets = new ArrayList<>();
-  protected static final int frontGradientLayers = 3;
-  protected static final int backGradientLayers = 5;
+  protected static final int frontGradientLayers = 2;
+  protected static final int backGradientLayers = 3;
   protected static final double backOpacity = 0.1;
   public static final int offscreenMargin = 0;
   private boolean alive;

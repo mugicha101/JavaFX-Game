@@ -3,8 +3,8 @@ package application.bullet.attr;
 import java.util.HashMap;
 
 public class LinAccelAttr extends AccelAttr {
-  private final double accelAmount;
-  private final Double speedCap;
+  public double accelAmount;
+  public Double speedCap;
   public LinAccelAttr(String id, double accelAmount, double speedCap) {
     super(id);
     this.accelAmount = accelAmount;
