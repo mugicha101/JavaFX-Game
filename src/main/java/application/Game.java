@@ -68,6 +68,10 @@ public class Game extends Application {
     playerHBGroup = new Group();
     root.getChildren().add(playerHBGroup);
 
+    // background
+    gc.setFill(Color.BLACK);
+    gc.fillRect(0, 0, width, height);
+
     // setup game
     String[] pImgArr = new String[4];
     for (int i = 0; i < 4; i++) {
@@ -92,7 +96,6 @@ public class Game extends Application {
   }
 
   private void draw() {
-    drawBG();
     drawPlayer();
     Bullet.drawBullets();
   }
@@ -130,16 +133,6 @@ public class Game extends Application {
       focusHold++;
     else if (focusHold > 0 && !Input.getInput("focus").isPressed())
       focusHold--;
-  }
-
-  private void drawBG() {
-    // background
-    gc.setFill(Color.BLACK);
-    gc.fillRect(0, 0, width, height);
-
-    // setup text
-    gc.setFill(Color.WHITE);
-    gc.setFont(Font.font(25));
   }
 
   public static void drawPlayer() {

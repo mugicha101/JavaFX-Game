@@ -14,18 +14,20 @@ public class BulletColor {
   public static final BulletColor PURPLE = new BulletColor(Color.color(1, 1, 1), Color.color(0.7, 0, 1));
   public static final BulletColor MAGENTA = new BulletColor(Color.color(1, 1, 1), Color.color(1, 0, 1));
   public static final BulletColor ROSE = new BulletColor(Color.color(1, 1, 1), Color.color(1, 0, 0.5));
+  public static final BulletColor GRAY = new BulletColor(Color.color(1, 1, 1), Color.color(0.7, 0.7, 0.7));
 
   // inverse colors
-  public static final BulletColor INVERSE_RED = new BulletColor(Color.color(0.5, 0, 0), Color.color(1, 0, 0));
-  public static final BulletColor INVERSE_ORANGE = new BulletColor(Color.color(0.5, 0.1, 0), Color.color(1, 0.6, 0));
-  public static final BulletColor INVERSE_YELLOW = new BulletColor(Color.color(0.5, 0.3, 0), Color.color(1, 1, 0));
-  public static final BulletColor INVERSE_GREEN = new BulletColor(Color.color(0, 0.4, 0), Color.color(0, 1, 0));
-  public static final BulletColor INVERSE_TURQUOISE = new BulletColor(Color.color(0, 0.4, 0.2), Color.color(0, 1, 0.7));
-  public static final BulletColor INVERSE_CYAN = new BulletColor(Color.color(0, 0.3, 0.5), Color.color(0, 1, 1));
-  public static final BulletColor INVERSE_BLUE = new BulletColor(Color.color(0, 0, 0.5), Color.color(0, 0, 1));
-  public static final BulletColor INVERSE_PURPLE = new BulletColor(Color.color(0.35, 0, 0.45), Color.color(0.7, 0, 1));
-  public static final BulletColor INVERSE_MAGENTA = new BulletColor(Color.color(0.45, 0, 0.35), Color.color(1, 0, 1));
-  public static final BulletColor INVERSE_ROSE = new BulletColor(Color.color(0.5, 0, 0.1), Color.color(1, 0, 0.5));
+  public static final BulletColor INVERSE_RED = new BulletColor(Color.color(0, 0, 0), Color.color(1, 0, 0));
+  public static final BulletColor INVERSE_ORANGE = new BulletColor(Color.color(0, 0, 0), Color.color(1, 0.6, 0));
+  public static final BulletColor INVERSE_YELLOW = new BulletColor(Color.color(0, 0, 0), Color.color(1, 1, 0));
+  public static final BulletColor INVERSE_GREEN = new BulletColor(Color.color(0, 0, 0), Color.color(0, 1, 0));
+  public static final BulletColor INVERSE_TURQUOISE = new BulletColor(Color.color(0, 0, 0), Color.color(0, 1, 0.7));
+  public static final BulletColor INVERSE_CYAN = new BulletColor(Color.color(0, 0, 0), Color.color(0, 1, 1));
+  public static final BulletColor INVERSE_BLUE = new BulletColor(Color.color(0, 0, 0), Color.color(0, 0, 1));
+  public static final BulletColor INVERSE_PURPLE = new BulletColor(Color.color(0, 0, 0), Color.color(0.7, 0, 1));
+  public static final BulletColor INVERSE_MAGENTA = new BulletColor(Color.color(0, 0, 0), Color.color(1, 0, 1));
+  public static final BulletColor INVERSE_ROSE = new BulletColor(Color.color(0, 0, 0), Color.color(1, 0, 0.5));
+  public static final BulletColor INVERSE_GRAY = new BulletColor(Color.color(0, 0, 0), Color.color(0.7, 0.7, 0.7));
 
   // dark colors
   public static final BulletColor DARK_RED = new BulletColor(Color.color(1, 0, 0), Color.color(0.5, 0, 0));
@@ -38,6 +40,7 @@ public class BulletColor {
   public static final BulletColor DARK_PURPLE = new BulletColor(Color.color(0.7, 0, 1), Color.color(0.35, 0, 0.45));
   public static final BulletColor DARK_MAGENTA = new BulletColor(Color.color(1, 0, 1), Color.color(0.45, 0, 0.35));
   public static final BulletColor DARK_ROSE = new BulletColor(Color.color(1, 0, 0.5), Color.color(0.5, 0, 0.1));
+  public static final BulletColor DARK_GRAY = new BulletColor(Color.color(0.7, 0.7, 0.7), Color.color(0.3, 0.3, 0.3));
 
   public final Color innerColor;
   public final Color outerColor;
