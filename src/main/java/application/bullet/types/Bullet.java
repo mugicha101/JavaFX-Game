@@ -11,6 +11,9 @@ import application.bullet.staging.BulletStage;
 import application.bullet.staging.ModifyStage;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
@@ -20,8 +23,8 @@ import java.util.HashMap;
 public class Bullet {
   private static ArrayList<Bullet> bullets = new ArrayList<>();
   protected static final int frontGradientLayers = 2;
-  protected static final int backGradientLayers = 3;
-  protected static final double backOpacity = 0.1;
+  protected static final int backGradientLayers = 5;
+  protected static final double backOpacity = 0.3;
   public static final int offscreenMargin = 0;
   private boolean alive;
   protected int time;
@@ -252,28 +255,16 @@ public class Bullet {
   }
 
   public void updateGroup() {
-    // back
-    if (groupBack.getChildren().size() == 0) {
-      for (int i = 0; i < backGradientLayers; i++)
-        groupBack.getChildren().add(new Circle(0, 0, groupSize * (3 - 1.75 * i / backGradientLayers)));
-    }
-    for (int i = 0; i < backGradientLayers; i++) {
-      ((Circle)groupBack.getChildren().get(i)).setFill(Color.color(getOuterColor().getRed(), getOuterColor().getGreen(), getOuterColor().getBlue(), backOpacity));
-    }
-
-    // front
-    if (groupFront.getChildren().size() == 0) {
-      for (int i = 0; i <= frontGradientLayers; i++)
-        groupFront.getChildren().add(new Circle(0, 0, groupSize * (1.25 - 0.5 * i / frontGradientLayers)));
-    }
     double[] c1 = new double[] {getOuterColor().getRed(), getOuterColor().getGreen(), getOuterColor().getBlue()};
     double[] c2 = new double[] {getInnerColor().getRed(), getInnerColor().getGreen(), getInnerColor().getBlue()};
-    double[] c3 = new double[3];
-    for (int i = 0; i <= frontGradientLayers; i++) {
-      for (int j = 0; j < 3; j++)
-        c3[j] = c1[j] + (c2[j] - c1[j]) * i / frontGradientLayers;
-      ((Circle)groupFront.getChildren().get(i)).setFill(Color.color(c3[0], c3[1], c3[2]));
+    if (groupBack.getChildren().size() == 0) {
+      groupBack.getChildren().add(new Circle(0, 0, groupSize * 3));
+      groupFront.getChildren().add(new Circle(0, 0, groupSize * 1.25));
     }
+    Circle circle = (Circle)groupBack.getChildren().get(0);
+    circle.setFill(new RadialGradient(0, 0, 0, 0, groupSize * 3, false, CycleMethod.NO_CYCLE, new Stop(0.3, Color.color(c1[0], c1[1], c1[2], backOpacity)), new Stop(1, Color.color(c1[0], c1[1], c1[2], 0))));
+    circle = (Circle)groupFront.getChildren().get(0);
+    circle.setFill(new RadialGradient(0, 0, 0, 0, groupSize * 1.25, false, CycleMethod.NO_CYCLE, new Stop(0.5, color.innerColor), new Stop(0.8, color.outerColor), new Stop(0.9, color.outerColor), new Stop(1, Color.color(c1[0], c1[1], c1[2], 0))));
   }
 
   public double getRenderRadius() {

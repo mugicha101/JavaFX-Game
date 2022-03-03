@@ -1,5 +1,6 @@
 package application.patterns;
 
+import application.DirCalc;
 import application.Position;
 import application.bullet.BulletColor;
 import application.bullet.attr.*;
@@ -23,7 +24,7 @@ public class TestPattern extends Pattern {
           int colorSwitchTime = rand.nextInt(60);
           Bullet.spawnBullet(
               new RiceBullet(
-                  pos.clone().moveInDir(dir, 100),
+                  pos.clone().moveInDir(dir, 50),
                   1,
                   BulletColor.INVERSE_RED,
                   new MoveAttr[] {
@@ -35,7 +36,7 @@ public class TestPattern extends Pattern {
                         2 * rotMulti,
                         new LinAccelAttr("moveAcc", -0.03, 0),
                         new LinAccelAttr("rotAcc", -0.02 * rotMulti, 0)),
-                    new LinMoveAttr("lin", 0, 0, new LinAccelAttr("acc", 0.005, 2))
+                    new LinMoveAttr("lin", 0, 0, new LinAccelAttr("acc", 0.005, 3))
                   },
                   new BulletStage[] {
                     new DisableAttrStage(0, "lin"),
@@ -56,6 +57,17 @@ public class TestPattern extends Pattern {
                   }));
         }
       }
+      Bullet.spawnBullet(
+              new Bullet(
+                      pos,
+                      3,
+                      BulletColor.YELLOW,
+                      new MoveAttr[] {new LinMoveAttr("move", 0, 0, new LinAccelAttr("acc", 0.01, 5))},
+                      new BulletStage[] {
+                              new DisableAttrStage(0, "move"),
+                              new EnableAttrStage(100, "move"),
+                              new ModifyStage(0, (b) -> ((LinMoveAttr)b.getAttr("move")).dir = DirCalc.dirToPlayer(b.pos))
+                      }));
     }
   }
 }
