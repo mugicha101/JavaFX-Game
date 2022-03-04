@@ -26,12 +26,12 @@ public class Bullet {
   public static final int offscreenMargin = 0;
   private boolean alive;
   protected int time;
-  public double radius;
+  private final double radius; // spawn radius
+  public double scale; // scaling since spawned
   private BulletColor color;
   private final ArrayList<MoveAttr> attrList;
   public final Position pos;
   public double dir; // direction bullet is facing (not necessarily direction its moving)
-  private static int nextId = 0;
   protected Group groupBack;
   protected Group groupFront;
   protected static final double groupSize = 10;
@@ -72,6 +72,7 @@ public class Bullet {
     alive = true;
     time = 0;
     this.radius = size*8;
+    this.scale = 1;
     this.color = color;
     attrList = new ArrayList<>();
     attrMap = new HashMap<>();
@@ -197,14 +198,14 @@ public class Bullet {
       }
     }
     if (alive) {
-      if (defaultPlayerCollision && (time >= 10 && pos.distSqd(Game.player.pos) <= Math.pow(radius + Game.player.hbRadius, 2)))
+      if (defaultPlayerCollision && (time >= 10 && pos.distSqd(Game.player.pos) <= Math.pow(radius * scale + Game.player.hbRadius, 2)))
         this.kill();
       else if (defaultBorderCollision && finishedStages() && (pos.x > Game.width + offscreenMargin + getRenderRadius() || pos.y > Game.height + offscreenMargin + getRenderRadius() || pos.x < -getRenderRadius() - offscreenMargin || pos.y < -getRenderRadius() - offscreenMargin))
         this.kill(true);
     }
   }
 
-  protected double getScale() {
+  protected double getVisualScale() {
     if (!alive)
       return 1 + time / 5.0;
     else if (time < 10)
@@ -230,7 +231,7 @@ public class Bullet {
       updateGroup();
       groupId = id;
     }
-    double scale = this.radius * getScale() / groupSize;
+    double scale = this.radius * this.scale * getVisualScale() / groupSize;
     double alpha = alive? Math.min(time / 10.0, 1) : 1 - time / 10.0;
     if (scale != groupFront.getScaleX()) {
       groupBack.setScaleX(scale);
@@ -266,7 +267,7 @@ public class Bullet {
   }
 
   public double getRenderRadius() {
-    return radius * getScale() * 3;
+    return radius * getVisualScale() * 3 * scale;
   }
 
   public final BulletColor getColor() {

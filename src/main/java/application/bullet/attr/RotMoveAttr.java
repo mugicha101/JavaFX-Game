@@ -16,8 +16,8 @@ public class RotMoveAttr extends MoveAttr {
   public double moveSpeed;
   public double rotSpeed;
   public double dir;
-  private final AccelAttr moveAccelAttr;
-  private final AccelAttr rotAccelAttr;
+  private final ChangeAttr moveAccelAttr;
+  private final ChangeAttr rotAccelAttr;
 
   public RotMoveAttr(
       String id,
@@ -25,8 +25,8 @@ public class RotMoveAttr extends MoveAttr {
       double moveSpeed,
       double dir,
       double rotSpeed,
-      AccelAttr moveAccelAttr,
-      AccelAttr rotAccelAttr) {
+      ChangeAttr moveAccelAttr,
+      ChangeAttr rotAccelAttr) {
     super(id);
     initDist = startingDist;
     initMoveSpeed = moveSpeed;
@@ -47,7 +47,7 @@ public class RotMoveAttr extends MoveAttr {
       double moveSpeed,
       double dir,
       double rotSpeed,
-      AccelAttr moveAccelAttr) {
+      ChangeAttr moveAccelAttr) {
     this(id, startingDist, moveSpeed, dir, rotSpeed, moveAccelAttr, null);
   }
 

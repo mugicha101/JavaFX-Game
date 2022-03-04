@@ -16,7 +16,7 @@ BulletAttr inheritance diagram:
 import java.util.HashMap;
 
 public abstract class BulletAttr {
-  private String id;
+  private final String id;
   public boolean enabled;
 
   public String getId() {

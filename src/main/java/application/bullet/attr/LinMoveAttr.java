@@ -7,11 +7,11 @@ import java.util.HashMap;
 public class LinMoveAttr extends MoveAttr {
   private final double initSpeed;
   private final double initDir;
-  private final AccelAttr accelAttr;
+  private final ChangeAttr accelAttr;
   public double speed;
   public double dir;
 
-  public LinMoveAttr(String id, double speed, double dir, AccelAttr accelAttr) {
+  public LinMoveAttr(String id, double speed, double dir, ChangeAttr accelAttr) {
     super(id);
     initSpeed = speed;
     initDir = dir % 360;

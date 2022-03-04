@@ -13,18 +13,19 @@ public class TestPattern extends Pattern {
   }
 
   public void tick(int cycle, double width, double height) {
-    if (cycle % 30 == 0) {
+    if (cycle % 45 == 0) {
       Position pos =
           new Position(width * (0.25 + Math.random() * 0.5), height * (0.2 + Math.random() * 0.2));
-      double dir = Math.random() * 360;
+      double rDir = Math.random() * 360;
       int rotMulti = rand.nextInt(2) * 2 - 1;
-      double amount = 36;
+      double amount = 45;
       for (int i = 0; i < amount; i++) {
         for (int j = 2; j >= 0; j--) {
           int colorSwitchTime = rand.nextInt(60);
+          double dir = rDir + (i * 360.0 / amount);
           Bullet.spawnBullet(
               new RiceBullet(
-                  pos.clone().moveInDir(dir, 50),
+                  pos,
                   1,
                   BulletColor.INVERSE_RED,
                   new MoveAttr[] {
@@ -32,11 +33,11 @@ public class TestPattern extends Pattern {
                         "rot",
                         0,
                         2 + j * 0.2,
-                        dir + (i * 360.0 / amount),
+                        dir,
                         2 * rotMulti,
-                        new LinAccelAttr("moveAcc", -0.03, 0),
-                        new LinAccelAttr("rotAcc", -0.02 * rotMulti, 0)),
-                    new LinMoveAttr("lin", 0, 0, new LinAccelAttr("acc", 0.005, 3))
+                        new LinChangeAttr("moveAcc", -0.03, 0),
+                        new LinChangeAttr("rotAcc", -0.02 * rotMulti, 0)),
+                    new LinMoveAttr("lin", 0, 0, new LinChangeAttr("acc", 0.005, 3))
                   },
                   new BulletStage[] {
                     new DisableAttrStage(0, "lin"),
@@ -52,7 +53,7 @@ public class TestPattern extends Pattern {
                     new DisableAttrStage(0, "rot"),
                     new EnableAttrStage(0, "lin"),
                     new ModifyAttrStage(
-                        60, "lin.acc", (ba) -> ((LinAccelAttr) ba).accelAmount = 0.1),
+                        60, "lin.acc", (ba) -> ((LinChangeAttr) ba).changeAmount = 0.1),
                     new BlankStage(30),
                   }));
         }
@@ -60,12 +61,15 @@ public class TestPattern extends Pattern {
       Bullet.spawnBullet(
               new Bullet(
                       pos,
-                      3,
+                      1,
                       BulletColor.YELLOW,
-                      new MoveAttr[] {new LinMoveAttr("move", 0, 0, new LinAccelAttr("acc", 0.01, 5))},
+                      new MoveAttr[] {
+                              new LinMoveAttr("move", 0, 0, new LinChangeAttr("acc", 0.1, 5)),
+                              new GrowAttr("grow", new SmoothChangeAttr("change", 0.02, 3))
+                      },
                       new BulletStage[] {
                               new DisableAttrStage(0, "move"),
-                              new EnableAttrStage(100, "move"),
+                              new EnableAttrStage(170, "move"),
                               new ModifyStage(0, (b) -> ((LinMoveAttr)b.getAttr("move")).dir = DirCalc.dirToPlayer(b.pos))
                       }));
     }
