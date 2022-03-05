@@ -26,6 +26,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -61,9 +62,13 @@ public class Game extends Application {
     tl.setCycleCount(Timeline.INDEFINITE);
     Scene scene = new Scene(rootGroup);
     stage.setScene(scene);
-    stage.show();
     stage.setWidth(width);
     stage.setHeight(height);
+    stage.setMinWidth(0);
+    stage.setMinHeight(0);
+    stage.initStyle(StageStyle.UNDECORATED);
+    stage.setResizable(true);
+    stage.show();
     stage.setTitle("Game");
     Game.stage = stage;
     tl.play();
@@ -99,7 +104,7 @@ public class Game extends Application {
   }
 
   private void calc() {
-    debugToggle();
+    toggles();
     movePlayer();
     Pattern.patternTick();
     Bullet.moveBullets();
@@ -111,9 +116,12 @@ public class Game extends Application {
     Bullet.drawBullets();
   }
 
-  private void debugToggle() {
+  private void toggles() {
     if (Input.getInput("debug").onInitialPress()) {
       debug = !debug;
+    }
+    if (Input.getInput("fullscreen").onInitialPress()) {
+      stage.setFullScreen(!stage.isFullScreen());
     }
   }
 
