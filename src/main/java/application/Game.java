@@ -6,35 +6,42 @@ import application.patterns.Pattern;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.ParallelCamera;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
-import java.util.*;
 
 public class Game extends Application {
-  public static final double[] dim = {800, 600};
   public static final double width = 800;
   public static final double height = 600;
   public static final int edgeMargin = 15;
   public static Player player;
   public static ParallelCamera cam;
   public static boolean debug = false;
-  public static GraphicsContext gc;
   public static int frame = -1;
   public static int focusHold = 0;
-  public static Group root;
+  public static Stage stage;
+  //public static StackPane root;
+  public static Group rootGroup;
   public static Group playerGroup;
   public static Group bulletGroupFront;
   public static Group bulletGroupBack;
@@ -42,16 +49,23 @@ public class Game extends Application {
 
   public void start(Stage stage) throws IOException {
     // setup JavaFX
-    root = new Group();
-    Canvas canvas = new Canvas(dim[0], dim[1]);
-    gc = canvas.getGraphicsContext2D();
-    root.getChildren().add(canvas);
+    rootGroup = new Group();
+    rootGroup.setClip(new Rectangle(0, 0, width, height));
+    Rectangle bg = new Rectangle(0, 0, width, height);
+    bg.setFill(Color.BLACK);
+    rootGroup.getChildren().add(bg);
+    // root.setClip(new Rectangle(0, 0, width, height));
+    // Canvas canvas = new Canvas(dim[0], dim[1]);
+    // root.getChildren().add(canvas);
     Timeline tl = new Timeline(new KeyFrame(Duration.millis(17), e -> run()));
     tl.setCycleCount(Timeline.INDEFINITE);
-    Scene scene = new Scene(root);
+    Scene scene = new Scene(rootGroup);
     stage.setScene(scene);
     stage.show();
+    stage.setWidth(width);
+    stage.setHeight(height);
     stage.setTitle("Game");
+    Game.stage = stage;
     tl.play();
 
     // setup input
@@ -60,17 +74,13 @@ public class Game extends Application {
 
     // setup scene graph bullets node
     playerGroup = new Group();
-    root.getChildren().add(playerGroup);
+    rootGroup.getChildren().add(playerGroup);
     bulletGroupBack = new Group();
-    root.getChildren().add(bulletGroupBack);
+    rootGroup.getChildren().add(bulletGroupBack);
     bulletGroupFront = new Group();
-    root.getChildren().add(bulletGroupFront);
+    rootGroup.getChildren().add(bulletGroupFront);
     playerHBGroup = new Group();
-    root.getChildren().add(playerHBGroup);
-
-    // background
-    gc.setFill(Color.BLACK);
-    gc.fillRect(0, 0, width, height);
+    rootGroup.getChildren().add(playerHBGroup);
 
     // setup game
     String[] pImgArr = new String[4];
@@ -96,6 +106,7 @@ public class Game extends Application {
   }
 
   private void draw() {
+    screenResize();
     drawPlayer();
     Bullet.drawBullets();
   }
@@ -123,6 +134,18 @@ public class Game extends Application {
 
     if (focusHold < 10 && Input.getInput("focus").isPressed()) focusHold++;
     else if (focusHold > 0 && !Input.getInput("focus").isPressed()) focusHold--;
+  }
+
+  public static void screenResize() {
+    double scaleVal = Math.min(stage.getWidth() / width, stage.getHeight() / height);
+    Scale scale = new Scale();
+    scale.setPivotX(0);
+    scale.setPivotY(0);
+    scale.setX(scaleVal);
+    scale.setY(scaleVal);
+    rootGroup.getTransforms().setAll(scale);
+    rootGroup.setTranslateX((stage.getWidth() - scaleVal * width) / 2);
+    rootGroup.setTranslateY((stage.getHeight() - scaleVal * height) / 2);
   }
 
   public static void drawPlayer() {
