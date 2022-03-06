@@ -32,6 +32,8 @@ import javafx.util.Duration;
 import java.io.IOException;
 
 public class Game extends Application {
+  public static double rightMargin = 9;
+  public static double topMargin = 24;
   public static final double width = 800;
   public static final double height = 600;
   public static final int edgeMargin = 15;
@@ -62,11 +64,11 @@ public class Game extends Application {
     tl.setCycleCount(Timeline.INDEFINITE);
     Scene scene = new Scene(rootGroup);
     stage.setScene(scene);
-    stage.setWidth(width);
-    stage.setHeight(height);
+    stage.setWidth(width + rightMargin);
+    stage.setHeight(height + topMargin);
     stage.setMinWidth(0);
     stage.setMinHeight(0);
-    stage.initStyle(StageStyle.UNDECORATED);
+    // stage.initStyle(StageStyle.UNDECORATED);
     stage.setResizable(true);
     stage.show();
     stage.setTitle("Game");
@@ -145,15 +147,16 @@ public class Game extends Application {
   }
 
   public static void screenResize() {
-    double scaleVal = Math.min(stage.getWidth() / width, stage.getHeight() / height);
+    double scaleVal = Math.min((stage.getWidth() - rightMargin) / width, (stage.getHeight() - topMargin) / height);
     Scale scale = new Scale();
     scale.setPivotX(0);
     scale.setPivotY(0);
     scale.setX(scaleVal);
     scale.setY(scaleVal);
+    System.out.println(scale);
     rootGroup.getTransforms().setAll(scale);
-    rootGroup.setTranslateX((stage.getWidth() - scaleVal * width) / 2);
-    rootGroup.setTranslateY((stage.getHeight() - scaleVal * height) / 2);
+    rootGroup.setTranslateX((stage.getWidth() - scaleVal * width) / 2 - rightMargin);
+    rootGroup.setTranslateY((stage.getHeight() - scaleVal * height) / 2 - topMargin);
   }
 
   public static void drawPlayer() {
