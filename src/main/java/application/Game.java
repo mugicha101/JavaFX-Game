@@ -147,16 +147,17 @@ public class Game extends Application {
   }
 
   public static void screenResize() {
-    double scaleVal = Math.min((stage.getWidth() - rightMargin) / width, (stage.getHeight() - topMargin) / height);
+    double rm = stage.isFullScreen()? 0 : rightMargin;
+    double tm = stage.isFullScreen()? 0 : topMargin;
+    double scaleVal = Math.min((stage.getWidth() - rm) / width, (stage.getHeight() - tm) / height);
     Scale scale = new Scale();
     scale.setPivotX(0);
     scale.setPivotY(0);
     scale.setX(scaleVal);
     scale.setY(scaleVal);
-    System.out.println(scale);
     rootGroup.getTransforms().setAll(scale);
-    rootGroup.setTranslateX((stage.getWidth() - scaleVal * width) / 2 - rightMargin);
-    rootGroup.setTranslateY((stage.getHeight() - scaleVal * height) / 2 - topMargin);
+    rootGroup.setTranslateX((stage.getWidth() - scaleVal * width) / 2 - rm);
+    rootGroup.setTranslateY((stage.getHeight() - scaleVal * height) / 2 - tm);
   }
 
   public static void drawPlayer() {
