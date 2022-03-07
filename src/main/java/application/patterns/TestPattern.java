@@ -23,7 +23,7 @@ public class TestPattern extends Pattern {
         for (int j = 2; j >= 0; j--) {
           int colorSwitchTime = rand.nextInt(60);
           double dir = rDir + (i * 360.0 / amount);
-          Bullet.spawnBullet(
+          Bullet.spawn(
               new RiceBullet(
                   pos,
                   1,
@@ -58,7 +58,7 @@ public class TestPattern extends Pattern {
                   }));
         }
       }
-      Bullet.spawnBullet(
+      Bullet.spawn(
               new Bullet(
                       pos,
                       1,

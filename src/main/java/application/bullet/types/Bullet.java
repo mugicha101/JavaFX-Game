@@ -63,7 +63,7 @@ public class Bullet {
     }
   }
 
-  public static void spawnBullet(Bullet bullet) {
+  public static void spawn(Bullet bullet) {
     bullets.add(bullet);
   }
 
