@@ -1,5 +1,6 @@
 package application;
 
+import application.enemy.types.Enemy;
 import application.patterns.*;
 import application.bullet.types.Bullet;
 import application.patterns.Pattern;
@@ -110,6 +111,7 @@ public class Game extends Application {
     movePlayer();
     Pattern.patternTick();
     Bullet.moveBullets();
+    Enemy.moveEnemies();
   }
 
   private void draw() {
