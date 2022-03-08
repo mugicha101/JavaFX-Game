@@ -72,4 +72,8 @@ public class TestPattern extends Pattern {
           });
     }
   }
+
+  public Pattern clone() {
+    return new TestPattern();
+  }
 }

@@ -66,4 +66,6 @@ public abstract class Pattern {
   }
 
   protected abstract void tick(int cycle, double width, double height);
+
+  public abstract Pattern clone();
 }

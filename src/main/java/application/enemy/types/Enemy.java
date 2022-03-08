@@ -3,6 +3,7 @@ package application.enemy.types;
 import application.Position;
 import application.Sprite;
 import application.enemy.pathing.*;
+import application.patterns.Pattern;
 
 import java.util.ArrayList;
 
@@ -41,8 +42,9 @@ public class Enemy {
   public final double maxHealth;
   public double health;
   private boolean active;
+  private Pattern pattern;
 
-  public Enemy(int lifetime, Path path, Sprite sprite, double health) {
+  public Enemy(int lifetime, Path path, Sprite sprite, double health, Pattern pattern) {
     time = 0;
     this.lifetime = lifetime;
     this.path = path;
@@ -52,6 +54,11 @@ public class Enemy {
     maxHealth = health;
     this.health = health;
     active = false;
+    this.pattern = pattern == null? null : pattern.clone();
+  }
+
+  public Enemy(int lifetime, Path path, Sprite sprite, double health) {
+    this(lifetime, path, sprite, health, null);
   }
 
   public void activate() { // converts template enemy to active enemy
@@ -69,6 +76,7 @@ public class Enemy {
   public final void move() {
     time++;
     pos.set(path.pos(time));
+    if (pattern != null) pattern.spawnTick();
   }
 
   public final void drawUpdate() {
@@ -80,6 +88,6 @@ public class Enemy {
   }
 
   public Enemy clone() {
-    return new Enemy(lifetime, path, sprite, maxHealth);
+    return new Enemy(lifetime, path, sprite, maxHealth, pattern);
   }
 }
