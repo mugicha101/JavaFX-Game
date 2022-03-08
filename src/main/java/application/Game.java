@@ -1,33 +1,21 @@
 package application;
 
-import application.enemy.types.Enemy;
+import application.enemy.types.*;
+import application.enemy.pathing.*;
 import application.patterns.*;
 import application.bullet.types.Bullet;
 import application.patterns.Pattern;
+import application.sprite.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.ParallelCamera;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
-import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -44,9 +32,9 @@ public class Game extends Application {
   public static int frame = -1;
   public static int focusHold = 0;
   public static Stage stage;
-  //public static StackPane root;
   public static Group rootGroup;
   public static Group playerGroup;
+  public static Group enemyGroup;
   public static Group bulletGroupFront;
   public static Group bulletGroupBack;
   public static Group playerHBGroup;
@@ -83,6 +71,8 @@ public class Game extends Application {
     // setup scene graph bullets node
     playerGroup = new Group();
     rootGroup.getChildren().add(playerGroup);
+    enemyGroup = new Group();
+    rootGroup.getChildren().add(enemyGroup);
     bulletGroupBack = new Group();
     rootGroup.getChildren().add(bulletGroupBack);
     bulletGroupFront = new Group();
@@ -95,8 +85,9 @@ public class Game extends Application {
     for (int i = 0; i < 4; i++) {
       pImgArr[i] = "Reimu/Reimu" + (i + 1) + ".png";
     }
-    player = new Player(7, 0.5, 3, new Sprite(playerGroup, pImgArr, new int[] {6, 0}, 20, 0.75));
+    player = new Player(7, 0.5, 3, new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20));
     player.pos.set(width * 0.5, height * 0.8);
+    Enemy.spawn(new Enemy(6000, PathFactory.linearPath(0, 0, width, height, 225), new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.1), 100, new TestPattern(null)));
   }
 
   private void run() {
@@ -109,7 +100,6 @@ public class Game extends Application {
   private void calc() {
     toggles();
     movePlayer();
-    Pattern.patternTick();
     Bullet.moveBullets();
     Enemy.moveEnemies();
   }
@@ -117,6 +107,7 @@ public class Game extends Application {
   private void draw() {
     screenResize();
     drawPlayer();
+    Enemy.drawEnemies();
     Bullet.drawBullets();
   }
 
@@ -169,7 +160,6 @@ public class Game extends Application {
 
   public static void main(String[] args) {
     Input.init();
-    new TestPattern();
     launch();
   }
 }

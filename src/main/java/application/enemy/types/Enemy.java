@@ -1,7 +1,8 @@
 package application.enemy.types;
 
+import application.Game;
 import application.Position;
-import application.Sprite;
+import application.sprite.Sprite;
 import application.enemy.pathing.*;
 import application.patterns.Pattern;
 
@@ -13,7 +14,6 @@ public class Enemy {
   public static void spawn(Enemy enemy) { // spawns an enemy from an inactive template enemy
     Enemy enemyClone = enemy.clone();
     enemyClone.activate();
-    enemyList.add(enemyClone);
   }
 
   public static void moveEnemies() {
@@ -42,7 +42,7 @@ public class Enemy {
   public final double maxHealth;
   public double health;
   private boolean active;
-  private Pattern pattern;
+  private final Pattern pattern;
 
   public Enemy(int lifetime, Path path, Sprite sprite, double health, Pattern pattern) {
     time = 0;
@@ -50,11 +50,12 @@ public class Enemy {
     this.path = path;
     pos = path.pos(0);
     this.spriteSource = sprite;
-    this.sprite = null;
     maxHealth = health;
     this.health = health;
     active = false;
     this.pattern = pattern == null? null : pattern.clone();
+    if (this.pattern != null)
+      this.pattern.pos = pos;
   }
 
   public Enemy(int lifetime, Path path, Sprite sprite, double health) {
@@ -66,6 +67,8 @@ public class Enemy {
       return;
     active = true;
     this.sprite = spriteSource.clone();
+    this.sprite.pos = pos;
+    this.sprite.enable();
     enemyList.add(this);
   }
 
@@ -76,7 +79,7 @@ public class Enemy {
   public final void move() {
     time++;
     pos.set(path.pos(time));
-    if (pattern != null) pattern.spawnTick();
+    if (pattern != null) pattern.moveTick();
   }
 
   public final void drawUpdate() {
@@ -84,10 +87,10 @@ public class Enemy {
   }
 
   public void delete() {
-    sprite.delete();
+    sprite.disable();
   }
 
   public Enemy clone() {
-    return new Enemy(lifetime, path, sprite, maxHealth, pattern);
+    return new Enemy(lifetime, path, spriteSource, maxHealth, pattern.clone());
   }
 }

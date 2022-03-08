@@ -13,4 +13,6 @@ module com.example.demo {
   opens application.bullet.staging;
   exports application.bullet;
   opens application.bullet to javafx.fxml;
+  exports application.sprite;
+  opens application.sprite to javafx.fxml;
 }

@@ -1,10 +1,10 @@
 package application;
 
+import application.sprite.Sprite;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
-import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Circle;
 
 import java.util.Arrays;
@@ -27,6 +27,7 @@ public class Player {
     this.sprite = sprite;
     this.alpha = 1;
     sprite.pos = pos;
+    sprite.enable();
     initPlayerHB();
   }
 
@@ -71,7 +72,7 @@ public class Player {
   }
 
   public void delete() {
-    sprite.delete();
+    sprite.disable();
     Game.playerHBGroup.getChildren().remove(hb);
   }
 }

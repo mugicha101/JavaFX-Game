@@ -1,6 +1,7 @@
 package application.patterns;
 
 import application.Game;
+import application.Position;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -10,24 +11,16 @@ public abstract class Pattern {
   private final double maxHealth;
   private double health;
   private int cycle;
-  private static final HashSet<Pattern> patternSet = new HashSet<>();
   protected final Random rand;
+  public Position pos;
 
-  public static void patternTick() {
-    for (Pattern pattern : patternSet) pattern.spawnTick();
-  }
-
-  public static void removePattern(Pattern pattern) {
-    patternSet.remove(pattern);
-  }
-
-  public Pattern(String name, double health) {
+  public Pattern(String name, double health, Position pos) {
     this.name = name;
     maxHealth = health;
     health = 0;
     cycle = 0;
-    patternSet.add(this);
     rand = new Random();
+    this.pos = pos == null? new Position(0, 0) : pos;
   }
 
   public void init() {
@@ -56,13 +49,9 @@ public abstract class Pattern {
     return health / maxHealth;
   }
 
-  public final void remove() {
-    Pattern.removePattern(this);
-  }
-
-  public final void spawnTick() {
-    cycle++;
+  public final void moveTick() {
     tick(cycle, Game.width, Game.height);
+    cycle++;
   }
 
   protected abstract void tick(int cycle, double width, double height);

@@ -1,6 +1,7 @@
 package application.patterns;
 
 import application.DirCalc;
+import application.Game;
 import application.Position;
 import application.bullet.BulletColor;
 import application.bullet.attr.*;
@@ -8,14 +9,13 @@ import application.bullet.staging.*;
 import application.bullet.types.*;
 
 public class TestPattern extends Pattern {
-  public TestPattern() {
-    super("Test", 1000);
+  public TestPattern(Position pos) {
+    super("Test", 1000, pos);
   }
 
   public void tick(int cycle, double width, double height) {
     if (cycle % 45 == 0) {
-      Position pos =
-          new Position(width * (0.25 + Math.random() * 0.5), height * (0.2 + Math.random() * 0.2));
+      // Position pos = new Position(width * (0.25 + Math.random() * 0.5), height * (0.2 + Math.random() * 0.2));
       double rDir = Math.random() * 360;
       int rotMulti = rand.nextInt(2) * 2 - 1;
       double amount = 45;
@@ -73,7 +73,8 @@ public class TestPattern extends Pattern {
     }
   }
 
-  public Pattern clone() {
-    return new TestPattern();
+  @Override
+  public TestPattern clone() {
+    return new TestPattern(pos);
   }
 }
