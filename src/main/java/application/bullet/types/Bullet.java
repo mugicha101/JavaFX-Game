@@ -63,10 +63,6 @@ public class Bullet {
     }
   }
 
-  public static void spawn(Bullet bullet) {
-    bullets.add(bullet);
-  }
-
   public Bullet(Position pos, double size, BulletColor color, MoveAttr[] attrArr, BulletStage[] stageArr) {
     this.pos = pos.clone();
     alive = true;
@@ -93,6 +89,7 @@ public class Bullet {
     Game.bulletGroupFront.getChildren().add(groupFront);
     groupId = null;
     stageIndex = 0;
+    Bullet.bullets.add(this);
   }
 
   public Bullet(Position pos, double size, BulletColor color, MoveAttr[] attrArr) {

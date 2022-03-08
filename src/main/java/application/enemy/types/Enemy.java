@@ -2,7 +2,6 @@ package application.enemy.types;
 
 import application.Position;
 import application.Sprite;
-import application.bullet.types.Bullet;
 import application.enemy.pathing.*;
 
 import java.util.ArrayList;
@@ -10,8 +9,10 @@ import java.util.ArrayList;
 public class Enemy {
   private static ArrayList<Enemy> enemyList = new ArrayList<>();
 
-  public static void spawn(Enemy enemy) {
-    enemyList.add(enemy);
+  public static void spawn(Enemy enemy) { // spawns an enemy from an inactive template enemy
+    Enemy enemyClone = enemy.clone();
+    enemyClone.activate();
+    enemyList.add(enemyClone);
   }
 
   public static void moveEnemies() {
@@ -35,19 +36,30 @@ public class Enemy {
   private final int lifetime;
   private final Path path;
   public final Position pos;
-  public final Sprite sprite;
+  private final Sprite spriteSource;
+  public Sprite sprite;
   public final double maxHealth;
   public double health;
+  private boolean active;
 
   public Enemy(int lifetime, Path path, Sprite sprite, double health) {
     time = 0;
     this.lifetime = lifetime;
     this.path = path;
     pos = path.pos(0);
-    this.sprite = sprite.clone();
-    this.sprite.pos = pos;
+    this.spriteSource = sprite;
+    this.sprite = null;
     maxHealth = health;
     this.health = health;
+    active = false;
+  }
+
+  public void activate() { // converts template enemy to active enemy
+    if (active)
+      return;
+    active = true;
+    this.sprite = spriteSource.clone();
+    enemyList.add(this);
   }
 
   public final boolean isAlive() {
@@ -67,7 +79,7 @@ public class Enemy {
     sprite.delete();
   }
 
-  public Enemy clone(Enemy enemy) {
+  public Enemy clone() {
     return new Enemy(lifetime, path, sprite, maxHealth);
   }
 }
