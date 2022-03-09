@@ -14,7 +14,7 @@ public class TestPattern extends Pattern {
   }
 
   public void tick(int cycle, double width, double height) {
-    if (cycle % 45 == 0) {
+    if (cycle >= 30 && (cycle - 30) % 90 == 0) {
       // Position pos = new Position(width * (0.25 + Math.random() * 0.5), height * (0.2 + Math.random() * 0.2));
       double rDir = Math.random() * 360;
       int rotMulti = rand.nextInt(2) * 2 - 1;

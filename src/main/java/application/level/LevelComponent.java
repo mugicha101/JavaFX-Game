@@ -34,4 +34,8 @@ public abstract class LevelComponent {
   }
 
   public abstract void action(); // action to perform
+
+  public void reset() {
+    time = 0;
+  }
 }

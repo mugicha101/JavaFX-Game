@@ -22,4 +22,13 @@ public class LevelSegment extends LevelComponent {
     if (levelComponents[lcIndex].isFinished())
       lcIndex++;
   }
+
+  @Override
+  public void reset() {
+    super.reset();
+    for (LevelComponent lc : levelComponents) {
+      lc.reset();
+    }
+    lcIndex = 0;
+  }
 }

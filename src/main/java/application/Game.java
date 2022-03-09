@@ -2,6 +2,7 @@ package application;
 
 import application.enemy.types.*;
 import application.enemy.pathing.*;
+import application.level.*;
 import application.patterns.*;
 import application.bullet.types.Bullet;
 import application.patterns.Pattern;
@@ -87,7 +88,28 @@ public class Game extends Application {
     }
     player = new Player(7, 0.5, 3, new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20));
     player.pos.set(width * 0.5, height * 0.8);
-    Enemy.spawn(new Enemy(6000, PathFactory.linearPath(0, 0, width, height, 225), new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.1), 100, new TestPattern(null)));
+    Level testLevel =
+        new Level(
+            new LevelEvent(
+                6000,
+                LevelActionFactory.repeatedEnemySpawn(
+                    new Enemy[] {
+                            new Enemy(
+                                    6000,
+                                    PathFactory.linearPath(0, 0, width, height * 0.5, 225),
+                                    new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.1),
+                                    100,
+                                    new TestPattern(null)),
+                            new Enemy(
+                                    6000,
+                                    PathFactory.linearPath(width, 0, 0, height * 0.5, 225),
+                                    new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.1),
+                                    100,
+                                    new TestPattern(null))
+                    },
+                    0,
+                    300)));
+    Level.setActive(testLevel);
   }
 
   private void run() {
@@ -102,6 +124,7 @@ public class Game extends Application {
     movePlayer();
     Bullet.moveBullets();
     Enemy.moveEnemies();
+    Level.tickActive();
   }
 
   private void draw() {
