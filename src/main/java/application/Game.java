@@ -86,29 +86,39 @@ public class Game extends Application {
     for (int i = 0; i < 4; i++) {
       pImgArr[i] = "Reimu/Reimu" + (i + 1) + ".png";
     }
-    player = new Player(7, 0.5, 3, new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20));
+    player =
+        new Player(
+            7, 0.5, 3, new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20));
     player.pos.set(width * 0.5, height * 0.8);
-    Level testLevel =
-        new Level(
-            new LevelEvent(
-                6000,
-                LevelActionFactory.repeatedEnemySpawn(
-                    new Enemy[] {
-                            new Enemy(
-                                    6000,
-                                    PathFactory.linearPath(0, 0, width, height * 0.5, 225),
-                                    new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.1),
-                                    100,
-                                    new TestPattern(null)),
-                            new Enemy(
-                                    6000,
-                                    PathFactory.linearPath(width, 0, 0, height * 0.5, 225),
-                                    new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.1),
-                                    100,
-                                    new TestPattern(null))
-                    },
-                    0,
-                    300)));
+    LevelEvent spawn1 =
+        new LevelEvent(
+            225,
+            LevelActionFactory.singleEnemySpawn(
+                new Enemy(
+                    225,
+                    PathFactory.linearPath(0, 0, width, height * 0.5, 225),
+                    new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.1),
+                    100,
+                    PatternFactory.Test()),
+                new Enemy(
+                    225,
+                    PathFactory.linearPath(width, 0, 0, height * 0.5, 225),
+                    new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.1),
+                    100,
+                    PatternFactory.Test())));
+    LevelEvent spawn2 =
+        new LevelEvent(
+            300,
+            LevelActionFactory.repeatedEnemySpawn(
+                0,
+                50,
+                new Enemy(
+                    120,
+                    PathFactory.linearPath(0, height * 0.25, width, height * 0.25, 120),
+                    new StaticSprite(enemyGroup, "enemy/smallPrism.png", null, 0.1),
+                    100,
+                    PatternFactory.TestStream())));
+    Level testLevel = new Level(new LevelSegment(spawn1, new LevelBreak(300), spawn2));
     Level.setActive(testLevel);
   }
 
@@ -117,6 +127,7 @@ public class Game extends Application {
     Input.keyTick();
     calc();
     draw();
+    if (debug) debugRun();
   }
 
   private void calc() {
@@ -163,8 +174,8 @@ public class Game extends Application {
   }
 
   public static void screenResize() {
-    double rm = stage.isFullScreen()? 0 : rightMargin;
-    double tm = stage.isFullScreen()? 0 : topMargin;
+    double rm = stage.isFullScreen() ? 0 : rightMargin;
+    double tm = stage.isFullScreen() ? 0 : topMargin;
     double scaleVal = Math.min((stage.getWidth() - rm) / width, (stage.getHeight() - tm) / height);
     Scale scale = new Scale();
     scale.setPivotX(0);
@@ -179,6 +190,16 @@ public class Game extends Application {
   public static void drawPlayer() {
     player.alpha = 1 - (double) focusHold / 20;
     player.drawUpdate();
+  }
+
+  public static void debugRun() {
+    if (frame % 60 == 0) {
+      System.out.println("cycle: " + frame);
+      System.out.println(Bullet.getBullets().size());
+      System.out.println(
+          bulletGroupBack.getChildren().size() + ", " + bulletGroupFront.getChildren().size());
+      System.out.println();
+    }
   }
 
   public static void main(String[] args) {

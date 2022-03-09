@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class Bullet {
+  public static final boolean hqBullets = true;
   private static ArrayList<Bullet> bullets = new ArrayList<>();
   protected static final double backOpacity = 0.3;
   public static final int offscreenMargin = 0;
@@ -256,11 +257,19 @@ public class Bullet {
     if (groupBack.getChildren().size() == 0) {
       groupBack.getChildren().add(new Circle(0, 0, groupSize * 3));
       groupFront.getChildren().add(new Circle(0, 0, groupSize * 1.25));
+      if (!hqBullets)
+        groupFront.getChildren().add(new Circle(0, 0, groupSize * 0.75));
     }
-    Circle circle = (Circle)groupBack.getChildren().get(0);
-    circle.setFill(new RadialGradient(0, 0, 0, 0, groupSize * 3, false, CycleMethod.NO_CYCLE, new Stop(0.3, Color.color(c1[0], c1[1], c1[2], backOpacity)), new Stop(1, Color.color(c1[0], c1[1], c1[2], 0))));
-    circle = (Circle)groupFront.getChildren().get(0);
-    circle.setFill(new RadialGradient(0, 0, 0, 0, groupSize * 1.25, false, CycleMethod.NO_CYCLE, new Stop(0.5, color.innerColor), new Stop(0.8, color.outerColor), new Stop(0.9, color.outerColor), new Stop(1, Color.color(c1[0], c1[1], c1[2], 0))));
+    if (hqBullets) {
+      Circle circle = (Circle)groupBack.getChildren().get(0);
+      circle.setFill(new RadialGradient(0, 0, 0, 0, groupSize * 3, false, CycleMethod.NO_CYCLE, new Stop(0.3, Color.color(c1[0], c1[1], c1[2], backOpacity)), new Stop(1, Color.color(c1[0], c1[1], c1[2], 0))));
+      circle = (Circle)groupFront.getChildren().get(0);
+      circle.setFill(new RadialGradient(0, 0, 0, 0, groupSize * 1.25, false, CycleMethod.NO_CYCLE, new Stop(0.5, color.innerColor), new Stop(0.8, color.outerColor), new Stop(0.9, color.outerColor), new Stop(1, Color.color(c1[0], c1[1], c1[2], 0))));
+    } else {
+      ((Circle)groupBack.getChildren().get(0)).setFill(Color.color(c1[0], c1[1], c1[2], 0.2));
+      ((Circle)groupFront.getChildren().get(0)).setFill(color.outerColor);
+      ((Circle)groupFront.getChildren().get(1)).setFill(color.innerColor);
+    }
   }
 
   public double getRenderRadius() {

@@ -4,14 +4,15 @@ package application.level;
 public class LevelSegment extends LevelComponent {
   int lcIndex = 0;
   LevelComponent[] levelComponents;
-  public LevelSegment(LevelComponent[] levelActions) {
-    super(0);
+
+  public LevelSegment(LevelComponent... levelComponents) {
+    super(1);
     int cumDuration = 0;
-    for (LevelComponent lc : levelActions) {
+    for (LevelComponent lc : levelComponents) {
       cumDuration += lc.getDuration();
     }
     setDuration(cumDuration);
-    this.levelComponents = levelActions;
+    this.levelComponents = levelComponents;
     lcIndex = 0;
   }
 
