@@ -86,15 +86,17 @@ public class PatternFactory {
         (time, pos, width, height) -> {
           if (time < 60 && time % 5 == 0) {
             for (int i = 0; i < 5; i++) {
-              new RiceBullet(
-                  pos,
-                  1,
-                  BulletColor.CYAN,
-                  new MoveAttr[] {
-                    new LinMoveAttr(
-                        "move", 0, DirCalc.dirToPlayer(pos), new LinChangeAttr("acc", 0.5, 5 + i))
-                  },
-                  null);
+              for (int j = -1; j <= 1; j++) {
+                new RiceBullet(
+                    pos,
+                    1,
+                    BulletColor.CYAN,
+                    new MoveAttr[] {
+                      new LinMoveAttr(
+                          "move", 0, DirCalc.dirToPlayer(pos) + j * 15, new LinChangeAttr("acc", 0.5, 5 + i))
+                    },
+                    null);
+              }
             }
           }
         });

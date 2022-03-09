@@ -90,7 +90,7 @@ public class Game extends Application {
         new Player(
             7, 0.5, 3, new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20));
     player.pos.set(width * 0.5, height * 0.8);
-    LevelEvent spawn1 =
+    LevelEvent burstSpawn =
         new LevelEvent(
             225,
             LevelActionFactory.singleEnemySpawn(
@@ -106,7 +106,7 @@ public class Game extends Application {
                     new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.1),
                     100,
                     PatternFactory.Test())));
-    LevelEvent spawn2 =
+    LevelEvent streamSpawn =
         new LevelEvent(
             300,
             LevelActionFactory.repeatedEnemySpawn(
@@ -118,7 +118,7 @@ public class Game extends Application {
                     new StaticSprite(enemyGroup, "enemy/smallPrism.png", null, 0.1),
                     100,
                     PatternFactory.TestStream())));
-    Level testLevel = new Level(new LevelSegment(spawn1, new LevelBreak(300), spawn2));
+    Level testLevel = new Level(new LevelSegment(streamSpawn, new LevelBreak(60), burstSpawn));
     Level.setActive(testLevel);
   }
 
