@@ -15,4 +15,6 @@ module com.example.demo {
   opens application.bullet to javafx.fxml;
   exports application.sprite;
   opens application.sprite to javafx.fxml;
+  exports application.stats;
+  opens application.stats to javafx.fxml;
 }

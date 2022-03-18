@@ -6,6 +6,8 @@ import application.level.*;
 import application.pattern.*;
 import application.bullet.types.Bullet;
 import application.sprite.*;
+import application.stats.Player;
+import application.stats.Stats;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -80,15 +82,17 @@ public class Game extends Application {
     playerHBGroup = new Group();
     rootGroup.getChildren().add(playerHBGroup);
 
-    // setup game
+    // setup player
     String[] pImgArr = new String[4];
     for (int i = 0; i < 4; i++) {
       pImgArr[i] = "Reimu/Reimu" + (i + 1) + ".png";
     }
     player =
         new Player(
-            7, 0.5, 3, new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20));
+            new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1));
     player.pos.set(width * 0.5, height * 0.8);
+
+    // setup level
     LevelEvent burstSpawn =
         new LevelEvent(
             225,
@@ -160,7 +164,7 @@ public class Game extends Application {
     if (Input.getInput("up").isPressed()) moveOffset[1]--;
     if (Input.getInput("down").isPressed()) moveOffset[1]++;
 
-    double multi = player.speed * (Input.getInput("focus").isPressed() ? player.focusMulti : 1);
+    double multi = player.getStats().speed * (Input.getInput("focus").isPressed() ? player.getStats().focusMulti : 1);
     player.pos.move(moveOffset, multi);
     if (player.pos.x < edgeMargin) player.pos.x = edgeMargin;
     else if (player.pos.x > width - edgeMargin) player.pos.x = width - edgeMargin;

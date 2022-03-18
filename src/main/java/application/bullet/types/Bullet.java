@@ -196,7 +196,7 @@ public class Bullet {
       }
     }
     if (alive) {
-      if (defaultPlayerCollision && (time >= 10 && pos.distSqd(Game.player.pos) <= Math.pow(radius * scale + Game.player.hbRadius, 2)))
+      if (defaultPlayerCollision && (time >= 10 && pos.distSqd(Game.player.pos) <= Math.pow(radius * scale + Game.player.getStats().hitboxRadius, 2)))
         this.kill();
       else if (defaultBorderCollision && finishedStages() && (pos.x > Game.width + offscreenMargin + getRenderRadius() || pos.y > Game.height + offscreenMargin + getRenderRadius() || pos.x < -getRenderRadius() - offscreenMargin || pos.y < -getRenderRadius() - offscreenMargin))
         this.kill(true);

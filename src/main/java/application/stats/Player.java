@@ -1,6 +1,11 @@
-package application;
+package application.stats;
 
+import application.Game;
+import application.Position;
+import application.stats.Item;
 import application.sprite.Sprite;
+import application.stats.StatManager;
+import application.stats.Stats;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
@@ -10,20 +15,17 @@ import javafx.scene.shape.Circle;
 import java.util.Arrays;
 
 public class Player {
+  private static final double HB_RENDER_SIZE = 10;
   public Position pos;
-  public final double speed;
-  public final double focusMulti;
-  public final double hbRadius;
+  private final StatManager sm;
   public final Sprite sprite;
   public double dir;
   public double alpha;
   private Circle hb;
 
-  public Player(double speed, double focus_multi, double hitbox_radius, Sprite sprite) {
+  public Player(Sprite sprite, Stats baseStats) {
     this.pos = new Position(0, 0);
-    this.speed = speed;
-    this.focusMulti = focus_multi;
-    this.hbRadius = hitbox_radius;
+    this.sm = new StatManager(baseStats);
     this.sprite = sprite;
     this.alpha = 1;
     sprite.pos = pos;
@@ -31,11 +33,21 @@ public class Player {
     initPlayerHB();
   }
 
+  public Stats getStats() {
+    return sm.stats;
+  }
+
+  public void addItem(Item item) {
+    sm.addItem(item);
+  }
+
   public void drawUpdate() {
     sprite.dir = dir;
     sprite.alpha = alpha;
     sprite.drawUpdate();
-    double scale = -2.913 * Math.pow(((double) Game.focusHold / 10) - 0.5859, 2) * 2 + 2;
+    double scale =
+        (-2.913 * Math.pow(((double) Game.focusHold / 10) - 0.5859, 2) * 2 + 2)
+            * getStats().hitboxRadius / HB_RENDER_SIZE;
     if (hb.getScaleX() != scale) {
       hb.setScaleX(scale);
       hb.setScaleY(scale);
@@ -51,7 +63,7 @@ public class Player {
   }
 
   private void initPlayerHB() {
-    double radius = hbRadius * 6;
+    double radius = HB_RENDER_SIZE * 6;
     hb = new Circle(radius);
     RadialGradient grad =
         new RadialGradient(
