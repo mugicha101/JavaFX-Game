@@ -1,9 +1,7 @@
-package application.patterns;
+package application.pattern;
 
 import application.Game;
 import application.Position;
-
-import java.util.Random;
 
 public class Pattern {
   private final String name;

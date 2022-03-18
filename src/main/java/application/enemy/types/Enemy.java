@@ -1,10 +1,9 @@
 package application.enemy.types;
 
-import application.Game;
 import application.Position;
 import application.sprite.Sprite;
 import application.enemy.pathing.*;
-import application.patterns.Pattern;
+import application.pattern.Pattern;
 
 import java.util.ArrayList;
 

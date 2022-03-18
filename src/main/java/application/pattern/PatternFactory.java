@@ -1,7 +1,6 @@
-package application.patterns;
+package application.pattern;
 
 import application.DirCalc;
-import application.Position;
 import application.bullet.BulletColor;
 import application.bullet.attr.*;
 import application.bullet.staging.*;

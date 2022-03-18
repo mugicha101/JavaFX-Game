@@ -1,4 +1,4 @@
-package application.patterns;
+package application.pattern;
 
 import application.Position;
 
