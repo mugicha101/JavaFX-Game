@@ -2,10 +2,10 @@ package application.stats;
 
 import application.Game;
 import application.Position;
-import application.stats.Item;
+import application.attack.DefaultBullet;
+import application.attack.NeedleBullet;
+import application.attack.PlayerBullet;
 import application.sprite.Sprite;
-import application.stats.StatManager;
-import application.stats.Stats;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
@@ -22,6 +22,7 @@ public class Player {
   public double dir;
   public double alpha;
   private Circle hb;
+  private double fireDelay;
 
   public Player(Sprite sprite, Stats baseStats) {
     this.pos = new Position(0, 0);
@@ -30,6 +31,7 @@ public class Player {
     this.alpha = 1;
     sprite.pos = pos;
     sprite.enable();
+    fireDelay = 1;
     initPlayerHB();
   }
 
@@ -39,6 +41,31 @@ public class Player {
 
   public void addItem(Item item) {
     sm.addItem(item);
+  }
+
+  public void attackTick() {
+    fireDelay--;
+    while (fireDelay <= 0) {
+      fireDelay += 60.0/getStats().firerate;
+      switch(getStats().laserType) {
+        case NORMAL -> {
+          // UNIMPLEMENTED
+        }
+        case LARGE -> {
+          // UNIMPLEMENTED
+        }
+        default -> {
+          switch(getStats().projType) {
+            case NEEDLE -> {
+              new NeedleBullet(getStats(), pos, 90);
+            }
+            default -> {
+              new DefaultBullet(getStats(), pos, 90);
+            }
+          }
+        }
+      }
+    }
   }
 
   public void drawUpdate() {

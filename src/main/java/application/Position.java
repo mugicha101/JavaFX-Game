@@ -98,4 +98,8 @@ public class Position {
   public double dist(Position pos) {
     return Math.sqrt(distSqd(pos));
   }
+
+  public String toString() {
+    return "(" + x + "," + y + ")";
+  }
 }

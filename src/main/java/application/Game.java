@@ -1,11 +1,14 @@
 package application;
 
+import application.attack.PlayerAttack;
+import application.attack.PlayerBullet;
 import application.enemy.types.*;
 import application.enemy.pathing.*;
 import application.level.*;
 import application.pattern.*;
 import application.bullet.types.Bullet;
 import application.sprite.*;
+import application.stats.Item;
 import application.stats.Player;
 import application.stats.Stats;
 import javafx.animation.KeyFrame;
@@ -75,6 +78,7 @@ public class Game extends Application {
     rootGroup.getChildren().add(playerGroup);
     enemyGroup = new Group();
     rootGroup.getChildren().add(enemyGroup);
+    rootGroup.getChildren().add(PlayerAttack.playerAttackGroup);
     bulletGroupBack = new Group();
     rootGroup.getChildren().add(bulletGroupBack);
     bulletGroupFront = new Group();
@@ -89,8 +93,11 @@ public class Game extends Application {
     }
     player =
         new Player(
-            new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1));
+            new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1, 5, 5, 10, 5, 1, 0, false, Stats.ProjType.BULLET, Stats.LaserType.NONE, Color.RED));
     player.pos.set(width * 0.5, height * 0.8);
+
+    //player.addItem(Item.AttackNeedles);
+    //player.addItem(Item.PlasmaCore);
 
     // setup level
     LevelEvent burstSpawn =
@@ -137,7 +144,9 @@ public class Game extends Application {
     toggles();
     movePlayer();
     Bullet.moveBullets();
+    PlayerAttack.moveAttacks();
     Enemy.moveEnemies();
+    player.attackTick();
     Level.tickActive();
   }
 
@@ -145,6 +154,7 @@ public class Game extends Application {
     screenResize();
     drawPlayer();
     Enemy.drawEnemies();
+    PlayerAttack.drawAttacks();
     Bullet.drawBullets();
   }
 

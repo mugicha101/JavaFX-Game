@@ -1,5 +1,7 @@
 package application.stats;
 
+import javafx.scene.paint.Color;
+
 import java.util.HashSet;
 
 public class StatManager {
@@ -26,9 +28,10 @@ public class StatManager {
   public void updateStats() {
     stats = baseStats.clone();
     HashSet<Item> items = new HashSet<>(itemSet); // clone itemSet first
-    // handle synergies
+    // handle synergies and their visuals
     if (synergyCheck(items, Item.AttackNeedles, Item.PlasmaCore)) {
-      stats.projType = Stats.ProjType.PLASMA_NEEDLE;
+      stats.projColor = Color.PURPLE;
+      stats.projType = Stats.ProjType.NEEDLE;
       stats.projSpeed *= 2.5;
       stats.projSize *= 0.75;
       stats.firerate *= 3;
@@ -37,7 +40,12 @@ public class StatManager {
       stats.projPierce += 100;
     }
 
-    // handle rest
+    // handle visuals
+    if (items.contains(Item.AttackNeedles)) {
+      stats.projType = Stats.ProjType.NEEDLE;
+    }
+
+    // handle stat changes
     for (Item item : items) {
       switch (item) {
         case BoxingGloves -> {
@@ -45,8 +53,16 @@ public class StatManager {
           stats.damage *= 1.2;
         }
         case PlasmaCore -> {
-          stats.laserType = Stats.LaserType.NONE;
+          stats.laserType = Stats.LaserType.NORMAL;
           stats.firerate *= 1.5;
+        }
+        case AttackNeedles -> {
+          stats.projSpeed *= 1.5;
+          stats.projSize *= 0.75;
+          stats.firerate *=  2;
+          stats.projInacc *= 0.5;
+          stats.damage *= 0.5;
+          stats.projPierce += 2;
         }
       }
     }
