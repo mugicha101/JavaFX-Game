@@ -20,8 +20,10 @@ public class LevelSegment extends LevelComponent {
     if (lcIndex == levelComponents.length)
       return;
     levelComponents[lcIndex].tick();
-    if (levelComponents[lcIndex].isFinished())
+    if (levelComponents[lcIndex].isFinished()) {
+      levelComponents[lcIndex].reset();
       lcIndex++;
+    }
   }
 
   @Override

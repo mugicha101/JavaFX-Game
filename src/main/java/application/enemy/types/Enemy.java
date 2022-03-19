@@ -1,14 +1,18 @@
 package application.enemy.types;
 
 import application.Position;
+import application.particle.CircleParticle;
 import application.sprite.Sprite;
 import application.enemy.pathing.*;
 import application.pattern.Pattern;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Enemy {
-  private static ArrayList<Enemy> enemyList = new ArrayList<>();
+  public static final Random rand = new Random();
+  public static ArrayList<Enemy> enemyList = new ArrayList<>();
 
   public static void spawn(Enemy enemy) { // spawns an enemy from an inactive template enemy
     Enemy enemyClone = enemy.clone();
@@ -38,17 +42,21 @@ public class Enemy {
   public final Position pos;
   private final Sprite spriteSource;
   public Sprite sprite;
+  public final double hitRadius;
   public final double maxHealth;
-  public double health;
+  protected double health;
   private boolean active;
   private final Pattern pattern;
+  public final Color color;
 
-  public Enemy(int lifetime, Path path, Sprite sprite, double health, Pattern pattern) {
+  public Enemy(int lifetime, Path path, Sprite sprite, Color color, double hitRadius, double health, Pattern pattern) {
     time = 0;
     this.lifetime = lifetime;
     this.path = path;
     pos = path.pos(0);
     this.spriteSource = sprite;
+    this.color = color;
+    this.hitRadius = hitRadius;
     maxHealth = health;
     this.health = health;
     active = false;
@@ -57,8 +65,8 @@ public class Enemy {
       this.pattern.pos = pos;
   }
 
-  public Enemy(int lifetime, Path path, Sprite sprite, double health) {
-    this(lifetime, path, sprite, health, null);
+  public Enemy(int lifetime, Path path, Sprite sprite, Color color, double hitRadius, double health) {
+    this(lifetime, path, sprite, color, hitRadius, health, null);
   }
 
   public void activate() { // converts template enemy to active enemy
@@ -85,11 +93,27 @@ public class Enemy {
     sprite.drawUpdate();
   }
 
+  public final void damage(double amount) {
+    if (health == 0)
+      return;
+    health -= amount;
+    if (health <= 0) {
+      health = 0;
+      deathParticles();
+    }
+  }
+
+  private void deathParticles() {
+    for (int i = 0; i < Math.pow(maxHealth*5, 0.75); i++) {
+      new CircleParticle(hitRadius*0.2 * (0.5 + rand.nextDouble()/2), color, pos, rand.nextDouble() * 360, 5 + rand.nextDouble() * 10, 10 + rand.nextInt(20));
+    }
+  }
+
   public void delete() {
     sprite.disable();
   }
 
   public Enemy clone() {
-    return new Enemy(lifetime, path, spriteSource, maxHealth, pattern.clone());
+    return new Enemy(lifetime, path, spriteSource, color, hitRadius, maxHealth, pattern.clone());
   }
 }

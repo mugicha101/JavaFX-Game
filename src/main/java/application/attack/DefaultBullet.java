@@ -12,8 +12,8 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 
 public class DefaultBullet extends PlayerBullet {
-  public DefaultBullet(Stats parentStats, Position pos, double dir) {
-    super(new Group(), parentStats, pos, dir);
+  public DefaultBullet(Stats parentStats, Position pos, double dir, double damageMulti) {
+    super(new Group(), parentStats, pos, dir, damageMulti);
     ObservableList<Node> gList = group.getChildren();
     Circle circle = new Circle(0, 0, parentStats.projSize*1.5);
     circle.setScaleY(2.0/3);

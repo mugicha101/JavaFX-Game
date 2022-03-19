@@ -57,10 +57,10 @@ public class Player {
         default -> {
           switch(getStats().projType) {
             case NEEDLE -> {
-              new NeedleBullet(getStats(), pos, 90);
+              new NeedleBullet(getStats(), pos, 90, 1);
             }
             default -> {
-              new DefaultBullet(getStats(), pos, 90);
+              new DefaultBullet(getStats(), pos, 90, 1);
             }
           }
         }

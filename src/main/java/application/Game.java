@@ -5,6 +5,7 @@ import application.attack.PlayerBullet;
 import application.enemy.types.*;
 import application.enemy.pathing.*;
 import application.level.*;
+import application.particle.Particle;
 import application.pattern.*;
 import application.bullet.types.Bullet;
 import application.sprite.*;
@@ -83,6 +84,7 @@ public class Game extends Application {
     rootGroup.getChildren().add(bulletGroupBack);
     bulletGroupFront = new Group();
     rootGroup.getChildren().add(bulletGroupFront);
+    rootGroup.getChildren().add(Particle.particleGroup);
     playerHBGroup = new Group();
     rootGroup.getChildren().add(playerHBGroup);
 
@@ -93,11 +95,11 @@ public class Game extends Application {
     }
     player =
         new Player(
-            new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1, 5, 5, 10, 5, 1, 0, false, Stats.ProjType.BULLET, Stats.LaserType.NONE, Color.RED));
+            new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1, 5, 5, 10, 5, 1, 0, false, Stats.ProjType.BULLET, Stats.LaserType.NONE, Color.YELLOW));
     player.pos.set(width * 0.5, height * 0.8);
 
-    //player.addItem(Item.AttackNeedles);
-    //player.addItem(Item.PlasmaCore);
+    // player.addItem(Item.AttackNeedles);
+    // player.addItem(Item.PlasmaCore);
 
     // setup level
     LevelEvent burstSpawn =
@@ -107,14 +109,18 @@ public class Game extends Application {
                 new Enemy(
                     225,
                     PathFactory.linearPath(0, 0, width, height * 0.5, 225),
-                    new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.1),
-                    100,
+                    new StaticSprite(enemyGroup, "enemy/bigPrismElite.png", null, 0.1),
+                    Color.RED,
+                    30,
+                    5,
                     PatternFactory.Test()),
                 new Enemy(
                     225,
                     PathFactory.linearPath(width, 0, 0, height * 0.5, 225),
-                    new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.1),
-                    100,
+                    new StaticSprite(enemyGroup, "enemy/bigPrismElite.png", null, 0.1),
+                    Color.RED,
+                    30,
+                    5,
                     PatternFactory.Test())));
     LevelEvent streamSpawn =
         new LevelEvent(
@@ -126,9 +132,12 @@ public class Game extends Application {
                     120,
                     PathFactory.linearPath(0, height * 0.25, width, height * 0.25, 120),
                     new StaticSprite(enemyGroup, "enemy/smallPrism.png", null, 0.1),
-                    100,
+                    Color.LIGHTBLUE,
+                    20,
+                    2,
                     PatternFactory.TestStream())));
-    Level testLevel = new Level(new LevelSegment(streamSpawn, new LevelBreak(60), burstSpawn));
+    LevelSegment testSeg = new LevelSegment(streamSpawn, new LevelBreak(60), burstSpawn, new LevelBreak(300));
+    Level testLevel = new Level(new LevelSegment(testSeg, testSeg, testSeg));
     Level.setActive(testLevel);
   }
 
@@ -148,6 +157,7 @@ public class Game extends Application {
     Enemy.moveEnemies();
     player.attackTick();
     Level.tickActive();
+    Particle.moveParticles();
   }
 
   private void draw() {
@@ -156,6 +166,7 @@ public class Game extends Application {
     Enemy.drawEnemies();
     PlayerAttack.drawAttacks();
     Bullet.drawBullets();
+    Particle.drawParticles();
   }
 
   private void toggles() {

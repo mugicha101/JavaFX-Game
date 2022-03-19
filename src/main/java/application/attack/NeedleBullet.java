@@ -12,8 +12,8 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 
 public class NeedleBullet extends PlayerBullet {
-  public NeedleBullet(Stats parentStats, Position pos, double dir) {
-    super(new Group(), parentStats, pos, dir);
+  public NeedleBullet(Stats parentStats, Position pos, double dir, double damageMulti) {
+    super(new Group(), parentStats, pos, dir, damageMulti);
     ObservableList<Node> gList = group.getChildren();
     Circle circle = new Circle(0, 0, parentStats.projSize*3);
     circle.setScaleY(0.2);
