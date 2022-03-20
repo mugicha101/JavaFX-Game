@@ -2,7 +2,12 @@ package application.pattern;
 
 import application.DirCalc;
 import application.bullet.BulletColor;
-import application.bullet.attr.*;
+import application.bullet.attr.bullet.BulletAttr;
+import application.bullet.attr.bullet.GrowAttr;
+import application.bullet.attr.bullet.LinMoveAttr;
+import application.bullet.attr.bullet.RotMoveAttr;
+import application.bullet.attr.change.LinChangeAttr;
+import application.bullet.attr.change.SmoothChangeAttr;
 import application.bullet.staging.*;
 import application.bullet.types.*;
 
@@ -30,7 +35,7 @@ public class PatternFactory {
                     pos,
                     1,
                     BulletColor.INVERSE_RED,
-                    new MoveAttr[] {
+                    new BulletAttr[] {
                       new RotMoveAttr(
                           "rot",
                           0,
@@ -64,7 +69,7 @@ public class PatternFactory {
                 pos,
                 1,
                 BulletColor.YELLOW,
-                new MoveAttr[] {
+                new BulletAttr[] {
                   new LinMoveAttr("move", 0, 0, new LinChangeAttr("acc", 0.1, 5)),
                   new GrowAttr("grow", new SmoothChangeAttr("change", 0.02, 3))
                 },
@@ -90,7 +95,7 @@ public class PatternFactory {
                     pos,
                     1,
                     BulletColor.CYAN,
-                    new MoveAttr[] {
+                    new BulletAttr[] {
                       new LinMoveAttr(
                           "move", 0, DirCalc.dirToPlayer(pos) + j * 15, new LinChangeAttr("acc", 0.5, 5 + i))
                     },

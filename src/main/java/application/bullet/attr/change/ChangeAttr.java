@@ -1,6 +1,8 @@
-package application.bullet.attr;
+package application.bullet.attr.change;
 
-public abstract class ChangeAttr extends BulletAttr {
+import application.bullet.attr.Attr;
+
+public abstract class ChangeAttr extends Attr {
   public ChangeAttr(String id) {
     super(id);
   }

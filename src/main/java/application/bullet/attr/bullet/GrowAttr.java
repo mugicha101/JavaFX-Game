@@ -1,10 +1,12 @@
-package application.bullet.attr;
+package application.bullet.attr.bullet;
 
+import application.bullet.attr.Attr;
+import application.bullet.attr.change.ChangeAttr;
 import application.bullet.types.Bullet;
 
 import java.util.HashMap;
 
-public class GrowAttr extends MoveAttr {
+public class GrowAttr extends BulletAttr {
   private final ChangeAttr changeAttr;
 
   public GrowAttr(String id, ChangeAttr changeAttr) {
@@ -26,12 +28,12 @@ public class GrowAttr extends MoveAttr {
     return false;
   }
 
-  public MoveAttr clone(String newId) {
+  public BulletAttr clone(String newId) {
     return new GrowAttr(newId, changeAttr);
   }
 
   @Override
-  public void toMap(HashMap<String, BulletAttr> map, String prefix) {
+  public void toMap(HashMap<String, Attr> map, String prefix) {
     map.put(prefix + getId(), this);
     changeAttr.toMap(map, prefix + getId() + ".");
   }

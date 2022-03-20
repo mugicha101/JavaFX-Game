@@ -1,11 +1,10 @@
-package application.bullet.attr;
+package application.bullet.attr.bullet;
 
+import application.bullet.attr.Attr;
 import application.bullet.types.Bullet;
 
-import java.util.HashMap;
-
-public abstract class MoveAttr extends BulletAttr {
-  public MoveAttr(String id) {
+public abstract class BulletAttr extends Attr {
+  public BulletAttr(String id) {
     super(id);
   }
 
@@ -18,7 +17,7 @@ public abstract class MoveAttr extends BulletAttr {
   }
 
   public abstract void init(
-      Bullet b); // runs on first frame of movement (does not run if disabled by stages on start,
+          Bullet b); // runs on first frame of movement (does not run if disabled by stages on start,
   // internal fields should be set in constructor)
 
   public abstract void prepTick(Bullet b); // before movement
@@ -27,9 +26,9 @@ public abstract class MoveAttr extends BulletAttr {
 
   public abstract boolean collisionTick(Bullet b); // collision checks (returns true if collided)
 
-  public MoveAttr clone() {
+  public BulletAttr clone() {
     return clone(getId());
   }
 
-  public abstract MoveAttr clone(String newId);
+  public abstract BulletAttr clone(String newId);
 }

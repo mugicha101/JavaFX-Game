@@ -1,6 +1,6 @@
 package application.bullet.staging;
 
-import application.bullet.attr.BulletAttr;
+import application.bullet.attr.Attr;
 
 public class ModifyAttrStage extends AttrStage {
   private final ModifyAttr mod;
@@ -10,7 +10,7 @@ public class ModifyAttrStage extends AttrStage {
     this.mod = mod;
   }
 
-  public void action(BulletAttr ba) {
-    mod.action(ba);
+  public void action(Attr attr) {
+    mod.action(attr);
   }
 }

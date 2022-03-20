@@ -17,4 +17,10 @@ module com.example.demo {
   opens application.sprite to javafx.fxml;
   exports application.stats;
   opens application.stats to javafx.fxml;
+  exports application.bullet.attr.change;
+  opens application.bullet.attr.change to javafx.fxml;
+  exports application.bullet.attr.bullet;
+  opens application.bullet.attr.bullet to javafx.fxml;
+  exports application.bullet.attr.laser;
+  opens application.bullet.attr.laser to javafx.fxml;
 }

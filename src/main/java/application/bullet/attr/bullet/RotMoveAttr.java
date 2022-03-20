@@ -1,12 +1,14 @@
-package application.bullet.attr;
+package application.bullet.attr.bullet;
 
 import application.Game;
 import application.Position;
+import application.bullet.attr.Attr;
+import application.bullet.attr.change.ChangeAttr;
 import application.bullet.types.Bullet;
 
 import java.util.HashMap;
 
-public class RotMoveAttr extends MoveAttr {
+public class RotMoveAttr extends BulletAttr {
   private final double initDist;
   private final double initMoveSpeed;
   private final double initDir;
@@ -86,13 +88,13 @@ public class RotMoveAttr extends MoveAttr {
     return b.finishedStages() && dist * dist > Game.width * Game.width + Game.height * Game.height;
   }
 
-  public MoveAttr clone(String newId) {
+  public BulletAttr clone(String newId) {
     return new RotMoveAttr(
         newId, initDist, initMoveSpeed, initDir, initRotSpeed, moveAccelAttr, rotAccelAttr);
   }
 
   @Override
-  public void toMap(HashMap<String, BulletAttr> map, String prefix) {
+  public void toMap(HashMap<String, Attr> map, String prefix) {
     if (moveAccelAttr != null) moveAccelAttr.toMap(map, prefix + getId() + ".");
     if (rotAccelAttr != null) rotAccelAttr.toMap(map, prefix + getId() + ".");
     map.put(prefix + getId(), this);

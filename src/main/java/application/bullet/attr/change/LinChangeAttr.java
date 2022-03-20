@@ -1,4 +1,7 @@
-package application.bullet.attr;
+package application.bullet.attr.change;
+
+import application.bullet.attr.Attr;
+import application.bullet.attr.bullet.BulletAttr;
 
 import java.util.HashMap;
 
@@ -32,7 +35,7 @@ public class LinChangeAttr extends ChangeAttr {
   }
 
   @Override
-  public void toMap(HashMap<String, BulletAttr> map, String prefix) {
+  public void toMap(HashMap<String, Attr> map, String prefix) {
     map.put(prefix + getId(), this);
   }
 }

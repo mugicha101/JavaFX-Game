@@ -3,8 +3,8 @@ package application.bullet.types;
 import application.Game;
 import application.Position;
 import application.bullet.BulletColor;
-import application.bullet.attr.BulletAttr;
-import application.bullet.attr.MoveAttr;
+import application.bullet.attr.Attr;
+import application.bullet.attr.bullet.BulletAttr;
 import application.bullet.staging.AttrStage;
 import application.bullet.staging.BlankStage;
 import application.bullet.staging.BulletStage;
@@ -30,7 +30,7 @@ public class Bullet {
   private final double radius; // spawn radius
   public double scale; // scaling since spawned
   private BulletColor color;
-  private final ArrayList<MoveAttr> attrList;
+  private final ArrayList<BulletAttr> attrList;
   public final Position pos;
   public double dir; // direction bullet is facing (not necessarily direction its moving)
   protected Group groupBack;
@@ -40,7 +40,7 @@ public class Bullet {
   private final ArrayList<BulletStage> stageList;
   private int stageIndex;
   private int stageTime;
-  private final HashMap<String, BulletAttr> attrMap;
+  private final HashMap<String, Attr> attrMap;
 
   public static ArrayList<Bullet> getBullets() {
     return bullets;
@@ -64,7 +64,7 @@ public class Bullet {
     }
   }
 
-  public Bullet(Position pos, double size, BulletColor color, MoveAttr[] attrArr, BulletStage[] stageArr) {
+  public Bullet(Position pos, double size, BulletColor color, BulletAttr[] attrArr, BulletStage[] stageArr) {
     this.pos = pos.clone();
     alive = true;
     time = 0;
@@ -73,10 +73,10 @@ public class Bullet {
     this.color = color;
     attrList = new ArrayList<>();
     attrMap = new HashMap<>();
-    for (MoveAttr ma : attrArr) {
-      MoveAttr maClone = ma.clone();
-      attrList.add(maClone);
-      maClone.toMap(attrMap, "");
+    for (BulletAttr ba : attrArr) {
+      BulletAttr baClone = ba.clone();
+      attrList.add(baClone);
+      baClone.toMap(attrMap, "");
     }
     if (stageArr == null)
       stageList = null;
@@ -93,7 +93,7 @@ public class Bullet {
     Bullet.bullets.add(this);
   }
 
-  public Bullet(Position pos, double size, BulletColor color, MoveAttr[] attrArr) {
+  public Bullet(Position pos, double size, BulletColor color, BulletAttr[] attrArr) {
     this(pos, size, color, attrArr, null);
   }
 
@@ -101,7 +101,7 @@ public class Bullet {
     return "normal";
   }
 
-  public final BulletAttr getAttr(String id) {
+  public final Attr getAttr(String id) {
     return attrMap.get(id);
   }
 
@@ -140,8 +140,8 @@ public class Bullet {
 
     // init
     if (time == 1) {
-      for (MoveAttr ma : attrList)
-        ma.init(this);
+      for (BulletAttr ba : attrList)
+        ba.init(this);
     }
 
     // update stages
@@ -152,14 +152,14 @@ public class Bullet {
         if (baseStage instanceof BlankStage stage) {
           stage.action();
         } else if (baseStage instanceof AttrStage stage) {
-          BulletAttr ba = getAttr(stage.getId());
-          if (ba == null)
+          Attr attr = getAttr(stage.getId());
+          if (attr == null)
             throw new NullPointerException(
                 "null BulletAttr instance assigned to stage (id="
                     + stage.getId()
                     + " is not in available ids: "
                     + attrMap.keySet());
-          stage.action(ba);
+          stage.action(attr);
         } else if (baseStage instanceof ModifyStage stage) {
           stage.action(this);
         }
@@ -171,26 +171,26 @@ public class Bullet {
     }
 
     // prep
-    for (MoveAttr ma : attrList)
-      if (ma.enabled)
-        ma.prepTick(this);
+    for (BulletAttr ba : attrList)
+      if (ba.enabled)
+        ba.prepTick(this);
 
     // move
-    for (MoveAttr ma : attrList)
-      if (ma.enabled)
-       ma.moveTick(this);
+    for (BulletAttr ba : attrList)
+      if (ba.enabled)
+       ba.moveTick(this);
 
     // collision
     boolean defaultPlayerCollision = true;
     boolean defaultBorderCollision = true;
-    for (MoveAttr ma : attrList) {
-      if (!ma.enabled)
+    for (BulletAttr ba : attrList) {
+      if (!ba.enabled)
         continue;
-      if (ma.overridesDefaultPlayerCollision())
+      if (ba.overridesDefaultPlayerCollision())
         defaultPlayerCollision = false;
-      if (ma.overridesDefaultBorderCollision())
+      if (ba.overridesDefaultBorderCollision())
         defaultBorderCollision = false;
-      if (ma.collisionTick(this)) {
+      if (ba.collisionTick(this)) {
         this.kill();
         break;
       }

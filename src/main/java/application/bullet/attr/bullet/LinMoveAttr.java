@@ -1,10 +1,12 @@
-package application.bullet.attr;
+package application.bullet.attr.bullet;
 
+import application.bullet.attr.Attr;
+import application.bullet.attr.change.ChangeAttr;
 import application.bullet.types.Bullet;
 
 import java.util.HashMap;
 
-public class LinMoveAttr extends MoveAttr {
+public class LinMoveAttr extends BulletAttr {
   private final double initSpeed;
   private final double initDir;
   private final ChangeAttr accelAttr;
@@ -42,12 +44,12 @@ public class LinMoveAttr extends MoveAttr {
     return false;
   }
 
-  public MoveAttr clone(String newId) {
+  public BulletAttr clone(String newId) {
     return new LinMoveAttr(newId, initSpeed, initDir, accelAttr);
   }
 
   @Override
-  public void toMap(HashMap<String, BulletAttr> map, String prefix) {
+  public void toMap(HashMap<String, Attr> map, String prefix) {
     map.put(prefix + getId(), this);
     if (accelAttr != null) accelAttr.toMap(map, prefix + getId() + ".");
   }

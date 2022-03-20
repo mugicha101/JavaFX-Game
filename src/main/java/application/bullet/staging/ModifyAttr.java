@@ -1,7 +1,7 @@
 package application.bullet.staging;
 
-import application.bullet.attr.BulletAttr;
+import application.bullet.attr.Attr;
 
 public interface ModifyAttr {
-  void action(BulletAttr ba);
+  void action(Attr attr);
 }

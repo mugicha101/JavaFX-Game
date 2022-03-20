@@ -1,6 +1,6 @@
 package application.bullet.staging;
 
-import application.bullet.attr.BulletAttr;
+import application.bullet.attr.Attr;
 
 public abstract class AttrStage extends BulletStage {
   private final String id; // id of targeted BulletAttr instance
@@ -14,5 +14,5 @@ public abstract class AttrStage extends BulletStage {
     return id;
   }
 
-  public abstract void action(BulletAttr ba);
+  public abstract void action(Attr attr);
 }
