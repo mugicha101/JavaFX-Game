@@ -95,11 +95,11 @@ public class Game extends Application {
     }
     player =
         new Player(
-            new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1, 5, 5, 10, 5, 1, 0, false, Stats.ProjType.BULLET, Stats.LaserType.NONE, Color.YELLOW));
+            new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1, 5, 5, 10, 5, 2, 0, false, Stats.ProjType.BULLET, Stats.LaserType.NONE, Color.YELLOW));
     player.pos.set(width * 0.5, height * 0.8);
 
-    // player.addItem(Item.AttackNeedles);
-    // player.addItem(Item.PlasmaCore);
+    player.addItem(Item.AttackNeedles);
+    player.addItem(Item.PlasmaCore);
 
     // setup level
     LevelEvent burstSpawn =

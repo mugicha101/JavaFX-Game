@@ -30,7 +30,7 @@ public class StatManager {
     HashSet<Item> items = new HashSet<>(itemSet); // clone itemSet first
     // handle synergies and their visuals
     if (synergyCheck(items, Item.AttackNeedles, Item.PlasmaCore)) {
-      stats.projColor = Color.PURPLE;
+      stats.projColor = Color.MAGENTA;
       stats.projType = Stats.ProjType.NEEDLE;
       stats.projSpeed *= 2.5;
       stats.projSize *= 0.75;

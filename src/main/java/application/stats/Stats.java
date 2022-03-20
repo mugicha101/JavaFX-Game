@@ -23,7 +23,7 @@ public class Stats {
   public double projSize; // projectile size
   public double projSpeed; // projectile speed
   public double projInacc; // inaccuracy in degrees of projectiles
-  public double projAmount; // amount of projectiles per shot
+  public int projAmount; // amount of projectiles per shot
   public int projPierce; // projectile pierce
   public boolean projHoming; // if true, projectiles home to nearest target
   public ProjType projType; // type of projectile
@@ -40,7 +40,7 @@ public class Stats {
       double projSize,
       double projSpeed,
       double projInacc,
-      double projAmount,
+      int projAmount,
       int projPierce,
       boolean projHoming,
       ProjType projType,
