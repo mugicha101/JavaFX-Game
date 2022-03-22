@@ -5,10 +5,11 @@ import application.sprite.Sprite;
 
 public class SpriteParticle extends Particle {
   private final Sprite sprite;
-  public SpriteParticle(Sprite sprite, Position pos, double dir, double speed, int time) {
+  public SpriteParticle(Sprite sprite, double opacity, Position pos, double dir, double speed, int time) {
     super(pos, dir, speed, time);
     this.sprite = sprite.clone();
     this.sprite.pos = this.pos;
+    this.sprite.alpha = opacity;
     this.sprite.enable();
   }
 

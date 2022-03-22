@@ -105,7 +105,7 @@ public class Enemy {
 
   private void deathParticles() {
     for (int i = 0; i < Math.pow(maxHealth*5, 0.75); i++) {
-      new CircleParticle(hitRadius*0.2 * (0.5 + rand.nextDouble()/2), color, pos, rand.nextDouble() * 360, 5 + rand.nextDouble() * 10, 10 + rand.nextInt(20));
+      new CircleParticle(hitRadius*0.2 * (0.5 + rand.nextDouble()/2), color, 1, pos, rand.nextDouble() * 360, 5 + rand.nextDouble() * 10, 10 + rand.nextInt(20));
     }
   }
 

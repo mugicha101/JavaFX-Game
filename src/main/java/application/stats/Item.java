@@ -24,5 +24,8 @@ public enum Item {
   DoubleShot,
   TripleShot,
   Shotgun,
-  Overclock
+  Overclock,
+  TruePrecision,
+  Delineator,
+  RainStorm
 }

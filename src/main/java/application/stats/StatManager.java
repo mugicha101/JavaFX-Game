@@ -28,6 +28,18 @@ public class StatManager {
   public void updateStats() {
     stats = baseStats.clone();
     HashSet<Item> items = new HashSet<>(itemSet); // clone itemSet first
+
+    // pre synergy merging visuals
+    if (items.contains(Item.BoxingGloves)) {
+      stats.projColor = Color.RED;
+    }
+    if (items.contains(Item.Anvil)) {
+      stats.projColor = Color.color(0.5, 0.5, 0.5);
+    }
+    if (items.contains(Item.TruePrecision)) {
+      stats.projColor = Color.LIGHTBLUE;
+    }
+
     // handle synergies and their visuals
     if (synergyCheck(items, Item.AttackNeedles, Item.PlasmaCore)) {
       stats.projColor = Color.MAGENTA;
@@ -40,9 +52,12 @@ public class StatManager {
       stats.projPierce += 100;
     }
 
-    // handle visuals
+    // post synergy merging visuals
     if (items.contains(Item.AttackNeedles)) {
       stats.projType = Stats.ProjType.NEEDLE;
+    }
+    if (items.contains(Item.RainStorm)) {
+      stats.projColor = Color.color(0, 0.5, 1);
     }
 
     // handle stat changes
@@ -63,6 +78,46 @@ public class StatManager {
           stats.projInacc *= 0.5;
           stats.damage *= 0.5;
           stats.projPierce += 2;
+        }
+        case TruePrecision -> {
+          stats.projInacc *= 0;
+          stats.projSpeed *= 1.25;
+        }
+        case Delineator -> {
+          stats.projAmount *= 2;
+          stats.damage *= 0.5;
+          stats.projSpeed *= 0.65;
+          stats.projInacc *= 0.25;
+        }
+        case DoubleShot -> {
+          stats.projAmount *= 2;
+          stats.firerate *= 0.8;
+          stats.damage *= 0.8;
+        }
+        case TripleShot -> {
+          stats.projAmount *= 3;
+          stats.firerate *= 0.65;
+          stats.damage *= 0.65;
+        }
+        case Shotgun -> {
+          stats.projAmount *= 10;
+          stats.firerate *= 0.25;
+          stats.damage *= 0.75;
+          stats.projInacc *= 2;
+        }
+        case Anvil -> {
+          stats.damage *= 2;
+          stats.firerate *= 0.75;
+          stats.projSpeed *= 0.75;
+        }
+        case InflatableBalloon -> {
+          stats.projSize *= 2;
+          stats.projSpeed *= 0.8;
+          stats.projOpacity *= 0.5;
+        }
+        case RainStorm -> {
+          stats.firerate *= 10;
+          stats.damage *= 0.15;
         }
       }
     }

@@ -95,11 +95,20 @@ public class Game extends Application {
     }
     player =
         new Player(
-            new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1, 5, 5, 10, 5, 2, 0, false, Stats.ProjType.BULLET, Stats.LaserType.NONE, Color.YELLOW));
+            new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1, 5, 5, 10, 5, 1, 2, 0, false, Stats.ProjType.BULLET, Stats.LaserType.NONE, Color.YELLOW));
     player.pos.set(width * 0.5, height * 0.8);
 
-    player.addItem(Item.AttackNeedles);
-    player.addItem(Item.PlasmaCore);
+    //player.addItem(Item.BoxingGloves);
+    //player.addItem(Item.TruePrecision);
+    // player.addItem(Item.Delineator);
+    // player.addItem(Item.Shotgun);
+    // player.addItem(Item.DoubleShot);
+    // player.addItem(Item.TripleShot);
+    //player.addItem(Item.AttackNeedles);
+    //player.addItem(Item.PlasmaCore);
+    //player.addItem(Item.Anvil);
+    player.addItem(Item.RainStorm);
+    // player.addItem(Item.InflatableBalloon);
 
     // setup level
     LevelEvent burstSpawn =
@@ -137,7 +146,7 @@ public class Game extends Application {
                     2,
                     PatternFactory.TestStream())));
     LevelSegment testSeg = new LevelSegment(streamSpawn, new LevelBreak(60), burstSpawn, new LevelBreak(300));
-    Level testLevel = new Level(new LevelSegment(testSeg, testSeg, testSeg));
+    Level testLevel = new Level(new LevelSegment(testSeg, testSeg, testSeg, testSeg, testSeg));
     Level.setActive(testLevel);
   }
 

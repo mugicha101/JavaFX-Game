@@ -23,6 +23,7 @@ public class Stats {
   public double projSize; // projectile size
   public double projSpeed; // projectile speed
   public double projInacc; // inaccuracy in degrees of projectiles
+  public double projOpacity; // opacity of projectiles
   public int projAmount; // amount of projectiles per shot
   public int projPierce; // projectile pierce
   public boolean projHoming; // if true, projectiles home to nearest target
@@ -40,6 +41,7 @@ public class Stats {
       double projSize,
       double projSpeed,
       double projInacc,
+      double projOpacity,
       int projAmount,
       int projPierce,
       boolean projHoming,
@@ -56,6 +58,7 @@ public class Stats {
     this.projSize = projSize;
     this.projSpeed = projSpeed;
     this.projInacc = projInacc;
+    this.projOpacity = projOpacity;
     this.projAmount = projAmount;
     this.projPierce = projPierce;
     this.projHoming = projHoming;
@@ -65,6 +68,6 @@ public class Stats {
   }
 
   public Stats clone() {
-    return new Stats(hitboxRadius, grazeRadius, speed, focusMulti, damage, firerate, projSize, projSpeed, projInacc, projAmount, projPierce, projHoming, projType, laserType, projColor);
+    return new Stats(hitboxRadius, grazeRadius, speed, focusMulti, damage, firerate, projSize, projSpeed, projInacc, projOpacity, projAmount, projPierce, projHoming, projType, laserType, projColor);
   }
 }

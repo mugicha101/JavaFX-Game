@@ -47,10 +47,15 @@ public class Player {
     class ProjOrigin {
       private Position pos;
       private double dir;
-      public ProjOrigin(Position pos, double dirOffset) {
+      private double speedMulti;
+      public ProjOrigin(Position pos, double dirOffset, double speedMulti) {
         this.pos = pos;
+        this.speedMulti = speedMulti;
         dir = dirOffset + 90;
         spawnProj();
+      }
+      public ProjOrigin(Position pos, double dirOffset) {
+        this(pos, dirOffset, 1);
       }
 
       private void spawnProj() {
@@ -64,37 +69,42 @@ public class Player {
           default -> {
             switch(getStats().projType) {
               case NEEDLE -> {
-                new NeedleBullet(getStats(), pos, dir, 1);
+                new NeedleBullet(getStats(), pos, dir, 1, speedMulti);
               }
               default -> {
-                new DefaultBullet(getStats(), pos, dir, 1);
+                new DefaultBullet(getStats(), pos, dir, 1, speedMulti);
               }
             }
           }
         }
       }
     }
+
     fireDelay--;
     while (fireDelay <= 0) {
       fireDelay += 60.0/getStats().firerate;
-      if (getStats().projAmount == 1) {
-        new ProjOrigin(pos.clone().move(0, -30), 0);
-      } else if (getStats().projAmount == 2) {
-        new ProjOrigin(pos.clone().move(-10, -30), 0);
-        new ProjOrigin(pos.clone().move(10, -30), 0);
-      } else if (getStats().projAmount == 3) {
-        new ProjOrigin(pos.clone().move(-10, -30), 2*getStats().projInacc);
-        new ProjOrigin(pos.clone().move(10, -30), -2*getStats().projInacc);
-        new ProjOrigin(pos.clone().move(0, -30), 0);
-      } else if (getStats().projAmount == 4) {
-        new ProjOrigin(pos.clone().move(-10, -30), 2*getStats().projInacc);
-        new ProjOrigin(pos.clone().move(10, -30), -2*getStats().projInacc);
-        new ProjOrigin(pos.clone().move(-5, -30), 0);
-        new ProjOrigin(pos.clone().move(5, -30), 0);
+      if (sm.hasItem(Item.Delineator)) {
+        for (int i = 0; i < getStats().projAmount; i++)
+          new ProjOrigin(pos.clone().move(0, -30), 0, 1 + i*0.2);
       } else {
-        int a = getStats().projAmount;
-        for (int i = 0; i < a; i++) {
-          new ProjOrigin(pos.clone().move(-10 + 20.0 * i/(a - 1), -30), getStats().projInacc * (3 - 6.0 * i/(a - 1)));
+        if (getStats().projAmount == 1) {
+          new ProjOrigin(pos.clone().move(0, -30), 0);
+        } else if (getStats().projAmount == 2) {
+          new ProjOrigin(pos.clone().move(-10, -30), 0);
+          new ProjOrigin(pos.clone().move(10, -30), 0);
+        } else if (getStats().projAmount == 3) {
+          new ProjOrigin(pos.clone().move(-10, -30), 2 * getStats().projInacc);
+          new ProjOrigin(pos.clone().move(10, -30), -2 * getStats().projInacc);
+          new ProjOrigin(pos.clone().move(0, -30), 0);
+        } else if (getStats().projAmount == 4) {
+          new ProjOrigin(pos.clone().move(-10, -30), 2 * getStats().projInacc);
+          new ProjOrigin(pos.clone().move(10, -30), -2 * getStats().projInacc);
+          new ProjOrigin(pos.clone().move(-5, -30), 0);
+          new ProjOrigin(pos.clone().move(5, -30), 0);
+        } else {
+          int a = getStats().projAmount;
+          for (int i = 0; i < a; i++)
+            new ProjOrigin(pos.clone().move(-10 + 20.0 * i / (a - 1), -30), (getStats().projInacc + 2) * (3 - 6.0 * i / (a - 1)));
         }
       }
     }

@@ -13,18 +13,21 @@ import java.util.Random;
 
 public class PlayerBullet extends PlayerAttack {
   protected static final Random rand = new Random();
+  protected static final double particleMulti = 2;
   private final Position pos;
   private final Stats parentStats;
   private double dir;
   private double speed;
   private double damageMulti;
-  public PlayerBullet(Group group, Stats parentStats, Position pos, double dir, double damageMulti) {
+  protected double radius;
+  public PlayerBullet(Group group, Stats parentStats, Position pos, double dir, double damageMulti, double speedMulti) {
     super(group);
     this.parentStats = parentStats.clone();
     this.pos = pos.clone();
     this.dir = dir + (rand.nextDouble() - 0.5) * parentStats.projInacc * 2;
     this.damageMulti = damageMulti;
-    speed = parentStats.projSpeed;
+    this.radius = parentStats.projSize * Math.sqrt(parentStats.damage * damageMulti);
+    speed = parentStats.projSpeed * speedMulti;
   }
 
   public void moveTick() {
@@ -32,8 +35,11 @@ public class PlayerBullet extends PlayerAttack {
     for (Enemy e : Enemy.enemyList) {
       if (e.pos.distSqd(pos) <= Math.pow(e.hitRadius + parentStats.projSize, 2)) {
         Position particlePos = pos.clone().moveInDir(DirCalc.dirTo(pos, e.pos), parentStats.projSize);
-        for (int i = 0; i < 5 + parentStats.damage; i++)
-          new CircleParticle(parentStats.hitboxRadius, parentStats.projColor, particlePos, dir + 180 + (rand.nextDouble() * 2 - 1) * 45, speed * (0.25 + rand.nextDouble()/2), 5 + rand.nextInt(10));
+        int amount = (int)(parentStats.damage * particleMulti);
+        if (rand.nextDouble() > (parentStats.damage * particleMulti - amount))
+          amount++;
+        for (int i = 0; i < 3 * amount; i++)
+          new CircleParticle(radius, parentStats.projColor, parentStats.projOpacity, particlePos, dir + 180 + (rand.nextDouble() * 2 - 1) * 45, speed * (0.25 + rand.nextDouble()/2), 5 + rand.nextInt(10));
         e.damage(parentStats.damage * damageMulti);
         kill();
         return;
@@ -49,7 +55,7 @@ public class PlayerBullet extends PlayerAttack {
     group.setTranslateX(pos.x);
     group.setTranslateY(pos.y);
     group.setRotate(-dir);
-    group.setOpacity(Game.player.alpha);
+    group.setOpacity(Game.player.alpha * parentStats.projOpacity);
   }
 
   public void killHelper() {
