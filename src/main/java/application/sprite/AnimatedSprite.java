@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 public class AnimatedSprite extends Sprite {
@@ -16,7 +17,7 @@ public class AnimatedSprite extends Sprite {
   private final int frameDelay;
 
   public AnimatedSprite(Group sceneGroup, String[] imgPaths, double[] offset, double scale, int frameDelay)
-      throws FileNotFoundException {
+          throws IOException {
     super(sceneGroup, offset, scale);
     this.frameDelay = frameDelay;
     this.alpha = 1;
@@ -25,12 +26,13 @@ public class AnimatedSprite extends Sprite {
   }
 
   private void setImages(String[] filePaths)
-      throws FileNotFoundException {
+          throws IOException {
     imgs = new Image[filePaths.length];
     for (int i = 0; i < filePaths.length; i++) {
       InputStream stream = new FileInputStream("src/main/java/application/images/" + filePaths[i]);
       Image image = new Image(stream);
       imgs[i] = image;
+      stream.close();
     }
   }
 
@@ -43,7 +45,7 @@ public class AnimatedSprite extends Sprite {
   public AnimatedSprite clone() {
     try {
       return new AnimatedSprite(getSceneGroup(), imgPaths, new double[] {offset[0], offset[1]}, scale, frameDelay);
-    } catch (FileNotFoundException e) {
+    } catch (IOException e) {
       throw new RuntimeException();
     }
   }
