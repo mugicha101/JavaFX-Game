@@ -23,4 +23,6 @@ module com.example.demo {
   opens application.bullet.attr.bullet to javafx.fxml;
   exports application.bullet.attr.laser;
   opens application.bullet.attr.laser to javafx.fxml;
+    exports application.bg;
+    opens application.bg to javafx.fxml;
 }

@@ -1,6 +1,8 @@
 package application;
 
 import application.attack.PlayerAttack;
+import application.bg.BackgroundLayer;
+import application.bg.CloudLayer;
 import application.enemy.types.*;
 import application.enemy.pathing.*;
 import application.level.*;
@@ -8,7 +10,6 @@ import application.particle.Particle;
 import application.pattern.*;
 import application.bullet.types.Bullet;
 import application.sprite.*;
-import application.stats.Item;
 import application.stats.Player;
 import application.stats.Stats;
 import javafx.animation.KeyFrame;
@@ -26,11 +27,11 @@ import javafx.util.Duration;
 import java.io.IOException;
 
 public class Game extends Application {
-  public static final double borderWidth = 20;
-  public static final double topMargin = 20;
-  public static final double width = 600;
-  public static final double height = 800;
-  public static final double guiWidth = 300;
+  public static final int borderWidth = 20;
+  public static final int topMargin = 20;
+  public static final int width = 600;
+  public static final int height = 800;
+  public static final int guiWidth = 300;
   public static final int playerMoveEdgeMargin = 15;
   public static Player player;
   public static ParallelCamera cam;
@@ -41,11 +42,13 @@ public class Game extends Application {
   public static Group rootGroup;
   public static Group mainGroup;
   public static Group guiGroup;
+  public static Group backgroundGroup;
   public static Group playerGroup;
   public static Group enemyGroup;
   public static Group bulletGroupFront;
   public static Group bulletGroupBack;
   public static Group playerHBGroup;
+  public static BackgroundLayer[] bgLayers;
 
   public void start(Stage stage) throws IOException {
     // setup JavaFX
@@ -53,8 +56,6 @@ public class Game extends Application {
     // root.setClip(new Rectangle(0, 0, width, height));
     // Canvas canvas = new Canvas(dim[0], dim[1]);
     // root.getChildren().add(canvas);
-    Timeline tl = new Timeline(new KeyFrame(Duration.millis(17), e -> run()));
-    tl.setCycleCount(Timeline.INDEFINITE);
     Scene scene = new Scene(rootGroup);
     stage.setScene(scene);
     stage.setWidth(width + guiWidth + borderWidth * 2);
@@ -66,7 +67,6 @@ public class Game extends Application {
     stage.show();
     stage.setTitle("Game");
     Game.stage = stage;
-    tl.play();
 
     // setup input
     stage.getScene().setOnKeyPressed(e -> Input.keyRequest(e.getCode(), true));
@@ -79,7 +79,7 @@ public class Game extends Application {
 
     mainGroup.setClip(new Rectangle(0, 0, width, height));
     Rectangle bg = new Rectangle(0, 0, width, height);
-    bg.setFill(Color.BLACK);
+    bg.setFill(Color.color(0, 0, 0.1));
     mainGroup.getChildren().add(bg);
 
     guiGroup.setClip(new Rectangle(0, 0, guiWidth, height));
@@ -90,12 +90,21 @@ public class Game extends Application {
     guiGroup.setTranslateX(width);
 
     // setup scene graph nodes
+    backgroundGroup = new Group();
     playerGroup = new Group();
     enemyGroup = new Group();
     bulletGroupBack = new Group();
     bulletGroupFront = new Group();
     playerHBGroup = new Group();
-    mainGroup.getChildren().addAll(playerGroup, enemyGroup, PlayerAttack.playerAttackGroup, bulletGroupBack, bulletGroupFront, Particle.particleGroup, playerHBGroup);
+    mainGroup.getChildren().addAll(backgroundGroup, playerGroup, enemyGroup, PlayerAttack.playerAttackGroup, bulletGroupBack, bulletGroupFront, Particle.particleGroup, playerHBGroup);
+
+    // setup background
+    bgLayers = new BackgroundLayer[] {
+            new CloudLayer(backgroundGroup, width, height, 1,  Color.color(1, 1, 1, 0.1), 50),
+            new CloudLayer(backgroundGroup, width, height, 3,  Color.color(1, 1, 1, 0.1), 25),
+    };
+    for (BackgroundLayer bgLayer : bgLayers)
+      bgLayer.init();
 
     // setup player
     String[] pImgArr = new String[4];
@@ -107,16 +116,16 @@ public class Game extends Application {
             new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1, 5, 5, 10, 5, 1, 2, 0, false, Stats.ProjType.BULLET, Stats.LaserType.NONE, Color.YELLOW));
     player.pos.set(width * 0.5, height * 0.8);
 
-    //player.addItem(Item.BoxingGloves);
+    // player.addItem(Item.BoxingGloves);
     //player.addItem(Item.TruePrecision);
     // player.addItem(Item.Delineator);
     // player.addItem(Item.Shotgun);
     // player.addItem(Item.DoubleShot);
     // player.addItem(Item.TripleShot);
-    //player.addItem(Item.AttackNeedles);
-    //player.addItem(Item.PlasmaCore);
-    //player.addItem(Item.Anvil);
-    player.addItem(Item.RainStorm);
+    // player.addItem(Item.AttackNeedles);
+    // player.addItem(Item.PlasmaCore);
+    // player.addItem(Item.Anvil);
+    // player.addItem(Item.RainStorm);
     // player.addItem(Item.InflatableBalloon);
 
     // setup level
@@ -157,6 +166,11 @@ public class Game extends Application {
     LevelSegment testSeg = new LevelSegment(streamSpawn, new LevelBreak(60), burstSpawn, new LevelBreak(300));
     Level testLevel = new Level(new LevelSegment(testSeg, testSeg, testSeg, testSeg, testSeg));
     Level.setActive(testLevel);
+
+    // start game loop
+    Timeline tl = new Timeline(new KeyFrame(Duration.millis(17), e -> run()));
+    tl.setCycleCount(Timeline.INDEFINITE);
+    tl.play();
   }
 
   private void run() {
@@ -180,6 +194,7 @@ public class Game extends Application {
 
   private void draw() {
     screenResize();
+    drawBG();
     drawPlayer();
     Enemy.drawEnemies();
     PlayerAttack.drawAttacks();
@@ -196,7 +211,7 @@ public class Game extends Application {
     }
   }
 
-  private void movePlayer() {
+  private static void movePlayer() {
     int[] moveOffset = new int[] {0, 0};
     if (Input.getInput("left").isPressed()) moveOffset[0]--;
     if (Input.getInput("right").isPressed()) moveOffset[0]++;
@@ -215,7 +230,7 @@ public class Game extends Application {
     else if (focusHold > 0 && !Input.getInput("focus").isPressed()) focusHold--;
   }
 
-  public static void screenResize() {
+  private static void screenResize() {
     double w = borderWidth * 2 + width + guiWidth;
     double h = borderWidth * 2 + height;
     double scaleVal = Math.min((stage.getWidth()) / w, (stage.getHeight() - topMargin) / h);
@@ -229,12 +244,17 @@ public class Game extends Application {
     rootGroup.setTranslateY((stage.getHeight() - scaleVal * h) / 2 + borderWidth * scaleVal - topMargin);
   }
 
-  public static void drawPlayer() {
+  private static void drawBG() {
+    for (BackgroundLayer bgLayer : bgLayers)
+      bgLayer.drawUpdate();
+  }
+
+  private static void drawPlayer() {
     player.alpha = 1 - (double) focusHold / 20;
     player.drawUpdate();
   }
 
-  public static void debugRun() {
+  private static void debugRun() {
     if (frame % 60 == 0) {
       System.out.println("cycle: " + frame);
       System.out.println(Bullet.getBullets().size());
