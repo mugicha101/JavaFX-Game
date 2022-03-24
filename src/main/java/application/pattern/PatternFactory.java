@@ -17,6 +17,28 @@ import java.util.Random;
 public class PatternFactory {
   protected static final Random rand = new Random();
 
+  public static Pattern Ring(int initFrameDelay, int frameDelay, int bullets, BulletColor color, LinMoveAttr linMoveAttr) {
+    return new Pattern(
+        "ring",
+        null,
+        (time, pos, width, height) -> {
+          if (time >= initFrameDelay && (time - initFrameDelay) % frameDelay == 0) {
+              double startDir = rand.nextDouble() * 360;
+              for (int i = 0; i < bullets; i++) {
+                  LinMoveAttr lma = (LinMoveAttr)linMoveAttr.clone();
+                  lma.initDir = (startDir + i * 360.0/bullets) % 360;
+                  new Bullet(
+                      pos,
+                      1,
+                      color,
+                      new BulletAttr[] {
+                        lma
+                      });
+            }
+          }
+        });
+  }
+
   public static Pattern Test() {
     return new Pattern(
         "test",
@@ -85,21 +107,25 @@ public class PatternFactory {
         });
   }
 
-  public static Pattern TestStream() {
+  public static Pattern TestStream(BulletColor color, int spokes, double spokeAngleSpacing) {
     return new Pattern(
         "stream",
         null,
         (time, pos, width, height) -> {
           if (time < 60 && time % 5 == 0) {
             for (int i = 0; i < 5; i++) {
-              for (int j = -1; j <= 1; j++) {
+              for (int j = 0; j < spokes; j++) {
                 new RiceBullet(
                     pos,
                     1,
-                    BulletColor.CYAN,
+                    color,
                     new BulletAttr[] {
                       new LinMoveAttr(
-                          "move", 0, DirCalc.dirToPlayer(pos) + j * 15, new LinChangeAttr("acc", 0.5, 5 + i))
+                          "move",
+                          0,
+                          DirCalc.dirToPlayer(pos)
+                              + (spokes == 1 ? 0 : (j - (spokes - 1) / 2.0) * spokeAngleSpacing),
+                          new LinChangeAttr("acc", 0.5, 5 + i))
                     },
                     null);
               }
@@ -136,7 +162,7 @@ public class PatternFactory {
                             ((LinMoveAttr) ba).dir += dirChange;
                             ((LinMoveAttr) ba).speed = 2;
                           }),
-                     new BlankStage(180)
+                      new BlankStage(180)
                     });
               }
             }

@@ -29,7 +29,7 @@ public class LinChangeAttr extends ChangeAttr {
     return value;
   }
 
-  public ChangeAttr clone(String newId) {
+  public LinChangeAttr clone(String newId) {
     if (limit == null) return new LinChangeAttr(newId, changeAmount);
     else return new LinChangeAttr(newId, changeAmount, limit);
   }

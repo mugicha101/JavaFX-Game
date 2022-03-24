@@ -4,6 +4,8 @@ import application.attack.PlayerAttack;
 import application.bg.BackgroundLayer;
 import application.bg.CloudLayer;
 import application.bullet.BulletColor;
+import application.bullet.attr.bullet.LinMoveAttr;
+import application.bullet.attr.change.LinChangeAttr;
 import application.enemy.types.*;
 import application.enemy.pathing.*;
 import application.level.*;
@@ -150,7 +152,7 @@ public class Game extends Application {
                     25,
                     5,
                     PatternFactory.Test())));
-    LevelEvent streamSpawn =
+    LevelEvent streamSpawn1 =
         new LevelEvent(
             300,
             LevelActionFactory.repeatedEnemySpawn(
@@ -163,7 +165,23 @@ public class Game extends Application {
                     Color.LIGHTBLUE,
                     15,
                     2,
-                    PatternFactory.TestStream())));
+                    PatternFactory.TestStream(BulletColor.CYAN, 3, 15))));
+    LevelEvent streamSpawn2 =
+            new LevelEvent(
+                    300,
+                    LevelActionFactory.repeatedEnemySpawn(
+                            0,
+                            50,
+                            new Enemy(
+                                    120,
+                                    PathFactory.linearPath(0, height * 0.25, width, height * 0.25, 120),
+                                    new StaticSprite(enemyGroup, "enemy/smallPrismElite.png", null, 0.1),
+                                    Color.LIGHTBLUE,
+                                    15,
+                                    2,
+                                    PatternFactory.TestStream(BulletColor.ORANGE, 4, 15),
+                                    PatternFactory.Ring(30, 30, 30, BulletColor.YELLOW, new LinMoveAttr("move", 15, 0, new LinChangeAttr("acc", -0.5, 3)))
+                            )));
     LevelEvent denseSpawn = new LevelEvent(
             300,
             LevelActionFactory.singleEnemySpawn(
@@ -174,11 +192,11 @@ public class Game extends Application {
                         Color.LIGHTBLUE,
                         50,
                         50,
-                        PatternFactory.FalseDoubleRotate(60, BulletColor.create(0, 1, 1), BulletColor.create(0, 0.75, 1), BulletColor.create(0, 0.5, 1))
+                        PatternFactory.FalseDoubleRotate(45, BulletColor.create(0, 1, 1), BulletColor.create(0, 0.75, 1), BulletColor.create(0, 0.5, 1))
                     )
             )
     );
-    LevelSegment testSeg = new LevelSegment(streamSpawn, new LevelBreak(60), burstSpawn, new LevelBreak(300), denseSpawn, new LevelBreak(300));
+    LevelSegment testSeg = new LevelSegment(streamSpawn1, new LevelBreak(60), burstSpawn, new LevelBreak(180), streamSpawn2, denseSpawn, new LevelBreak(300));
     Level testLevel = new Level(new LevelSegment(testSeg, testSeg, testSeg, testSeg, testSeg));
     Level.setActive(testLevel);
 

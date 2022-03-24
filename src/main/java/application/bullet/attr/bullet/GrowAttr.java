@@ -28,7 +28,7 @@ public class GrowAttr extends BulletAttr {
     return false;
   }
 
-  public BulletAttr clone(String newId) {
+  public GrowAttr clone(String newId) {
     return new GrowAttr(newId, changeAttr);
   }
 

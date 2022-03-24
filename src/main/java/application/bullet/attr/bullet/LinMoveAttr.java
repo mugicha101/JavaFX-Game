@@ -7,9 +7,9 @@ import application.bullet.types.Bullet;
 import java.util.HashMap;
 
 public class LinMoveAttr extends BulletAttr {
-  private final double initSpeed;
-  private final double initDir;
-  private final ChangeAttr accelAttr;
+  public double initSpeed;
+  public double initDir;
+  public ChangeAttr accelAttr;
   public double speed;
   public double dir;
 
@@ -44,7 +44,7 @@ public class LinMoveAttr extends BulletAttr {
     return false;
   }
 
-  public BulletAttr clone(String newId) {
+  public LinMoveAttr clone(String newId) {
     return new LinMoveAttr(newId, initSpeed, initDir, accelAttr);
   }
 

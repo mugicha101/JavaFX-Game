@@ -46,10 +46,10 @@ public class Enemy {
   public final double maxHealth;
   protected double health;
   private boolean active;
-  private final Pattern pattern;
+  private final Pattern[] patterns;
   public final Color color;
 
-  public Enemy(int lifetime, Path path, Sprite sprite, Color color, double hitRadius, double health, Pattern pattern) {
+  public Enemy(int lifetime, Path path, Sprite sprite, Color color, double hitRadius, double health, Pattern... patterns) {
     time = 0;
     this.lifetime = lifetime;
     this.path = path;
@@ -60,13 +60,11 @@ public class Enemy {
     maxHealth = health;
     this.health = health;
     active = false;
-    this.pattern = pattern == null? null : pattern.clone();
-    if (this.pattern != null)
-      this.pattern.pos = pos;
-  }
-
-  public Enemy(int lifetime, Path path, Sprite sprite, Color color, double hitRadius, double health) {
-    this(lifetime, path, sprite, color, hitRadius, health, null);
+    this.patterns = new Pattern[patterns.length];
+    for (int i = 0; i < patterns.length; i++) {
+      this.patterns[i] = patterns[i].clone();
+      this.patterns[i].pos = pos;
+    }
   }
 
   public void activate() { // converts template enemy to active enemy
@@ -86,7 +84,8 @@ public class Enemy {
   public final void move() {
     time++;
     pos.set(path.pos(time));
-    if (pattern != null) pattern.moveTick();
+    for (Pattern p : patterns)
+      p.moveTick();
   }
 
   public final void drawUpdate() {
@@ -114,6 +113,6 @@ public class Enemy {
   }
 
   public Enemy clone() {
-    return new Enemy(lifetime, path, spriteSource, color, hitRadius, maxHealth, pattern == null? null : pattern.clone());
+    return new Enemy(lifetime, path, spriteSource, color, hitRadius, maxHealth, patterns);
   }
 }

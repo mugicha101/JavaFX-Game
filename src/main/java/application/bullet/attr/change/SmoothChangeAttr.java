@@ -19,7 +19,7 @@ public class SmoothChangeAttr extends ChangeAttr {
     return value + (limit - value) * multi;
   }
 
-  public ChangeAttr clone(String newId) {
+  public SmoothChangeAttr clone(String newId) {
     return new SmoothChangeAttr(newId, multi, limit);
   }
 

@@ -15,11 +15,11 @@ public class RotMoveAttr extends BulletAttr {
     ORIGIN, // faces away from origin
     MOVE, // faces in direction of motion
   }
-  private final double initDist;
-  private final double initMoveSpeed;
-  private final double initDir;
-  private final double initRotSpeed;
-  private final Position center;
+  public double initDist;
+  public double initMoveSpeed;
+  public double initDir;
+  public double initRotSpeed;
+  public Position center;
   public double dist;
   public double moveSpeed;
   public double rotSpeed;
@@ -68,6 +68,8 @@ public class RotMoveAttr extends BulletAttr {
     this(id, startingDist, moveSpeed, dir, rotSpeed, dirMode, null, null);
   }
 
+  // TO ADD: ability to move center
+
   public void init(Bullet b) {
     moveSpeed = initMoveSpeed;
     rotSpeed = initRotSpeed;
@@ -103,7 +105,7 @@ public class RotMoveAttr extends BulletAttr {
     return b.finishedStages() && dist * dist > Game.width * Game.width + Game.height * Game.height;
   }
 
-  public BulletAttr clone(String newId) {
+  public RotMoveAttr clone(String newId) {
     return new RotMoveAttr(
         newId, initDist, initMoveSpeed, initDir, initRotSpeed, dirMode, moveAccelAttr, rotAccelAttr);
   }
