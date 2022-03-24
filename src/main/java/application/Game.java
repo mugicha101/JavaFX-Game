@@ -1,7 +1,6 @@
 package application;
 
 import application.attack.PlayerAttack;
-import application.attack.PlayerBullet;
 import application.enemy.types.*;
 import application.enemy.pathing.*;
 import application.level.*;
@@ -27,11 +26,12 @@ import javafx.util.Duration;
 import java.io.IOException;
 
 public class Game extends Application {
-  public static double rightMargin = 9;
-  public static double topMargin = 24;
-  public static final double width = 800;
-  public static final double height = 600;
-  public static final int edgeMargin = 15;
+  public static final double borderWidth = 20;
+  public static final double topMargin = 20;
+  public static final double width = 600;
+  public static final double height = 800;
+  public static final double guiWidth = 300;
+  public static final int playerMoveEdgeMargin = 15;
   public static Player player;
   public static ParallelCamera cam;
   public static boolean debug = false;
@@ -39,6 +39,8 @@ public class Game extends Application {
   public static int focusHold = 0;
   public static Stage stage;
   public static Group rootGroup;
+  public static Group mainGroup;
+  public static Group guiGroup;
   public static Group playerGroup;
   public static Group enemyGroup;
   public static Group bulletGroupFront;
@@ -48,10 +50,6 @@ public class Game extends Application {
   public void start(Stage stage) throws IOException {
     // setup JavaFX
     rootGroup = new Group();
-    rootGroup.setClip(new Rectangle(0, 0, width, height));
-    Rectangle bg = new Rectangle(0, 0, width, height);
-    bg.setFill(Color.BLACK);
-    rootGroup.getChildren().add(bg);
     // root.setClip(new Rectangle(0, 0, width, height));
     // Canvas canvas = new Canvas(dim[0], dim[1]);
     // root.getChildren().add(canvas);
@@ -59,10 +57,10 @@ public class Game extends Application {
     tl.setCycleCount(Timeline.INDEFINITE);
     Scene scene = new Scene(rootGroup);
     stage.setScene(scene);
-    stage.setWidth(width + rightMargin);
-    stage.setHeight(height + topMargin);
-    stage.setMinWidth(0);
-    stage.setMinHeight(0);
+    stage.setWidth(width + guiWidth + borderWidth * 2);
+    stage.setHeight(height + borderWidth * 2);
+    stage.setMinWidth(borderWidth);
+    stage.setMinHeight(borderWidth);
     // stage.initStyle(StageStyle.UNDECORATED);
     stage.setResizable(true);
     stage.show();
@@ -74,19 +72,30 @@ public class Game extends Application {
     stage.getScene().setOnKeyPressed(e -> Input.keyRequest(e.getCode(), true));
     stage.getScene().setOnKeyReleased(e -> Input.keyRequest(e.getCode(), false));
 
-    // setup scene graph bullets node
+    // setup screen regions
+    mainGroup = new Group();
+    guiGroup = new Group();
+    rootGroup.getChildren().addAll(mainGroup, guiGroup);
+
+    mainGroup.setClip(new Rectangle(0, 0, width, height));
+    Rectangle bg = new Rectangle(0, 0, width, height);
+    bg.setFill(Color.BLACK);
+    mainGroup.getChildren().add(bg);
+
+    guiGroup.setClip(new Rectangle(0, 0, guiWidth, height));
+    bg = new Rectangle(0, 0, guiWidth, height);
+    bg.setFill(Color.ORANGE);
+    scene.setFill(Color.YELLOW);
+    guiGroup.getChildren().add(bg);
+    guiGroup.setTranslateX(width);
+
+    // setup scene graph nodes
     playerGroup = new Group();
-    rootGroup.getChildren().add(playerGroup);
     enemyGroup = new Group();
-    rootGroup.getChildren().add(enemyGroup);
-    rootGroup.getChildren().add(PlayerAttack.playerAttackGroup);
     bulletGroupBack = new Group();
-    rootGroup.getChildren().add(bulletGroupBack);
     bulletGroupFront = new Group();
-    rootGroup.getChildren().add(bulletGroupFront);
-    rootGroup.getChildren().add(Particle.particleGroup);
     playerHBGroup = new Group();
-    rootGroup.getChildren().add(playerHBGroup);
+    mainGroup.getChildren().addAll(playerGroup, enemyGroup, PlayerAttack.playerAttackGroup, bulletGroupBack, bulletGroupFront, Particle.particleGroup, playerHBGroup);
 
     // setup player
     String[] pImgArr = new String[4];
@@ -196,10 +205,10 @@ public class Game extends Application {
 
     double multi = player.getStats().speed * (Input.getInput("focus").isPressed() ? player.getStats().focusMulti : 1);
     player.pos.move(moveOffset, multi);
-    if (player.pos.x < edgeMargin) player.pos.x = edgeMargin;
-    else if (player.pos.x > width - edgeMargin) player.pos.x = width - edgeMargin;
-    if (player.pos.y < edgeMargin) player.pos.y = edgeMargin;
-    else if (player.pos.y > height - edgeMargin) player.pos.y = height - edgeMargin;
+    if (player.pos.x < playerMoveEdgeMargin) player.pos.x = playerMoveEdgeMargin;
+    else if (player.pos.x > width - playerMoveEdgeMargin) player.pos.x = width - playerMoveEdgeMargin;
+    if (player.pos.y < playerMoveEdgeMargin) player.pos.y = playerMoveEdgeMargin;
+    else if (player.pos.y > height - playerMoveEdgeMargin) player.pos.y = height - playerMoveEdgeMargin;
     player.dir = moveOffset[0] * multi * 5;
 
     if (focusHold < 10 && Input.getInput("focus").isPressed()) focusHold++;
@@ -207,17 +216,17 @@ public class Game extends Application {
   }
 
   public static void screenResize() {
-    double rm = stage.isFullScreen() ? 0 : rightMargin;
-    double tm = stage.isFullScreen() ? 0 : topMargin;
-    double scaleVal = Math.min((stage.getWidth() - rm) / width, (stage.getHeight() - tm) / height);
+    double w = borderWidth * 2 + width + guiWidth;
+    double h = borderWidth * 2 + height;
+    double scaleVal = Math.min((stage.getWidth()) / w, (stage.getHeight() - topMargin) / h);
     Scale scale = new Scale();
     scale.setPivotX(0);
     scale.setPivotY(0);
     scale.setX(scaleVal);
     scale.setY(scaleVal);
     rootGroup.getTransforms().setAll(scale);
-    rootGroup.setTranslateX((stage.getWidth() - scaleVal * width) / 2 - rm);
-    rootGroup.setTranslateY((stage.getHeight() - scaleVal * height) / 2 - tm);
+    rootGroup.setTranslateX((stage.getWidth() - scaleVal * w) / 2 + borderWidth * scaleVal);
+    rootGroup.setTranslateY((stage.getHeight() - scaleVal * h) / 2 + borderWidth * scaleVal - topMargin);
   }
 
   public static void drawPlayer() {
