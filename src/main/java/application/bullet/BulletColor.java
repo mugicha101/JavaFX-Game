@@ -74,6 +74,20 @@ public class BulletColor {
   public static final BulletColor DARK_GRAY =
       new BulletColor(Color.color(0.7, 0.7, 0.7), Color.color(0.3, 0.3, 0.3));
 
+  public static BulletColor create(Color color) {
+    return new BulletColor(Color.color(1, 1, 1), color);
+  }
+  public static BulletColor create(double r, double g, double b) {
+    return create(Color.color(r, g, b));
+  }
+
+  public static BulletColor createInverse(Color color) {
+    return new BulletColor(Color.color(0, 0, 0), color);
+  }
+  public static BulletColor createInverse(double r, double g, double b) {
+    return createInverse(Color.color(r, g, b));
+  }
+
   public final Color innerColor;
   public final Color outerColor;
 

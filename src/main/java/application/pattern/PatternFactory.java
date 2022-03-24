@@ -10,6 +10,7 @@ import application.bullet.attr.change.LinChangeAttr;
 import application.bullet.attr.change.SmoothChangeAttr;
 import application.bullet.staging.*;
 import application.bullet.types.*;
+import javafx.scene.paint.Color;
 
 import java.util.Random;
 
@@ -42,6 +43,7 @@ public class PatternFactory {
                           2 + j * 0.2,
                           dir,
                           2 * rotMulti,
+                          RotMoveAttr.DirMode.ORIGIN,
                           new LinChangeAttr("moveAcc", -0.03, 0),
                           new LinChangeAttr("rotAcc", -0.02 * rotMulti, 0)),
                       new LinMoveAttr("lin", 0, 0, new LinChangeAttr("acc", 0.005, 3))
@@ -100,6 +102,42 @@ public class PatternFactory {
                           "move", 0, DirCalc.dirToPlayer(pos) + j * 15, new LinChangeAttr("acc", 0.5, 5 + i))
                     },
                     null);
+              }
+            }
+          }
+        });
+  }
+
+  public static Pattern FalseDoubleRotate(int bullets, BulletColor... ringColors) {
+    return new Pattern(
+        "double rotate",
+        null,
+        (time, pos, width, height) -> {
+          if (time >= 120 && time % 120 == 0) {
+            for (int r = 0; r < ringColors.length; r++) {
+              for (int i = 0; i < bullets * 2; i++) {
+                int dirChange = i % 2 == 0 ? 90 : -90;
+                new RiceBullet(
+                    pos,
+                    1,
+                    ringColors[r],
+                    new BulletAttr[] {
+                      new LinMoveAttr(
+                          "move", 5, i * 180.0 / bullets, new LinChangeAttr("acc", -0.2, 0))
+                    },
+                    new BulletStage[] {
+                      new DisableAttrStage(0, "move.acc"),
+                      new EnableAttrStage(r * 20, "move.acc"),
+                      new DisableAttrStage(60 + (ringColors.length - r - 1) * 20, "move.acc"),
+                      new ModifyAttrStage(
+                          0,
+                          "move",
+                          (ba) -> {
+                            ((LinMoveAttr) ba).dir += dirChange;
+                            ((LinMoveAttr) ba).speed = 2;
+                          }),
+                     new BlankStage(180)
+                    });
               }
             }
           }

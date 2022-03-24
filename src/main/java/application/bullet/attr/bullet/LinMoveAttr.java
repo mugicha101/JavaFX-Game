@@ -29,7 +29,6 @@ public class LinMoveAttr extends BulletAttr {
   public void init(Bullet b) {
     speed = initSpeed;
     dir = initDir;
-    b.dir = dir;
   }
 
   public void prepTick(Bullet b) {
@@ -37,6 +36,7 @@ public class LinMoveAttr extends BulletAttr {
   }
 
   public void moveTick(Bullet b) {
+    b.dir = dir;
     b.pos.moveInDir(dir, speed);
   }
 

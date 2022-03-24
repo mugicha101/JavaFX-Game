@@ -3,6 +3,7 @@ package application;
 import application.attack.PlayerAttack;
 import application.bg.BackgroundLayer;
 import application.bg.CloudLayer;
+import application.bullet.BulletColor;
 import application.enemy.types.*;
 import application.enemy.pathing.*;
 import application.level.*;
@@ -138,7 +139,7 @@ public class Game extends Application {
                     PathFactory.linearPath(0, 0, width, height * 0.5, 225),
                     new StaticSprite(enemyGroup, "enemy/bigPrismElite.png", null, 0.1),
                     Color.RED,
-                    30,
+                    25,
                     5,
                     PatternFactory.Test()),
                 new Enemy(
@@ -146,7 +147,7 @@ public class Game extends Application {
                     PathFactory.linearPath(width, 0, 0, height * 0.5, 225),
                     new StaticSprite(enemyGroup, "enemy/bigPrismElite.png", null, 0.1),
                     Color.RED,
-                    30,
+                    25,
                     5,
                     PatternFactory.Test())));
     LevelEvent streamSpawn =
@@ -160,10 +161,24 @@ public class Game extends Application {
                     PathFactory.linearPath(0, height * 0.25, width, height * 0.25, 120),
                     new StaticSprite(enemyGroup, "enemy/smallPrism.png", null, 0.1),
                     Color.LIGHTBLUE,
-                    20,
+                    15,
                     2,
                     PatternFactory.TestStream())));
-    LevelSegment testSeg = new LevelSegment(streamSpawn, new LevelBreak(60), burstSpawn, new LevelBreak(300));
+    LevelEvent denseSpawn = new LevelEvent(
+            300,
+            LevelActionFactory.singleEnemySpawn(
+                    new Enemy(
+                        900,
+                        PathFactory.convergePath((double)width/2, 0.0, (double)width/2, height * 0.2, 0.05),
+                        new StaticSprite(enemyGroup, "enemy/bigPrism.png", null, 0.2),
+                        Color.LIGHTBLUE,
+                        50,
+                        50,
+                        PatternFactory.FalseDoubleRotate(60, BulletColor.create(0, 1, 1), BulletColor.create(0, 0.75, 1), BulletColor.create(0, 0.5, 1))
+                    )
+            )
+    );
+    LevelSegment testSeg = new LevelSegment(streamSpawn, new LevelBreak(60), burstSpawn, new LevelBreak(300), denseSpawn, new LevelBreak(300));
     Level testLevel = new Level(new LevelSegment(testSeg, testSeg, testSeg, testSeg, testSeg));
     Level.setActive(testLevel);
 

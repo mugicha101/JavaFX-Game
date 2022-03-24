@@ -1,5 +1,6 @@
 package application.bullet.attr.bullet;
 
+import application.DirCalc;
 import application.Game;
 import application.Position;
 import application.bullet.attr.Attr;
@@ -9,6 +10,11 @@ import application.bullet.types.Bullet;
 import java.util.HashMap;
 
 public class RotMoveAttr extends BulletAttr {
+  public enum DirMode {
+    NONE, // does not edit direction
+    ORIGIN, // faces away from origin
+    MOVE, // faces in direction of motion
+  }
   private final double initDist;
   private final double initMoveSpeed;
   private final double initDir;
@@ -18,6 +24,7 @@ public class RotMoveAttr extends BulletAttr {
   public double moveSpeed;
   public double rotSpeed;
   public double dir;
+  private final DirMode dirMode;
   private final ChangeAttr moveAccelAttr;
   private final ChangeAttr rotAccelAttr;
 
@@ -27,6 +34,7 @@ public class RotMoveAttr extends BulletAttr {
       double moveSpeed,
       double dir,
       double rotSpeed,
+      DirMode dirMode,
       ChangeAttr moveAccelAttr,
       ChangeAttr rotAccelAttr) {
     super(id);
@@ -38,6 +46,7 @@ public class RotMoveAttr extends BulletAttr {
     this.moveSpeed = initMoveSpeed;
     this.rotSpeed = initRotSpeed;
     this.dir = initDir;
+    this.dirMode = dirMode;
     this.moveAccelAttr = moveAccelAttr == null ? null : moveAccelAttr.clone();
     this.rotAccelAttr = rotAccelAttr == null ? null : rotAccelAttr.clone();
     this.center = new Position(0, 0);
@@ -49,13 +58,14 @@ public class RotMoveAttr extends BulletAttr {
       double moveSpeed,
       double dir,
       double rotSpeed,
+      DirMode dirMode,
       ChangeAttr moveAccelAttr) {
-    this(id, startingDist, moveSpeed, dir, rotSpeed, moveAccelAttr, null);
+    this(id, startingDist, moveSpeed, dir, rotSpeed, dirMode, moveAccelAttr, null);
   }
 
   public RotMoveAttr(
-      String id, double startingDist, double moveSpeed, double dir, double rotSpeed) {
-    this(id, startingDist, moveSpeed, dir, rotSpeed, null, null);
+      String id, double startingDist, double moveSpeed, double dir, double rotSpeed, DirMode dirMode) {
+    this(id, startingDist, moveSpeed, dir, rotSpeed, dirMode, null, null);
   }
 
   public void init(Bullet b) {
@@ -75,8 +85,13 @@ public class RotMoveAttr extends BulletAttr {
   public void moveTick(Bullet b) {
     dist += moveSpeed;
     dir = (dir + rotSpeed) % 360;
+    Position oldPos = b.pos.clone();
     b.pos.set(center.clone().moveInDir(dir, dist));
-    b.dir = dir;
+    b.dir = switch(dirMode) {
+      case ORIGIN -> dir;
+      case MOVE -> DirCalc.dirTo(oldPos, b.pos);
+      default -> b.dir;
+    };
   }
 
   @Override
@@ -90,7 +105,7 @@ public class RotMoveAttr extends BulletAttr {
 
   public BulletAttr clone(String newId) {
     return new RotMoveAttr(
-        newId, initDist, initMoveSpeed, initDir, initRotSpeed, moveAccelAttr, rotAccelAttr);
+        newId, initDist, initMoveSpeed, initDir, initRotSpeed, dirMode, moveAccelAttr, rotAccelAttr);
   }
 
   @Override

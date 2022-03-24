@@ -80,7 +80,7 @@ public class Enemy {
   }
 
   public final boolean isAlive() {
-    return health > 0 && time <= lifetime;
+    return health > 0 && (lifetime <= 0 || time <= lifetime);
   }
 
   public final void move() {
@@ -114,6 +114,6 @@ public class Enemy {
   }
 
   public Enemy clone() {
-    return new Enemy(lifetime, path, spriteSource, color, hitRadius, maxHealth, pattern.clone());
+    return new Enemy(lifetime, path, spriteSource, color, hitRadius, maxHealth, pattern == null? null : pattern.clone());
   }
 }
