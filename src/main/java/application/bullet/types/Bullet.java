@@ -64,25 +64,26 @@ public class Bullet {
     }
   }
 
-  public Bullet(Position pos, double size, BulletColor color, BulletAttr[] attrArr, BulletStage[] stageArr) {
-    this.pos = pos.clone();
+  protected Bullet(BulletTemplate template, double sizeMulti) {
+    this.pos = template.pos.clone();
     alive = true;
     time = 0;
-    this.radius = size*8;
+    this.radius = template.size*sizeMulti;
     this.scale = 1;
-    this.color = color;
+    this.color = template.color;
     attrList = new ArrayList<>();
     attrMap = new HashMap<>();
-    for (BulletAttr ba : attrArr) {
+    for (BulletAttr ba : template.attrArr) {
       BulletAttr baClone = ba.clone();
       attrList.add(baClone);
       baClone.toMap(attrMap, "");
     }
-    if (stageArr == null)
+    if (template.stageArr == null)
       stageList = null;
     else {
       stageList = new ArrayList<>();
-      stageList.addAll(Arrays.stream(stageArr).toList());
+      for (BulletStage stage : template.stageArr)
+        stageList.add(stage.clone());
     }
     groupFront = new Group();
     groupBack = new Group();
@@ -92,9 +93,8 @@ public class Bullet {
     stageIndex = 0;
     Bullet.bullets.add(this);
   }
-
-  public Bullet(Position pos, double size, BulletColor color, BulletAttr[] attrArr) {
-    this(pos, size, color, attrArr, null);
+  public Bullet(BulletTemplate bulletTemplate) {
+    this(bulletTemplate, 8);
   }
 
   public String getType() {

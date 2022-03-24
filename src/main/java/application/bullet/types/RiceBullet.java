@@ -7,12 +7,8 @@ import application.bullet.staging.BulletStage;
 
 public class RiceBullet extends Bullet {
   public RiceBullet(
-          Position pos, double size, BulletColor color, BulletAttr[] attrArr, BulletStage[] stageArr) {
-    super(pos, size * 0.35, color, attrArr, stageArr);
-  }
-
-  public RiceBullet(Position pos, double size, BulletColor color, BulletAttr[] attrArr) {
-    this(pos, size, color, attrArr, null);
+          BulletTemplate template) {
+    super(template, 4);
   }
 
   @Override

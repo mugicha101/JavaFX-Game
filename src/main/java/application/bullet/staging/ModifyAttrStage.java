@@ -13,4 +13,8 @@ public class ModifyAttrStage extends AttrStage {
   public void action(Attr attr) {
     mod.action(attr);
   }
+
+  public ModifyAttrStage clone() {
+    return new ModifyAttrStage(getTime(), getId(), mod);
+  }
 }

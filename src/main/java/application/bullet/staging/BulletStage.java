@@ -13,4 +13,6 @@ public abstract class BulletStage {
   public final int getTime() {
     return time;
   }
+
+  public abstract BulletStage clone();
 }

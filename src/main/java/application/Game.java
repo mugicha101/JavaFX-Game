@@ -4,8 +4,11 @@ import application.attack.PlayerAttack;
 import application.bg.BackgroundLayer;
 import application.bg.CloudLayer;
 import application.bullet.BulletColor;
+import application.bullet.attr.bullet.BulletAttr;
 import application.bullet.attr.bullet.LinMoveAttr;
 import application.bullet.attr.change.LinChangeAttr;
+import application.bullet.types.BulletTemplate;
+import application.bullet.types.BulletType;
 import application.enemy.types.*;
 import application.enemy.pathing.*;
 import application.level.*;
@@ -13,6 +16,7 @@ import application.particle.Particle;
 import application.pattern.*;
 import application.bullet.types.Bullet;
 import application.sprite.*;
+import application.stats.Item;
 import application.stats.Player;
 import application.stats.Stats;
 import javafx.animation.KeyFrame;
@@ -120,16 +124,16 @@ public class Game extends Application {
     player.pos.set(width * 0.5, height * 0.8);
 
     // player.addItem(Item.BoxingGloves);
-    //player.addItem(Item.TruePrecision);
+    // player.addItem(Item.TruePrecision);
     // player.addItem(Item.Delineator);
     // player.addItem(Item.Shotgun);
     // player.addItem(Item.DoubleShot);
     // player.addItem(Item.TripleShot);
-    // player.addItem(Item.AttackNeedles);
+    player.addItem(Item.AttackNeedles);
     // player.addItem(Item.PlasmaCore);
-    // player.addItem(Item.Anvil);
+    player.addItem(Item.Anvil);
     // player.addItem(Item.RainStorm);
-    // player.addItem(Item.InflatableBalloon);
+    player.addItem(Item.InflatableBalloon);
 
     // setup level
     LevelEvent burstSpawn =
@@ -165,7 +169,7 @@ public class Game extends Application {
                     Color.LIGHTBLUE,
                     15,
                     2,
-                    PatternFactory.TestStream(BulletColor.CYAN, 3, 15))));
+                    PatternFactory.TestStream(BulletType.RICE, BulletColor.CYAN, 3, 15))));
     LevelEvent streamSpawn2 =
             new LevelEvent(
                     300,
@@ -179,8 +183,10 @@ public class Game extends Application {
                                     Color.LIGHTBLUE,
                                     15,
                                     2,
-                                    PatternFactory.TestStream(BulletColor.ORANGE, 4, 15),
-                                    PatternFactory.Ring(30, 30, 30, BulletColor.YELLOW, new LinMoveAttr("move", 15, 0, new LinChangeAttr("acc", -0.5, 3)))
+                                    PatternFactory.TestStream(BulletType.RICE, BulletColor.ORANGE, 4, 15),
+                                    PatternFactory.Ring(30, 30, 30, new BulletTemplate(BulletType.ORB, null, 1, BulletColor.YELLOW, new BulletAttr[] {
+                                            new LinMoveAttr("move", 15, 0, new LinChangeAttr("acc", -0.5, 3))
+                                    }), "move")
                             )));
     LevelEvent denseSpawn = new LevelEvent(
             300,

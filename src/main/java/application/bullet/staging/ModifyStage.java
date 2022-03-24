@@ -13,4 +13,8 @@ public class ModifyStage extends BulletStage {
   public void action(Bullet b) {
     mod.action(b);
   }
+
+  public ModifyStage clone() {
+    return new ModifyStage(getTime(), mod);
+  }
 }

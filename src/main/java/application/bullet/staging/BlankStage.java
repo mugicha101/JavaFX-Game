@@ -6,4 +6,8 @@ public class BlankStage extends BulletStage {
   }
 
   public void action() {}
+
+  public BlankStage clone() {
+    return new BlankStage(getTime());
+  }
 }

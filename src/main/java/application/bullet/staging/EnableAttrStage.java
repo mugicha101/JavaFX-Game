@@ -10,4 +10,8 @@ public class EnableAttrStage extends AttrStage {
   public void action(Attr attr) {
     attr.enabled = true;
   }
+
+  public EnableAttrStage clone() {
+    return new EnableAttrStage(getTime(), getId());
+  }
 }

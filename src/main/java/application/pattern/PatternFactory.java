@@ -1,6 +1,7 @@
 package application.pattern;
 
 import application.DirCalc;
+import application.Position;
 import application.bullet.BulletColor;
 import application.bullet.attr.bullet.BulletAttr;
 import application.bullet.attr.bullet.GrowAttr;
@@ -17,24 +18,29 @@ import java.util.Random;
 public class PatternFactory {
   protected static final Random rand = new Random();
 
-  public static Pattern Ring(int initFrameDelay, int frameDelay, int bullets, BulletColor color, LinMoveAttr linMoveAttr) {
+  private static void spawnRing(
+      Position pos, int bullets, BulletTemplate template, String linMoveId) {
+    Position originalPos = template.pos;
+    template.pos = pos;
+    LinMoveAttr lma = (LinMoveAttr) template.getAttr(linMoveId);
+    double originalDir = lma.initDir;
+    double startDir = rand.nextDouble() * 360;
+    for (int i = 0; i < bullets; i++) {
+      lma.initDir = startDir + i * 360.0 / bullets;
+      template.spawn();
+    }
+    lma.initDir = originalDir;
+    template.pos = originalPos;
+  }
+
+  public static Pattern Ring(
+      int initFrameDelay, int frameDelay, int bullets, BulletTemplate template, String linMoveId) {
     return new Pattern(
         "ring",
         null,
         (time, pos, width, height) -> {
           if (time >= initFrameDelay && (time - initFrameDelay) % frameDelay == 0) {
-              double startDir = rand.nextDouble() * 360;
-              for (int i = 0; i < bullets; i++) {
-                  LinMoveAttr lma = (LinMoveAttr)linMoveAttr.clone();
-                  lma.initDir = (startDir + i * 360.0/bullets) % 360;
-                  new Bullet(
-                      pos,
-                      1,
-                      color,
-                      new BulletAttr[] {
-                        lma
-                      });
-            }
+            spawnRing(pos, bullets, template, linMoveId);
           }
         });
   }
@@ -54,60 +60,69 @@ public class PatternFactory {
               for (int j = 2; j >= 0; j--) {
                 int colorSwitchTime = rand.nextInt(60);
                 double dir = rDir + (i * 360.0 / amount);
-                new RiceBullet(
-                    pos,
-                    1,
-                    BulletColor.INVERSE_RED,
-                    new BulletAttr[] {
-                      new RotMoveAttr(
-                          "rot",
-                          0,
-                          2 + j * 0.2,
-                          dir,
-                          2 * rotMulti,
-                          RotMoveAttr.DirMode.ORIGIN,
-                          new LinChangeAttr("moveAcc", -0.03, 0),
-                          new LinChangeAttr("rotAcc", -0.02 * rotMulti, 0)),
-                      new LinMoveAttr("lin", 0, 0, new LinChangeAttr("acc", 0.005, 3))
-                    },
-                    new BulletStage[] {
-                      new DisableAttrStage(0, "lin"),
-                      new ModifyStage(
-                          20 + colorSwitchTime, (Bullet b) -> b.setColor(BulletColor.DARK_RED)),
-                      new ModifyStage(
-                          80 + j * 5 - colorSwitchTime, (Bullet b) -> b.setColor(BulletColor.RED)),
-                      new ModifyStage(
-                          0,
-                          (Bullet b) ->
-                              ((LinMoveAttr) b.getAttr("lin")).dir =
-                                  ((RotMoveAttr) b.getAttr("rot")).dir + 180),
-                      new DisableAttrStage(0, "rot"),
-                      new EnableAttrStage(0, "lin"),
-                      new ModifyAttrStage(
-                          60, "lin.acc", (ba) -> ((LinChangeAttr) ba).changeAmount = 0.1),
-                      new BlankStage(30),
-                    });
+                BulletTemplate bt =
+                    new BulletTemplate(
+                        BulletType.RICE,
+                        pos,
+                        1,
+                        BulletColor.INVERSE_RED,
+                        new BulletAttr[] {
+                          new RotMoveAttr(
+                              "rot",
+                              0,
+                              2 + j * 0.2,
+                              dir,
+                              2 * rotMulti,
+                              RotMoveAttr.DirMode.ORIGIN,
+                              new LinChangeAttr("moveAcc", -0.03, 0),
+                              new LinChangeAttr("rotAcc", -0.02 * rotMulti, 0)),
+                          new LinMoveAttr("lin", 0, 0, new LinChangeAttr("acc", 0.005, 3))
+                        },
+                        new BulletStage[] {
+                          new DisableAttrStage(0, "lin"),
+                          new ModifyStage(
+                              20 + colorSwitchTime, (Bullet b) -> b.setColor(BulletColor.DARK_RED)),
+                          new ModifyStage(
+                              80 + j * 5 - colorSwitchTime,
+                              (Bullet b) -> b.setColor(BulletColor.RED)),
+                          new ModifyStage(
+                              0,
+                              (Bullet b) ->
+                                  ((LinMoveAttr) b.getAttr("lin")).dir =
+                                      ((RotMoveAttr) b.getAttr("rot")).dir + 180),
+                          new DisableAttrStage(0, "rot"),
+                          new EnableAttrStage(0, "lin"),
+                          new ModifyAttrStage(
+                              60, "lin.acc", (ba) -> ((LinChangeAttr) ba).changeAmount = 0.1),
+                          new BlankStage(30),
+                        });
+                bt.spawn();
               }
             }
-            new Bullet(
-                pos,
-                1,
-                BulletColor.YELLOW,
-                new BulletAttr[] {
-                  new LinMoveAttr("move", 0, 0, new LinChangeAttr("acc", 0.1, 5)),
-                  new GrowAttr("grow", new SmoothChangeAttr("change", 0.02, 3))
-                },
-                new BulletStage[] {
-                  new DisableAttrStage(0, "move"),
-                  new EnableAttrStage(170, "move"),
-                  new ModifyStage(
-                      0, (b) -> ((LinMoveAttr) b.getAttr("move")).dir = DirCalc.dirToPlayer(b.pos))
-                });
+            BulletTemplate bt =
+                new BulletTemplate(
+                    BulletType.ORB,
+                    pos,
+                    1,
+                    BulletColor.YELLOW,
+                    new BulletAttr[] {
+                      new LinMoveAttr("move", 0, 0, new LinChangeAttr("acc", 0.1, 5)),
+                      new GrowAttr("grow", new SmoothChangeAttr("change", 0.02, 3))
+                    },
+                    new BulletStage[] {
+                      new DisableAttrStage(0, "move"),
+                      new EnableAttrStage(170, "move"),
+                      new ModifyStage(
+                          0,
+                          (b) -> ((LinMoveAttr) b.getAttr("move")).dir = DirCalc.dirToPlayer(b.pos))
+                    });
+            bt.spawn();
           }
         });
   }
 
-  public static Pattern TestStream(BulletColor color, int spokes, double spokeAngleSpacing) {
+  public static Pattern TestStream(
+      BulletType type, BulletColor color, int spokes, double spokeAngleSpacing) {
     return new Pattern(
         "stream",
         null,
@@ -115,19 +130,24 @@ public class PatternFactory {
           if (time < 60 && time % 5 == 0) {
             for (int i = 0; i < 5; i++) {
               for (int j = 0; j < spokes; j++) {
-                new RiceBullet(
-                    pos,
-                    1,
-                    color,
-                    new BulletAttr[] {
-                      new LinMoveAttr(
-                          "move",
-                          0,
-                          DirCalc.dirToPlayer(pos)
-                              + (spokes == 1 ? 0 : (j - (spokes - 1) / 2.0) * spokeAngleSpacing),
-                          new LinChangeAttr("acc", 0.5, 5 + i))
-                    },
-                    null);
+                BulletTemplate bt =
+                    new BulletTemplate(
+                        type,
+                        pos,
+                        1,
+                        color,
+                        new BulletAttr[] {
+                          new LinMoveAttr(
+                              "move",
+                              0,
+                              DirCalc.dirToPlayer(pos)
+                                  + (spokes == 1
+                                      ? 0
+                                      : (j - (spokes - 1) / 2.0) * spokeAngleSpacing),
+                              new LinChangeAttr("acc", 0.5, 5 + i))
+                        },
+                        null);
+                bt.spawn();
               }
             }
           }
@@ -143,27 +163,30 @@ public class PatternFactory {
             for (int r = 0; r < ringColors.length; r++) {
               for (int i = 0; i < bullets * 2; i++) {
                 int dirChange = i % 2 == 0 ? 90 : -90;
-                new RiceBullet(
-                    pos,
-                    1,
-                    ringColors[r],
-                    new BulletAttr[] {
-                      new LinMoveAttr(
-                          "move", 5, i * 180.0 / bullets, new LinChangeAttr("acc", -0.2, 0))
-                    },
-                    new BulletStage[] {
-                      new DisableAttrStage(0, "move.acc"),
-                      new EnableAttrStage(r * 20, "move.acc"),
-                      new DisableAttrStage(60 + (ringColors.length - r - 1) * 20, "move.acc"),
-                      new ModifyAttrStage(
-                          0,
-                          "move",
-                          (ba) -> {
-                            ((LinMoveAttr) ba).dir += dirChange;
-                            ((LinMoveAttr) ba).speed = 2;
-                          }),
-                      new BlankStage(180)
-                    });
+                BulletTemplate bt =
+                    new BulletTemplate(
+                        BulletType.RICE,
+                        pos,
+                        1,
+                        ringColors[r],
+                        new BulletAttr[] {
+                          new LinMoveAttr(
+                              "move", 5, i * 180.0 / bullets, new LinChangeAttr("acc", -0.2, 0))
+                        },
+                        new BulletStage[] {
+                          new DisableAttrStage(0, "move.acc"),
+                          new EnableAttrStage(r * 20, "move.acc"),
+                          new DisableAttrStage(60 + (ringColors.length - r - 1) * 20, "move.acc"),
+                          new ModifyAttrStage(
+                              0,
+                              "move",
+                              (ba) -> {
+                                ((LinMoveAttr) ba).dir += dirChange;
+                                ((LinMoveAttr) ba).speed = 2;
+                              }),
+                          new BlankStage(180)
+                        });
+                bt.spawn();
               }
             }
           }
