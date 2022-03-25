@@ -27,5 +27,6 @@ public enum Item {
   Overclock,
   TruePrecision,
   Delineator,
-  RainStorm
+  RainStorm,
+  CompactSnow,
 }

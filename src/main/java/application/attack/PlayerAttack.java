@@ -22,6 +22,9 @@ public abstract class PlayerAttack {
   }
 
   private boolean active;
+  protected boolean isActive() {
+    return active;
+  }
   protected final Group group;
   public PlayerAttack(Group group) {
     playerAttacks.add(this);

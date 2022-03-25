@@ -23,7 +23,7 @@ public class StatManager {
     for (Item item : synergyItems)
       items.remove(item);
     return true;
-  };
+  }
 
   public void updateStats() {
     stats = baseStats.clone();
@@ -58,6 +58,9 @@ public class StatManager {
     }
     if (items.contains(Item.RainStorm)) {
       stats.projColor = Color.color(0, 0.5, 1);
+    }
+    if (items.contains(Item.CompactSnow)) {
+      stats.projColor = Color.color(0.75, 0.75, 0.8);
     }
 
     // handle stat changes
@@ -119,6 +122,7 @@ public class StatManager {
           stats.firerate *= 10;
           stats.damage *= 0.15;
         }
+        case CompactSnow -> stats.collidable = true;
       }
     }
   }

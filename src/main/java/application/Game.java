@@ -121,7 +121,7 @@ public class Game extends Application {
     }
     player =
         new Player(
-            new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1, 5, 5, 10, 5, 1, 2, 0, false, Stats.ProjType.BULLET, Stats.LaserType.NONE, Color.YELLOW));
+            new AnimatedSprite(playerGroup, pImgArr, new double[] {6, 0}, 0.75, 20), new Stats(3, 12, 7, 0.5, 1, 5, 5, 10, 5, 1, 2, 0, false, false,  Stats.ProjType.BULLET, Stats.LaserType.NONE, Color.YELLOW));
     player.pos.set(width * 0.5, height * 0.8);
 
     // player.addItem(Item.BoxingGloves);
@@ -134,6 +134,7 @@ public class Game extends Application {
     // player.addItem(Item.PlasmaCore);
     player.addItem(Item.Anvil);
     // player.addItem(Item.RainStorm);
+    // player.addItem(Item.CompactSnow);
     player.addItem(Item.InflatableBalloon);
 
     // setup level
@@ -181,7 +182,7 @@ public class Game extends Application {
                                     120,
                                     PathFactory.linearPath(0, height * 0.25, width, height * 0.25, 120),
                                     new StaticSprite(enemyGroup, "enemy/smallPrismElite.png", null, 0.1),
-                                    Color.LIGHTBLUE,
+                                    Color.RED,
                                     15,
                                     2,
                                     PatternFactory.TestStream(BulletType.RICE, BulletColor.ORANGE, 4, 15),
@@ -189,7 +190,7 @@ public class Game extends Application {
                                             new LinMoveAttr("move", 15, 0, new LinChangeAttr("acc", -0.5, 3))
                                     }), "move")
                             )));
-    LevelEvent denseSpawn = new LevelEvent(
+    LevelEvent denseSpawn1 = new LevelEvent(
             300,
             LevelActionFactory.singleEnemySpawn(
                     new Enemy(
@@ -203,8 +204,36 @@ public class Game extends Application {
                     )
             )
     );
-    LevelSegment testSeg = new LevelSegment(streamSpawn1, new LevelBreak(60), burstSpawn, new LevelBreak(180), streamSpawn2, denseSpawn, new LevelBreak(300));
-    Level testLevel = new Level(new LevelSegment(testSeg, testSeg, testSeg, testSeg, testSeg));
+    Pattern[] wpArr = new Pattern[2];
+    for (int i = 0; i < 2; i++)
+      wpArr[i] = PatternFactory.WaveParticle(2, 120, 2, -90, i*2 - 1, 1.5, new BulletTemplate(BulletType.RICE, null, 1, i == 0? BulletColor.GREEN : BulletColor.MAGENTA, new BulletAttr[] {
+            new LinMoveAttr("move", 25, 0, new LinChangeAttr("acc", -1, 2))
+    }), "move");
+    LevelEvent denseSpawn2 = new LevelEvent(
+            900,
+            LevelActionFactory.singleEnemySpawn(
+                    new Enemy(
+                            1200,
+                            PathFactory.convergePath((double)width*0.3, 0.0, (double)width*0.3, height * 0.3, 0.05),
+                            new StaticSprite(enemyGroup, "enemy/bigPrismElite.png", null, 0.2),
+                            Color.RED,
+                            50,
+                            50,
+                            wpArr[0]
+                    ),
+                    new Enemy(
+                            1200,
+                            PathFactory.convergePath((double)width*0.7, 0.0, (double)width*0.7, height * 0.3, 0.05),
+                            new StaticSprite(enemyGroup, "enemy/bigPrismElite.png", null, 0.2),
+                            Color.RED,
+                            50,
+                            50,
+                            wpArr[1]
+                    )
+            )
+    );
+    LevelSegment testSeg = new LevelSegment(streamSpawn1, new LevelBreak(60), burstSpawn, new LevelBreak(180), streamSpawn2, denseSpawn1, new LevelBreak(300), denseSpawn2, new LevelBreak(300));
+    Level testLevel = new Level(new LevelSegment(denseSpawn2, new LevelBreak(300), testSeg, testSeg, testSeg, testSeg, testSeg));
     Level.setActive(testLevel);
 
     // start game loop

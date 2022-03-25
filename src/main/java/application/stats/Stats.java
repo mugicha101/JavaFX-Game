@@ -30,6 +30,7 @@ public class Stats {
   public ProjType projType; // type of projectile
   public LaserType laserType; // laser type
   public Color projColor; // color of projectile
+  public boolean collidable; // can collide with enemy bullets
 
   public Stats(
       double hitboxRadius,
@@ -45,6 +46,7 @@ public class Stats {
       int projAmount,
       int projPierce,
       boolean projHoming,
+      boolean collidable,
       ProjType projType,
       LaserType laserType,
       Color projColor
@@ -62,12 +64,13 @@ public class Stats {
     this.projAmount = projAmount;
     this.projPierce = projPierce;
     this.projHoming = projHoming;
+    this.collidable = collidable;
     this.projType = projType;
     this.laserType = laserType;
     this.projColor = projColor;
   }
 
   public Stats clone() {
-    return new Stats(hitboxRadius, grazeRadius, speed, focusMulti, damage, firerate, projSize, projSpeed, projInacc, projOpacity, projAmount, projPierce, projHoming, projType, laserType, projColor);
+    return new Stats(hitboxRadius, grazeRadius, speed, focusMulti, damage, firerate, projSize, projSpeed, projInacc, projOpacity, projAmount, projPierce, projHoming, collidable, projType, laserType, projColor);
   }
 }

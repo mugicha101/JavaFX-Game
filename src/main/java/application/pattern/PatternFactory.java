@@ -19,12 +19,11 @@ public class PatternFactory {
   protected static final Random rand = new Random();
 
   private static void spawnRing(
-      Position pos, int bullets, BulletTemplate template, String linMoveId) {
+      Position pos, int bullets, BulletTemplate template, String linMoveId, double startDir) {
     Position originalPos = template.pos;
     template.pos = pos;
     LinMoveAttr lma = (LinMoveAttr) template.getAttr(linMoveId);
     double originalDir = lma.initDir;
-    double startDir = rand.nextDouble() * 360;
     for (int i = 0; i < bullets; i++) {
       lma.initDir = startDir + i * 360.0 / bullets;
       template.spawn();
@@ -34,15 +33,20 @@ public class PatternFactory {
   }
 
   public static Pattern Ring(
-      int initFrameDelay, int frameDelay, int bullets, BulletTemplate template, String linMoveId) {
+      int initFrameDelay, int frameDelay, int bullets, BulletTemplate template, String linMoveId, double dir) {
     return new Pattern(
         "ring",
         null,
         (time, pos, width, height) -> {
           if (time >= initFrameDelay && (time - initFrameDelay) % frameDelay == 0) {
-            spawnRing(pos, bullets, template, linMoveId);
+            spawnRing(pos, bullets, template, linMoveId, dir);
           }
         });
+  }
+
+  public static Pattern Ring(
+      int initFrameDelay, int frameDelay, int bullets, BulletTemplate template, String linMoveId) {
+      return Ring(initFrameDelay, frameDelay, bullets, template, linMoveId, rand.nextDouble() * 360);
   }
 
   public static Pattern Test() {
@@ -191,5 +195,16 @@ public class PatternFactory {
             }
           }
         });
+  }
+
+  public static Pattern WaveParticle(int bullets, int initFrameDelay, int frameDelay, double startDir, double rotSpeed, double rotAccel, BulletTemplate template, String linMoveId) {
+      return new Pattern(
+      "wp",
+      null,
+      (time, pos, width, height) -> {
+          if (time >= initFrameDelay && (time - initFrameDelay) % frameDelay == 0) {
+              spawnRing(pos, bullets, template, linMoveId, startDir + Math.pow(time - initFrameDelay, rotAccel) * rotSpeed);
+          }
+      });
   }
 }

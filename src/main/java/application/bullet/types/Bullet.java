@@ -113,6 +113,10 @@ public class Bullet {
     return time;
   }
 
+  public final double getRadius() {
+    return radius * scale;
+  }
+
   public final boolean finishedStages() {
     return stageList == null || stageIndex == stageList.size();
   }
