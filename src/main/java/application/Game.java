@@ -43,6 +43,7 @@ public class Game extends Application {
   public static Player player;
   public static ParallelCamera cam;
   public static boolean debug = false;
+  public static boolean paused = false;
   public static int frame = -1;
   public static int focusHold = 0;
   public static Stage stage;
@@ -108,7 +109,7 @@ public class Game extends Application {
     // setup background
     bgLayers = new BackgroundLayer[] {
             new CloudLayer(backgroundGroup, width, height, 1,  Color.color(1, 1, 1, 0.1), 50),
-            new CloudLayer(backgroundGroup, width, height, 3,  Color.color(1, 1, 1, 0.1), 25),
+            new CloudLayer(backgroundGroup, width, height, 5,  Color.color(1, 1, 1, 0.1), 25),
     };
     for (BackgroundLayer bgLayer : bgLayers)
       bgLayer.init();
@@ -215,13 +216,19 @@ public class Game extends Application {
   private void run() {
     frame++;
     Input.keyTick();
-    calc();
-    draw();
-    if (debug) debugRun();
+    input();
+    if (!paused) {
+      calc();
+      draw();
+      if (debug) debugRun();
+    }
+  }
+
+  private void input() {
+    toggles();
   }
 
   private void calc() {
-    toggles();
     movePlayer();
     Bullet.moveBullets();
     PlayerAttack.moveAttacks();
@@ -247,6 +254,9 @@ public class Game extends Application {
     }
     if (Input.getInput("fullscreen").onInitialPress()) {
       stage.setFullScreen(!stage.isFullScreen());
+    }
+    if (Input.getInput("pause").onInitialPress()) {
+      paused = !paused;
     }
   }
 

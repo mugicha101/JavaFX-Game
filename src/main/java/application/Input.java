@@ -23,6 +23,7 @@ public class Input {
     inputMap.put("focus", new Input(new KeyCode[] {KeyCode.SHIFT}));
     inputMap.put("debug", new Input(new KeyCode[] {KeyCode.F5}));
     inputMap.put("fullscreen", new Input(new KeyCode[] {KeyCode.F}));
+    inputMap.put("pause", new Input(new KeyCode[] {KeyCode.ESCAPE}));
   }
 
   public static Input getInput(String name) {
