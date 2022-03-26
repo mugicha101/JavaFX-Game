@@ -132,10 +132,10 @@ public class Game extends Application {
     // player.addItem(Item.TripleShot);
     player.addItem(Item.AttackNeedles);
     // player.addItem(Item.PlasmaCore);
-    player.addItem(Item.Anvil);
+    // player.addItem(Item.Anvil);
     // player.addItem(Item.RainStorm);
     // player.addItem(Item.CompactSnow);
-    player.addItem(Item.InflatableBalloon);
+    // player.addItem(Item.InflatableBalloon);
 
     // setup level
     LevelEvent burstSpawn =
@@ -206,7 +206,7 @@ public class Game extends Application {
     );
     Pattern[] wpArr = new Pattern[2];
     for (int i = 0; i < 2; i++)
-      wpArr[i] = PatternFactory.WaveParticle(2, 120, 2, -90, i*2 - 1, 1.5, new BulletTemplate(BulletType.RICE, null, 1, i == 0? BulletColor.GREEN : BulletColor.MAGENTA, new BulletAttr[] {
+      wpArr[i] = PatternFactory.WaveParticle(2, 120, 1, -90, i*2 - 1, 1.5, new BulletTemplate(BulletType.RICE, null, 1, i == 0? BulletColor.GREEN : BulletColor.MAGENTA, new BulletAttr[] {
             new LinMoveAttr("move", 25, 0, new LinChangeAttr("acc", -1, 2))
     }), "move");
     LevelEvent denseSpawn2 = new LevelEvent(
