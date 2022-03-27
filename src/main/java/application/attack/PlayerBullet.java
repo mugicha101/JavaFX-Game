@@ -15,7 +15,7 @@ import java.util.Random;
 
 public class PlayerBullet extends PlayerAttack {
   protected static final Random rand = new Random();
-  protected static final double particleMulti = 2;
+  protected static final double particleMulti = 6;
   protected static final double stepLength = 10;
   private final Position pos;
   private final Stats parentStats;
@@ -52,7 +52,7 @@ public class PlayerBullet extends PlayerAttack {
     int amount = (int)(parentStats.damage * particleMulti);
     if (rand.nextDouble() > (parentStats.damage * particleMulti - amount))
       amount++;
-    for (int i = 0; i < 3 * amount; i++)
+    for (int i = 0; i < amount; i++)
       new CircleParticle(radius, parentStats.projColor, parentStats.projOpacity, particlePos, dir + 180 + (rand.nextDouble() * 2 - 1) * 45, speed * (0.25 + rand.nextDouble()/2), 5 + rand.nextInt(10));
     if (hitEnemy != null) hitEnemy.damage(parentStats.damage * damageMulti);
     if (pierce > 0) {
