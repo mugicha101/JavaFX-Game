@@ -15,15 +15,15 @@ public class Input {
       new ArrayList<>(); // async -> sync
 
   public static void init() {
-    inputMap.put("left", new Input(new KeyCode[] {KeyCode.A, KeyCode.LEFT}));
-    inputMap.put("right", new Input(new KeyCode[] {KeyCode.D, KeyCode.RIGHT}));
-    inputMap.put("up", new Input(new KeyCode[] {KeyCode.W, KeyCode.UP}));
-    inputMap.put("down", new Input(new KeyCode[] {KeyCode.S, KeyCode.DOWN}));
-    inputMap.put("shoot", new Input(new KeyCode[] {KeyCode.Z, KeyCode.BACK_SLASH}));
-    inputMap.put("focus", new Input(new KeyCode[] {KeyCode.SHIFT}));
-    inputMap.put("debug", new Input(new KeyCode[] {KeyCode.F5}));
-    inputMap.put("fullscreen", new Input(new KeyCode[] {KeyCode.F}));
-    inputMap.put("pause", new Input(new KeyCode[] {KeyCode.ESCAPE}));
+    inputMap.put("left", new Input(KeyCode.A, KeyCode.LEFT));
+    inputMap.put("right", new Input(KeyCode.D, KeyCode.RIGHT));
+    inputMap.put("up", new Input(KeyCode.W, KeyCode.UP));
+    inputMap.put("down", new Input(KeyCode.S, KeyCode.DOWN));
+    inputMap.put("shoot", new Input(KeyCode.Z, KeyCode.BACK_SLASH));
+    inputMap.put("focus", new Input(KeyCode.SHIFT));
+    inputMap.put("debug", new Input(KeyCode.F5));
+    inputMap.put("fullscreen", new Input(KeyCode.F));
+    inputMap.put("pause", new Input(KeyCode.ESCAPE));
   }
 
   public static Input getInput(String name) {
@@ -59,7 +59,7 @@ public class Input {
   private boolean initial = false;
   private HashSet<KeyCode> keys;
 
-  public Input(KeyCode[] keys) {
+  public Input(KeyCode... keys) {
     this.keys = new HashSet<>();
     this.keys.addAll(Arrays.asList(keys));
   }
