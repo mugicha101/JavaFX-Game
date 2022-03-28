@@ -18,7 +18,7 @@ public abstract class Sprite {
   public double alpha;
   public Position pos; // dont make final to allow for shared references
   public double dir; // direction
-  private Group sceneGroup; // scene group that the com.example.spaceswarm.sprite is in
+  private Group sceneGroup; // scene group that the sprite is in
   private boolean enabled;
   protected static final HashMap<String, Image> imgCache = new HashMap<>();
 
