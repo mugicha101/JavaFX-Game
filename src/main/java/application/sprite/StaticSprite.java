@@ -3,13 +3,11 @@ package application.sprite;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 
-import java.io.IOException;
-
 public class StaticSprite extends Sprite {
   private final Image img;
   private final String imgPath;
-  public StaticSprite(Group sceneGroup, String imgPath, double[] offset, double scale)
-          throws IOException {
+
+  public StaticSprite(Group sceneGroup, String imgPath, double[] offset, double scale) {
     super(sceneGroup, offset, scale);
     this.imgPath = imgPath;
     img = createImage(imgPath);
@@ -21,10 +19,6 @@ public class StaticSprite extends Sprite {
 
   @Override
   public StaticSprite clone() {
-    try {
-      return new StaticSprite(getSceneGroup(), imgPath,  new double[] {offset[0], offset[1]}, scale);
-    } catch (IOException e) {
-      throw new RuntimeException();
-    }
+    return new StaticSprite(getSceneGroup(), imgPath, new double[] {offset[0], offset[1]}, scale);
   }
 }
