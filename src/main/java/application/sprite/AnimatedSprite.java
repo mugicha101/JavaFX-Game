@@ -1,15 +1,10 @@
 package application.sprite;
 
 import application.Game;
-import application.Position;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class AnimatedSprite extends Sprite {
   private final String[] imgPaths;
@@ -29,10 +24,7 @@ public class AnimatedSprite extends Sprite {
           throws IOException {
     imgs = new Image[filePaths.length];
     for (int i = 0; i < filePaths.length; i++) {
-      InputStream stream = new FileInputStream("src/main/java/application/images/" + filePaths[i]);
-      Image image = new Image(stream);
-      imgs[i] = image;
-      stream.close();
+      imgs[i] = createImage(filePaths[i]);
     }
   }
 

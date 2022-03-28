@@ -2,13 +2,11 @@ package application.sprite;
 
 import javafx.scene.Group;
 import javafx.scene.image.Image;
-import javafx.util.Pair;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
-import java.util.Map;
 
-// sprite that can toggle between different sprites
+// com.example.spaceswarm.sprite that can toggle between different sprites
 public class MultiSprite extends Sprite {
   private final HashMap<String, Sprite> spriteMap;
   private final String startState;

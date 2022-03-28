@@ -5,17 +5,22 @@ import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 
 public abstract class Sprite {
+  private static final String basePath = "src/main/java/application/images/";
   protected final ImageView iv;
   public double scale; // scale of image
   protected final double[] offset; // offset in pixels of image
   public double alpha;
   public Position pos; // dont make final to allow for shared references
   public double dir; // direction
-  private Group sceneGroup; // scene group that the sprite is in
+  private Group sceneGroup; // scene group that the com.example.spaceswarm.sprite is in
   private boolean enabled;
+  protected static final HashMap<String, Image> imgCache = new HashMap<>();
 
   protected Group getSceneGroup() {
     return sceneGroup;
@@ -76,4 +81,13 @@ public abstract class Sprite {
   }
 
   public abstract Sprite clone();
+
+  protected Image createImage(String imgPath) throws IOException {
+    if (!imgCache.containsKey(imgPath)) {
+      InputStream stream = new FileInputStream(basePath + imgPath);
+      imgCache.put(imgPath, new Image(stream));
+      stream.close();
+    }
+    return imgCache.get(imgPath);
+  }
 }
