@@ -35,7 +35,6 @@ import java.io.IOException;
 
 public class Game extends Application {
   public static final int borderWidth = 20;
-  public static final int topMargin = 20;
   public static final int width = 600;
   public static final int height = 800;
   public static final int guiWidth = 300;
@@ -311,15 +310,17 @@ public class Game extends Application {
   private static void screenResize() {
     double w = borderWidth * 2 + width + guiWidth;
     double h = borderWidth * 2 + height;
-    double scaleVal = Math.min((stage.getWidth()) / w, (stage.getHeight() - topMargin) / h);
+    double topOffset = stage.getScene().getWindow().getHeight() - stage.getScene().getHeight();
+    double sideOffset = stage.getScene().getWindow().getWidth() - stage.getScene().getWidth();
+    double scaleVal = Math.min((stage.getWidth() - sideOffset * 0.5) / w, (stage.getHeight() - topOffset * 0.5) / h);
     Scale scale = new Scale();
     scale.setPivotX(0);
     scale.setPivotY(0);
     scale.setX(scaleVal);
     scale.setY(scaleVal);
     rootGroup.getTransforms().setAll(scale);
-    rootGroup.setTranslateX((stage.getWidth() - scaleVal * w) / 2 + borderWidth * scaleVal);
-    rootGroup.setTranslateY((stage.getHeight() - scaleVal * h) / 2 + borderWidth * scaleVal - topMargin);
+    rootGroup.setTranslateX((stage.getWidth() - scaleVal * w) / 2 + borderWidth * scaleVal - sideOffset * 0.5);
+    rootGroup.setTranslateY((stage.getHeight() - scaleVal * h) / 2 + borderWidth * scaleVal - topOffset * 0.5);
   }
 
   private static void drawBG() {

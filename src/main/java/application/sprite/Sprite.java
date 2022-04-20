@@ -1,17 +1,16 @@
 package application.sprite;
 
+import application.Game;
 import application.Position;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Objects;
 
 public abstract class Sprite {
-  private static final String basePath = "src/main/java/application/images/";
+  private static final String basePath = "images/";
   protected final ImageView iv;
   public double scale; // scale of image
   protected final double[] offset; // offset in pixels of image
@@ -49,6 +48,10 @@ public abstract class Sprite {
     alpha = 1;
   }
 
+  public final ImageView getIv() {
+    return iv;
+  }
+
   protected abstract Image getImage();
 
   public void drawUpdate() {
@@ -83,13 +86,8 @@ public abstract class Sprite {
   public abstract Sprite clone();
 
   protected Image createImage(String imgPath) {
-    if (!imgCache.containsKey(imgPath)) {
-      try (InputStream stream = new FileInputStream(basePath + imgPath)) {
-        imgCache.put(imgPath, new Image(stream));
-      } catch (IOException e) {
-        throw new RuntimeException();
-      }
-    }
+    if (!imgCache.containsKey(imgPath))
+      imgCache.put(imgPath, new Image(Objects.requireNonNull(Game.class.getResourceAsStream(basePath + imgPath))));
     return imgCache.get(imgPath);
   }
 }
