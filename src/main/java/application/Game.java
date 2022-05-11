@@ -301,7 +301,7 @@ public class Game extends Application {
     else if (player.pos.x > width - playerMoveEdgeMargin) player.pos.x = width - playerMoveEdgeMargin;
     if (player.pos.y < playerMoveEdgeMargin) player.pos.y = playerMoveEdgeMargin;
     else if (player.pos.y > height - playerMoveEdgeMargin) player.pos.y = height - playerMoveEdgeMargin;
-    player.dir = moveOffset[0] * multi * 5;
+    player.dir = -moveOffset[0] * multi * 5;
 
     if (focusHold < 10 && Input.getInput("focus").isPressed()) focusHold++;
     else if (focusHold > 0 && !Input.getInput("focus").isPressed()) focusHold--;
